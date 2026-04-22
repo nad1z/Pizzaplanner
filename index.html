@@ -1,22 +1,314 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pizzaplanner</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap');
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #1a1209; font-family: 'DM Sans', sans-serif; }
+    h1, h2, h3, .serif { font-family: 'Playfair Display', serif; }
+    @keyframes flash {
+      0% { background-color: #c0522a44; }
+      100% { background-color: transparent; }
+    }
+    .flash { animation: flash 0.4s ease-out; }
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+    input[type=number] { -moz-appearance: textfield; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #1a1209; }
+    ::-webkit-scrollbar-thumb { background: #c0522a66; border-radius: 3px; }
+  </style>
 </head>
 <body>
-    Welcome to the best pizza calculator there is!
-    <br>
-    This wil be updated daily.
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useMemo, useEffect, useRef, useCallback } = React;
 
-    What this will include:
-    <ul>
-        <li>Calculated based on the pizza kind - Neaoploitan, NY style, Detriot Style. Rome style etc..</li>
-        <li>Type of Dough - veriious pre-feremts</li>
-        <li>Type of flour</li>
-        <li>hydration</li>
-        <li>yeast</li>
-    </ul>
+class PizzaStyle {
+  constructor({ name, hydration, ballWeight, saltPercent, oilPercent, description, emoji }) {
+    this.name = name;
+    this.hydration = hydration;
+    this.ballWeight = ballWeight;
+    this.saltPercent = saltPercent;
+    this.oilPercent = oilPercent;
+    this.description = description;
+    this.emoji = emoji;
+  }
+  static STYLES = {
+    neapolitan: new PizzaStyle({ name: 'Neapolitan', emoji: '🇮🇹', hydration: { min: 58, max: 65, recommended: 62 }, ballWeight: { min: 200, max: 280 }, saltPercent: 2.8, oilPercent: 0, description: 'Thin, soft, charred crust from a wood-fired oven' }),
+    newyork:    new PizzaStyle({ name: 'New York',   emoji: '🗽', hydration: { min: 58, max: 65, recommended: 62 }, ballWeight: { min: 180, max: 280 }, saltPercent: 2.0, oilPercent: 2, description: 'Large foldable slices, crispy yet chewy crust' }),
+    roman:      new PizzaStyle({ name: 'Roman',      emoji: '🏛️', hydration: { min: 70, max: 85, recommended: 78 }, ballWeight: { min: 600, max: 900 }, saltPercent: 2.5, oilPercent: 3, description: 'High-hydration focaccia-style baked in a tray' }),
+    brooklyn:   new PizzaStyle({ name: 'Brooklyn',   emoji: '🌉', hydration: { min: 60, max: 68, recommended: 64 }, ballWeight: { min: 220, max: 300 }, saltPercent: 2.0, oilPercent: 1.5, description: 'Thicker than NY, crispy bottom, chewier edge' }),
+    detroit:    new PizzaStyle({ name: 'Detroit',    emoji: '🏭', hydration: { min: 65, max: 75, recommended: 70 }, ballWeight: { min: 400, max: 600 }, saltPercent: 2.0, oilPercent: 2, description: 'Deep dish, crispy laced cheese edges, airy crumb' }),
+    sicilian:   new PizzaStyle({ name: 'Sicilian',   emoji: '🌊', hydration: { min: 65, max: 72, recommended: 68 }, ballWeight: { min: 500, max: 750 }, saltPercent: 2.2, oilPercent: 3, description: 'Thick, spongy square slices with a crispy base' }),
+  };
+}
+
+class DoughCalculator {
+  static ballWeightFromDiameter(cm) {
+    return Math.round(0.65 * Math.PI * Math.pow(cm / 2, 2));
+  }
+  static diameterFromBallWeight(g) {
+    return Math.round(2 * Math.sqrt(g / (0.65 * Math.PI)));
+  }
+  static compute({ numPizzas, ballWeightG, hydrationPct, saltPct, oilPct }) {
+    const h = hydrationPct / 100, s = saltPct / 100, o = oilPct / 100;
+    const totalDough = numPizzas * ballWeightG;
+    const flourG = Math.round(totalDough / (1 + h + s + o));
+    const waterG = Math.round(flourG * h);
+    const saltG  = Math.round(flourG * s * 10) / 10;
+    const oilG   = Math.round(flourG * o * 10) / 10;
+    return { totalDough, flourG, waterG, saltG, oilG };
+  }
+}
+
+class StorageManager {
+  static KEY = 'pizza-calc-v1';
+  static load() {
+    try { return JSON.parse(localStorage.getItem(this.KEY)) || null; } catch { return null; }
+  }
+  static save(data) {
+    try { localStorage.setItem(this.KEY, JSON.stringify(data)); } catch {}
+  }
+  static clear() {
+    try { localStorage.removeItem(this.KEY); } catch {}
+  }
+}
+
+function validityClass(value, min, max) {
+  if (value >= min && value <= max) return 'green';
+  const over = Math.max(0, value - max), under = Math.max(0, min - value);
+  const pct = (over || under) / (max - min) * 100;
+  return pct > 10 ? 'red' : 'yellow';
+}
+
+const DOT = { green: 'bg-green-500', yellow: 'bg-yellow-400', red: 'bg-red-500' };
+const RING = { green: '#22c55e', yellow: '#facc15', red: '#ef4444' };
+
+function HydrationGauge({ value, min, max }) {
+  const clamp = v => Math.min(Math.max(v, min - 5), max + 5);
+  const pct = (clamp(value) - (min - 5)) / ((max + 5) - (min - 5));
+  const angle = -180 + pct * 180;
+  const rad = angle * Math.PI / 180;
+  const R = 70, cx = 90, cy = 90;
+  const nx = cx + R * Math.cos(rad), ny = cy + R * Math.sin(rad);
+  const validity = validityClass(value, min, max);
+  const color = RING[validity];
+  const arcPath = (startDeg, endDeg) => {
+    const s = startDeg * Math.PI / 180, e = endDeg * Math.PI / 180;
+    return `M ${cx + R * Math.cos(s)} ${cy + R * Math.sin(s)} A ${R} ${R} 0 0 1 ${cx + R * Math.cos(e)} ${cy + R * Math.sin(e)}`;
+  };
+  return (
+    <svg viewBox="0 0 180 100" className="w-full max-w-xs mx-auto">
+      <path d={arcPath(-180, 0)} fill="none" stroke="#3a2a18" strokeWidth="12" strokeLinecap="round" />
+      <path d={arcPath(-180, angle)} fill="none" stroke={color} strokeWidth="12" strokeLinecap="round" />
+      <line x1={cx} y1={cy} x2={nx} y2={ny} stroke={color} strokeWidth="3" strokeLinecap="round" />
+      <circle cx={cx} cy={cy} r="5" fill={color} />
+      <text x="18" y="96" fill="#f5e6c880" fontSize="10" fontFamily="DM Sans">{min}%</text>
+      <text x="152" y="96" fill="#f5e6c880" fontSize="10" fontFamily="DM Sans">{max}%</text>
+      <text x={cx} y={cy - 18} textAnchor="middle" fill="#f5e6c8" fontSize="16" fontFamily="Playfair Display" fontWeight="600">{value}%</text>
+      <text x={cx} y={cy - 4} textAnchor="middle" fill="#f5e6c880" fontSize="9" fontFamily="DM Sans">hydration</text>
+    </svg>
+  );
+}
+
+function InputField({ label, unit, value, onChange, validity, step = 1, min: fmin, max: fmax }) {
+  const flashRef = useRef(null);
+  const prevVal = useRef(value);
+  useEffect(() => {
+    if (prevVal.current !== value && flashRef.current) {
+      flashRef.current.classList.remove('flash');
+      void flashRef.current.offsetWidth;
+      flashRef.current.classList.add('flash');
+    }
+    prevVal.current = value;
+  }, [value]);
+  const dot = validity ? DOT[validity] : null;
+  return (
+    <div className="flex flex-col gap-1">
+      <div className="flex items-center justify-between">
+        <span style={{ color: '#f5e6c8aa', fontSize: 12 }} className="uppercase tracking-widest">{label}</span>
+        {dot && <span className={`w-2 h-2 rounded-full ${dot}`} />}
+      </div>
+      <div ref={flashRef} className="flex items-center rounded-xl overflow-hidden" style={{ background: '#2a1e0e', border: '1px solid #3a2a18' }}>
+        <button onClick={() => onChange(Math.max(fmin ?? 0, +value - step))}
+          style={{ color: '#c0522a', fontSize: 20, width: 44, flexShrink: 0 }}
+          className="h-14 flex items-center justify-center hover:bg-white/5 transition-colors">−</button>
+        <input type="number" value={value} min={fmin} max={fmax} step={step}
+          onChange={e => onChange(+e.target.value)}
+          style={{ color: '#f5e6c8', background: 'transparent', fontSize: 22, fontFamily: 'DM Sans', textAlign: 'center', width: '100%' }}
+          className="h-14 outline-none px-1" />
+        <span style={{ color: '#f5e6c860', fontSize: 13, paddingRight: 8, flexShrink: 0 }}>{unit}</span>
+        <button onClick={() => onChange(Math.min(fmax ?? Infinity, +value + step))}
+          style={{ color: '#c0522a', fontSize: 20, width: 44, flexShrink: 0 }}
+          className="h-14 flex items-center justify-center hover:bg-white/5 transition-colors">+</button>
+      </div>
+    </div>
+  );
+}
+
+function PizzaCalculator() {
+  const getDefaults = (styleId) => {
+    const s = PizzaStyle.STYLES[styleId];
+    const ballWeightG = Math.round((s.ballWeight.min + s.ballWeight.max) / 2);
+    return { styleId, numPizzas: 4, ballWeightG, pizzaDiameterCm: DoughCalculator.diameterFromBallWeight(ballWeightG), hydrationPct: s.hydration.recommended };
+  };
+
+  const [state, setState] = useState(() => {
+    const saved = StorageManager.load();
+    return (saved && PizzaStyle.STYLES[saved.styleId]) ? saved : getDefaults('neapolitan');
+  });
+  const [dismissed, setDismissed] = useState(false);
+
+  useEffect(() => { StorageManager.save(state); }, [state]);
+
+  const style = PizzaStyle.STYLES[state.styleId];
+  const recipe = useMemo(() =>
+    DoughCalculator.compute({ ...state, saltPct: style.saltPercent, oilPct: style.oilPercent }),
+    [state, style]
+  );
+
+  const update = useCallback((patch) => setState(prev => {
+    const next = { ...prev, ...patch };
+    if ('ballWeightG' in patch) next.pizzaDiameterCm = DoughCalculator.diameterFromBallWeight(patch.ballWeightG);
+    if ('pizzaDiameterCm' in patch) next.ballWeightG = DoughCalculator.ballWeightFromDiameter(patch.pizzaDiameterCm);
+    return next;
+  }), []);
+
+  const hydValidity  = validityClass(state.hydrationPct, style.hydration.min, style.hydration.max);
+  const ballValidity = validityClass(state.ballWeightG, style.ballWeight.min, style.ballWeight.max);
+
+  const suggestedStyle = useMemo(() => {
+    const currDist = Math.abs(state.hydrationPct - style.hydration.recommended);
+    let best = null, bestDist = currDist;
+    for (const [id, s] of Object.entries(PizzaStyle.STYLES)) {
+      if (id === state.styleId) continue;
+      const dist = Math.abs(state.hydrationPct - s.hydration.recommended);
+      if (dist < bestDist) { bestDist = dist; best = { id, style: s }; }
+    }
+    return best;
+  }, [state.hydrationPct, state.styleId, style.hydration.recommended]);
+
+  const handleStyleChange = (id) => { setDismissed(false); setState(getDefaults(id)); };
+  const reset = () => { StorageManager.clear(); setDismissed(false); setState(getDefaults('neapolitan')); };
+
+  const Row = ({ label, value, unit, accent }) => (
+    <div className="flex justify-between items-baseline py-3" style={{ borderBottom: '1px solid #3a2a1833' }}>
+      <span style={{ color: '#f5e6c8aa', fontSize: 13 }} className="uppercase tracking-wider">{label}</span>
+      <span style={{ color: accent ? '#c0522a' : '#fafaf0', fontSize: accent ? 22 : 18, fontFamily: accent ? 'Playfair Display' : 'DM Sans', fontWeight: accent ? 700 : 400 }}>
+        {value}<span style={{ fontSize: 12, marginLeft: 3, color: '#f5e6c870' }}>{unit}</span>
+      </span>
+    </div>
+  );
+
+  return (
+    <div style={{ minHeight: '100vh', color: '#f5e6c8', padding: '24px 16px 48px' }} className="max-w-3xl mx-auto">
+      <div className="text-center mb-8">
+        <h1 className="serif" style={{ fontSize: 38, color: '#fafaf0', lineHeight: 1.1, marginBottom: 4 }}>Pizzaplanner</h1>
+        <p style={{ color: '#f5e6c870', fontSize: 14 }}>The best pizza calculator there is.</p>
+      </div>
+
+      <div className="flex flex-wrap gap-2 justify-center mb-6">
+        {Object.entries(PizzaStyle.STYLES).map(([id, s]) => (
+          <button key={id} onClick={() => handleStyleChange(id)}
+            style={{
+              padding: '8px 18px', borderRadius: 999, fontSize: 13, fontFamily: 'DM Sans', fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s',
+              background: state.styleId === id ? '#c0522a' : '#2a1e0e',
+              color: state.styleId === id ? '#fafaf0' : '#f5e6c8aa',
+              border: `1px solid ${state.styleId === id ? '#c0522a' : '#3a2a18'}`,
+            }}>{s.emoji} {s.name}</button>
+        ))}
+      </div>
+
+      <p className="text-center mb-8" style={{ color: '#f5e6c870', fontSize: 14, fontStyle: 'italic' }}>{style.description}</p>
+
+      <div className="grid gap-6" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
+        <div className="flex flex-col gap-4" style={{ background: '#21160a', borderRadius: 20, padding: 24, border: '1px solid #3a2a18' }}>
+          <h2 className="serif" style={{ fontSize: 20, color: '#fafaf0', marginBottom: 4 }}>Your Dough</h2>
+          <InputField label="Pizzas" unit="pcs" value={state.numPizzas} step={1} min={1} max={50}
+            onChange={v => update({ numPizzas: Math.max(1, Math.min(50, Math.round(v))) })} />
+          <InputField label="Ball Weight" unit="g" value={state.ballWeightG} step={5} min={50} max={1200} validity={ballValidity}
+            onChange={v => update({ ballWeightG: Math.max(50, Math.round(v)) })} />
+          <InputField label="Diameter" unit="cm" value={state.pizzaDiameterCm} step={1} min={10} max={60}
+            onChange={v => update({ pizzaDiameterCm: Math.max(10, Math.min(60, Math.round(v))) })} />
+          <InputField label="Hydration" unit="%" value={state.hydrationPct} step={1} min={40} max={100} validity={hydValidity}
+            onChange={v => update({ hydrationPct: Math.max(40, Math.min(100, Math.round(v))) })} />
+          <InputField label="Flour" unit="g" value={recipe.flourG} step={10} min={50}
+            onChange={v => {
+              const flourG = Math.max(50, Math.round(v));
+              const totalDough = flourG * (1 + state.hydrationPct/100 + style.saltPercent/100 + style.oilPercent/100);
+              update({ ballWeightG: Math.round(totalDough / state.numPizzas) });
+            }} />
+          <InputField label="Water" unit="g" value={recipe.waterG} step={10} min={10}
+            onChange={v => {
+              const waterG = Math.max(10, Math.round(v));
+              update({ hydrationPct: Math.round(waterG / recipe.flourG * 100) });
+            }} />
+          <button onClick={reset} style={{ marginTop: 4, color: '#c0522a66', fontSize: 12, background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', padding: 0 }}>
+            ↺ Reset to defaults
+          </button>
+        </div>
+
+        <div style={{ background: '#21160a', borderRadius: 20, padding: 24, border: '1px solid #3a2a18' }}>
+          <h2 className="serif" style={{ fontSize: 20, color: '#fafaf0', marginBottom: 16 }}>Recipe</h2>
+          <HydrationGauge value={state.hydrationPct} min={style.hydration.min} max={style.hydration.max} />
+          <div style={{ marginTop: 16 }}>
+            <Row label="Flour"       value={recipe.flourG}    unit="g" />
+            <Row label="Water"       value={recipe.waterG}    unit="g" />
+            <Row label="Salt"        value={recipe.saltG}     unit="g" />
+            {style.oilPercent > 0 && <Row label="Oil" value={recipe.oilG} unit="g" />}
+            <Row label="Total dough" value={recipe.totalDough} unit="g" accent />
+          </div>
+          <div style={{ marginTop: 16, padding: '12px 16px', background: '#2a1e0e', borderRadius: 12, border: '1px solid #3a2a1844' }}>
+            <div style={{ fontSize: 12, color: '#f5e6c870', marginBottom: 4 }}>Per pizza</div>
+            <div style={{ fontSize: 14, color: '#f5e6c8' }}>
+              {state.ballWeightG}g ball · {state.pizzaDiameterCm}cm · {style.saltPercent}% salt{style.oilPercent > 0 ? ` · ${style.oilPercent}% oil` : ''}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-3 mt-6">
+        {!dismissed && suggestedStyle && (
+          <div style={{ background: '#2a1e0e', border: '1px solid #c0522a55', borderRadius: 14, padding: '12px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: 13, color: '#f5e6c8cc' }}>
+              {suggestedStyle.style.emoji} Your hydration ({state.hydrationPct}%) looks more like <strong style={{ color: '#f5e6c8' }}>{suggestedStyle.style.name}</strong> — try switching?
+            </span>
+            <div className="flex gap-3 ml-4" style={{ flexShrink: 0 }}>
+              <button onClick={() => handleStyleChange(suggestedStyle.id)} style={{ fontSize: 12, color: '#c0522a', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>Switch</button>
+              <button onClick={() => setDismissed(true)} style={{ fontSize: 12, color: '#f5e6c850', background: 'none', border: 'none', cursor: 'pointer' }}>✕</button>
+            </div>
+          </div>
+        )}
+        {hydValidity !== 'green' && (
+          <div style={{ background: '#2a1e0e', border: `1px solid ${RING[hydValidity]}44`, borderRadius: 14, padding: '12px 20px' }}>
+            <span style={{ fontSize: 13, color: '#f5e6c8cc' }}>
+              <span className={`inline-block w-2 h-2 rounded-full ${DOT[hydValidity]} mr-2`} />
+              Hydration {state.hydrationPct}% is {hydValidity === 'red' ? 'critically' : 'slightly'} outside the {style.name} range ({style.hydration.min}–{style.hydration.max}%)
+            </span>
+          </div>
+        )}
+        {ballValidity !== 'green' && (
+          <div style={{ background: '#2a1e0e', border: `1px solid ${RING[ballValidity]}44`, borderRadius: 14, padding: '12px 20px' }}>
+            <span style={{ fontSize: 13, color: '#f5e6c8cc' }}>
+              <span className={`inline-block w-2 h-2 rounded-full ${DOT[ballValidity]} mr-2`} />
+              Ball weight {state.ballWeightG}g is {ballValidity === 'red' ? 'critically' : 'slightly'} outside the {style.name} range ({style.ballWeight.min}–{style.ballWeight.max}g)
+            </span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<PizzaCalculator />);
+</script>
 </body>
 </html>
