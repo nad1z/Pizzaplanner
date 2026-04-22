@@ -20,6 +20,7 @@ export class DoughCalculator {
   }
 
   static diameterFromBallWeight(g: number): number {
+    if (!Number.isFinite(g) || g <= 0) return 0;
     return Math.round(2 * Math.sqrt(g / (0.65 * Math.PI)));
   }
 

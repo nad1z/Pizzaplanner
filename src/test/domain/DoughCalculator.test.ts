@@ -27,6 +27,16 @@ describe('DoughCalculator', () => {
     it('converts 500g ball to correct diameter', () => {
       expect(DoughCalculator.diameterFromBallWeight(500)).toBe(31);
     });
+
+    it('returns 0 for zero input', () => {
+      expect(DoughCalculator.diameterFromBallWeight(0)).toBe(0);
+    });
+
+    it('returns 0 for negative input instead of NaN', () => {
+      const result = DoughCalculator.diameterFromBallWeight(-100);
+      expect(result).toBe(0);
+      expect(Number.isNaN(result)).toBe(false);
+    });
   });
 
   describe('compute', () => {

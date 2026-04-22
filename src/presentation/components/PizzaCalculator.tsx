@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect, useCallback } from 'react';
 import { PizzaStyle } from '../../domain/models/PizzaStyle';
 import type { PizzaStyleId } from '../../domain/models/PizzaStyle';
 import { DoughCalculator } from '../../domain/services/DoughCalculator';
+import { FIELD_BOUNDS, absoluteError } from '../../domain/validation';
 import { StorageManager } from '../../infrastructure/StorageManager';
 import type { PersistedState } from '../../infrastructure/StorageManager';
 import { validityLevel, RING_COLORS, DOT_CLASSES } from '../utils/validity';
@@ -76,6 +77,13 @@ export function PizzaCalculator() {
   const hydValidity  = validityLevel(state.hydrationPct, style.hydration.min, style.hydration.max);
   const ballValidity = validityLevel(state.ballWeightG,  style.ballWeight.min, style.ballWeight.max);
 
+  const fieldErrors = {
+    numPizzas:       absoluteError(state.numPizzas,       FIELD_BOUNDS.numPizzas,       ''),
+    ballWeightG:     absoluteError(state.ballWeightG,     FIELD_BOUNDS.ballWeightG,     'g'),
+    pizzaDiameterCm: absoluteError(state.pizzaDiameterCm, FIELD_BOUNDS.pizzaDiameterCm, 'cm'),
+    hydrationPct:    absoluteError(state.hydrationPct,    FIELD_BOUNDS.hydrationPct,    '%'),
+  };
+
   const suggestedStyle = useMemo<SuggestedStyle | null>(() => {
     const currDist = Math.abs(state.hydrationPct - style.hydration.recommended);
     let best: SuggestedStyle | null = null;
@@ -115,25 +123,40 @@ export function PizzaCalculator() {
       <div className="grid gap-6" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
         <div className="flex flex-col gap-4" style={{ background: '#21160a', borderRadius: 20, padding: 24, border: '1px solid #3a2a18' }}>
           <h2 className="serif" style={{ fontSize: 20, color: '#fafaf0', marginBottom: 4 }}>Your Dough</h2>
-          <InputField label="Pizzas"      unit="pcs" value={state.numPizzas}      step={1}  min={1}  max={50}
-            onChange={v => update({ numPizzas: Math.max(1, Math.min(50, Math.round(v))) })} />
-          <InputField label="Ball Weight" unit="g"   value={state.ballWeightG}    step={5}  min={50} max={1200} validity={ballValidity}
-            onChange={v => update({ ballWeightG: Math.max(50, Math.round(v)) })} />
-          <InputField label="Diameter"   unit="cm"  value={state.pizzaDiameterCm} step={1}  min={10} max={60}
-            onChange={v => update({ pizzaDiameterCm: Math.max(10, Math.min(60, Math.round(v))) })} />
-          <InputField label="Hydration"  unit="%"   value={state.hydrationPct}   step={1}  min={40} max={100} validity={hydValidity}
-            onChange={v => update({ hydrationPct: Math.max(40, Math.min(100, Math.round(v))) })} />
-          <InputField label="Flour"      unit="g"   value={recipe.flourG}        step={10} min={50}
+
+          <InputField label="Pizzas" unit="pcs" value={state.numPizzas} step={1} min={1} max={50}
+            error={fieldErrors.numPizzas}
+            onChange={v => update({ numPizzas: Math.max(1, Math.round(v)) })} />
+
+          <InputField label="Ball Weight" unit="g" value={state.ballWeightG} step={5} min={50} max={1200}
+            validity={fieldErrors.ballWeightG ? undefined : ballValidity}
+            error={fieldErrors.ballWeightG}
+            onChange={v => update({ ballWeightG: Math.round(v) })} />
+
+          <InputField label="Diameter" unit="cm" value={state.pizzaDiameterCm} step={1} min={10} max={60}
+            error={fieldErrors.pizzaDiameterCm}
+            onChange={v => update({ pizzaDiameterCm: Math.round(v) })} />
+
+          <InputField label="Hydration" unit="%" value={state.hydrationPct} step={1} min={40} max={100}
+            validity={fieldErrors.hydrationPct ? undefined : hydValidity}
+            error={fieldErrors.hydrationPct}
+            onChange={v => update({ hydrationPct: Math.round(v) })} />
+
+          <InputField label="Flour" unit="g" value={recipe.flourG} step={10} min={50}
             onChange={v => {
-              const flourG = Math.max(50, Math.round(v));
+              const flourG = Math.round(v);
+              if (flourG <= 0 || state.numPizzas <= 0) return;
               const totalDough = flourG * (1 + state.hydrationPct / 100 + style.saltPercent / 100 + style.oilPercent / 100);
               update({ ballWeightG: Math.round(totalDough / state.numPizzas) });
             }} />
-          <InputField label="Water"      unit="g"   value={recipe.waterG}        step={10} min={10}
+
+          <InputField label="Water" unit="g" value={recipe.waterG} step={10} min={10}
             onChange={v => {
-              const waterG = Math.max(10, Math.round(v));
+              const waterG = Math.round(v);
+              if (recipe.flourG <= 0) return;
               update({ hydrationPct: Math.round(waterG / recipe.flourG * 100) });
             }} />
+
           <button onClick={reset} style={{ marginTop: 4, color: '#c0522a66', fontSize: 12, background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', padding: 0 }}>
             ↺ Reset to defaults
           </button>
@@ -170,7 +193,7 @@ export function PizzaCalculator() {
             </div>
           </div>
         )}
-        {hydValidity !== 'green' && (
+        {!fieldErrors.hydrationPct && hydValidity !== 'green' && (
           <div style={{ background: '#2a1e0e', border: `1px solid ${RING_COLORS[hydValidity]}44`, borderRadius: 14, padding: '12px 20px' }}>
             <span style={{ fontSize: 13, color: '#f5e6c8cc' }}>
               <span className={`inline-block w-2 h-2 rounded-full ${DOT_CLASSES[hydValidity]} mr-2`} />
@@ -178,7 +201,7 @@ export function PizzaCalculator() {
             </span>
           </div>
         )}
-        {ballValidity !== 'green' && (
+        {!fieldErrors.ballWeightG && ballValidity !== 'green' && (
           <div style={{ background: '#2a1e0e', border: `1px solid ${RING_COLORS[ballValidity]}44`, borderRadius: 14, padding: '12px 20px' }}>
             <span style={{ fontSize: 13, color: '#f5e6c8cc' }}>
               <span className={`inline-block w-2 h-2 rounded-full ${DOT_CLASSES[ballValidity]} mr-2`} />
