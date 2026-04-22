@@ -1,0 +1,62 @@
+import { useEffect, useRef } from 'react';
+import type { ValidityLevel } from '../utils/validity';
+import { DOT_CLASSES } from '../utils/validity';
+
+interface InputFieldProps {
+  label: string;
+  unit: string;
+  value: number;
+  onChange: (value: number) => void;
+  validity?: ValidityLevel;
+  step?: number;
+  min?: number;
+  max?: number;
+}
+
+export function InputField({ label, unit, value, onChange, validity, step = 1, min: fmin, max: fmax }: InputFieldProps) {
+  const flashRef = useRef<HTMLDivElement>(null);
+  const prevVal = useRef(value);
+
+  useEffect(() => {
+    if (prevVal.current !== value && flashRef.current) {
+      flashRef.current.classList.remove('flash');
+      void flashRef.current.offsetWidth;
+      flashRef.current.classList.add('flash');
+    }
+    prevVal.current = value;
+  }, [value]);
+
+  const dot = validity ? DOT_CLASSES[validity] : null;
+
+  return (
+    <div className="flex flex-col gap-1">
+      <div className="flex items-center justify-between">
+        <span style={{ color: '#f5e6c8aa', fontSize: 12 }} className="uppercase tracking-widest">{label}</span>
+        {dot && <span className={`w-2 h-2 rounded-full ${dot}`} />}
+      </div>
+      <div ref={flashRef} className="flex items-center rounded-xl overflow-hidden" style={{ background: '#2a1e0e', border: '1px solid #3a2a18' }}>
+        <button
+          onClick={() => onChange(Math.max(fmin ?? 0, value - step))}
+          style={{ color: '#c0522a', fontSize: 20, width: 44, flexShrink: 0 }}
+          className="h-14 flex items-center justify-center hover:bg-white/5 transition-colors"
+        >−</button>
+        <input
+          type="number"
+          value={value}
+          min={fmin}
+          max={fmax}
+          step={step}
+          onChange={e => onChange(Number(e.target.value))}
+          style={{ color: '#f5e6c8', background: 'transparent', fontSize: 22, fontFamily: 'DM Sans', textAlign: 'center', width: '100%' }}
+          className="h-14 outline-none px-1"
+        />
+        <span style={{ color: '#f5e6c860', fontSize: 13, paddingRight: 8, flexShrink: 0 }}>{unit}</span>
+        <button
+          onClick={() => onChange(Math.min(fmax ?? Infinity, value + step))}
+          style={{ color: '#c0522a', fontSize: 20, width: 44, flexShrink: 0 }}
+          className="h-14 flex items-center justify-center hover:bg-white/5 transition-colors"
+        >+</button>
+      </div>
+    </div>
+  );
+}
