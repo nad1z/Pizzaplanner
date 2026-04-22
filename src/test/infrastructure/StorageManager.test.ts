@@ -38,8 +38,45 @@ describe('StorageManager', () => {
     expect(StorageManager.load()?.numPizzas).toBe(6);
   });
 
-  it('returns null on corrupted storage data', () => {
+  it('returns null on corrupted JSON', () => {
     localStorage.setItem('pizza-calc-v1', 'not-valid-json{{{');
+    expect(StorageManager.load()).toBeNull();
+  });
+
+  it('returns null for an unknown styleId', () => {
+    localStorage.setItem('pizza-calc-v1', JSON.stringify({ ...SAMPLE, styleId: 'chicago' }));
+    expect(StorageManager.load()).toBeNull();
+  });
+
+  it('returns null when numPizzas exceeds max bound', () => {
+    localStorage.setItem('pizza-calc-v1', JSON.stringify({ ...SAMPLE, numPizzas: 999 }));
+    expect(StorageManager.load()).toBeNull();
+  });
+
+  it('returns null when numPizzas is below min bound', () => {
+    localStorage.setItem('pizza-calc-v1', JSON.stringify({ ...SAMPLE, numPizzas: 0 }));
+    expect(StorageManager.load()).toBeNull();
+  });
+
+  it('returns null when ballWeightG exceeds max bound', () => {
+    localStorage.setItem('pizza-calc-v1', JSON.stringify({ ...SAMPLE, ballWeightG: 5000 }));
+    expect(StorageManager.load()).toBeNull();
+  });
+
+  it('returns null when hydrationPct exceeds max bound', () => {
+    localStorage.setItem('pizza-calc-v1', JSON.stringify({ ...SAMPLE, hydrationPct: 200 }));
+    expect(StorageManager.load()).toBeNull();
+  });
+
+  it('returns null when a field is not a number', () => {
+    localStorage.setItem('pizza-calc-v1', JSON.stringify({ ...SAMPLE, numPizzas: '4' }));
+    expect(StorageManager.load()).toBeNull();
+  });
+
+  it('returns null when a required field is missing', () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { hydrationPct: _, ...partial } = SAMPLE;
+    localStorage.setItem('pizza-calc-v1', JSON.stringify(partial));
     expect(StorageManager.load()).toBeNull();
   });
 });

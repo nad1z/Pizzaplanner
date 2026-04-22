@@ -1,3 +1,4 @@
+import { FIELD_BOUNDS, isValidStyleId } from '../domain/validation';
 import type { PizzaStyleId } from '../domain/models/PizzaStyle';
 
 export interface PersistedState {
@@ -8,12 +9,25 @@ export interface PersistedState {
   hydrationPct: number;
 }
 
+function isValidPersistedState(raw: unknown): raw is PersistedState {
+  if (!raw || typeof raw !== 'object') return false;
+  const d = raw as Record<string, unknown>;
+  return (
+    isValidStyleId(d.styleId) &&
+    typeof d.numPizzas       === 'number' && d.numPizzas       >= FIELD_BOUNDS.numPizzas.min       && d.numPizzas       <= FIELD_BOUNDS.numPizzas.max &&
+    typeof d.ballWeightG     === 'number' && d.ballWeightG     >= FIELD_BOUNDS.ballWeightG.min     && d.ballWeightG     <= FIELD_BOUNDS.ballWeightG.max &&
+    typeof d.pizzaDiameterCm === 'number' && d.pizzaDiameterCm >= FIELD_BOUNDS.pizzaDiameterCm.min && d.pizzaDiameterCm <= FIELD_BOUNDS.pizzaDiameterCm.max &&
+    typeof d.hydrationPct    === 'number' && d.hydrationPct    >= FIELD_BOUNDS.hydrationPct.min    && d.hydrationPct    <= FIELD_BOUNDS.hydrationPct.max
+  );
+}
+
 export class StorageManager {
   private static readonly KEY = 'pizza-calc-v1';
 
   static load(): PersistedState | null {
     try {
-      return JSON.parse(localStorage.getItem(this.KEY) ?? 'null') as PersistedState | null;
+      const raw = JSON.parse(localStorage.getItem(this.KEY) ?? 'null');
+      return isValidPersistedState(raw) ? raw : null;
     } catch {
       return null;
     }
