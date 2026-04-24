@@ -1,5 +1,7 @@
 import { FIELD_BOUNDS, isValidStyleId } from '../domain/validation';
 import type { PizzaStyleId } from '../domain/models/PizzaStyle';
+import { YEAST_TYPES } from '../domain/models/YeastType';
+import type { YeastTypeId } from '../domain/models/YeastType';
 
 export interface PersistedState {
   styleId: PizzaStyleId;
@@ -7,6 +9,7 @@ export interface PersistedState {
   ballWeightG: number;
   pizzaDiameterCm: number;
   hydrationPct: number;
+  yeastId: YeastTypeId;
 }
 
 function isValidPersistedState(raw: unknown): raw is PersistedState {
@@ -17,7 +20,8 @@ function isValidPersistedState(raw: unknown): raw is PersistedState {
     typeof d.numPizzas       === 'number' && d.numPizzas       >= FIELD_BOUNDS.numPizzas.min       && d.numPizzas       <= FIELD_BOUNDS.numPizzas.max &&
     typeof d.ballWeightG     === 'number' && d.ballWeightG     >= FIELD_BOUNDS.ballWeightG.min     && d.ballWeightG     <= FIELD_BOUNDS.ballWeightG.max &&
     typeof d.pizzaDiameterCm === 'number' && d.pizzaDiameterCm >= FIELD_BOUNDS.pizzaDiameterCm.min && d.pizzaDiameterCm <= FIELD_BOUNDS.pizzaDiameterCm.max &&
-    typeof d.hydrationPct    === 'number' && d.hydrationPct    >= FIELD_BOUNDS.hydrationPct.min    && d.hydrationPct    <= FIELD_BOUNDS.hydrationPct.max
+    typeof d.hydrationPct    === 'number' && d.hydrationPct    >= FIELD_BOUNDS.hydrationPct.min    && d.hydrationPct    <= FIELD_BOUNDS.hydrationPct.max &&
+    typeof d.yeastId === 'string' && d.yeastId in YEAST_TYPES
   );
 }
 

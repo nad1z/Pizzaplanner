@@ -8,6 +8,7 @@ const SAMPLE: PersistedState = {
   ballWeightG: 240,
   pizzaDiameterCm: 22,
   hydrationPct: 62,
+  yeastId: 'idy',
 };
 
 describe('StorageManager', () => {
@@ -48,6 +49,11 @@ describe('StorageManager', () => {
     expect(StorageManager.load()).toBeNull();
   });
 
+  it('returns null for an unknown yeastId', () => {
+    localStorage.setItem('pizza-calc-v1', JSON.stringify({ ...SAMPLE, yeastId: 'wild' }));
+    expect(StorageManager.load()).toBeNull();
+  });
+
   it('returns null when numPizzas exceeds max bound', () => {
     localStorage.setItem('pizza-calc-v1', JSON.stringify({ ...SAMPLE, numPizzas: 999 }));
     expect(StorageManager.load()).toBeNull();
@@ -78,5 +84,19 @@ describe('StorageManager', () => {
     const { hydrationPct: _, ...partial } = SAMPLE;
     localStorage.setItem('pizza-calc-v1', JSON.stringify(partial));
     expect(StorageManager.load()).toBeNull();
+  });
+
+  it('returns null when yeastId is missing', () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { yeastId: _, ...partial } = SAMPLE;
+    localStorage.setItem('pizza-calc-v1', JSON.stringify(partial));
+    expect(StorageManager.load()).toBeNull();
+  });
+
+  it('accepts all three valid yeast types', () => {
+    for (const yeastId of ['idy', 'ady', 'sourdough'] as const) {
+      StorageManager.save({ ...SAMPLE, yeastId });
+      expect(StorageManager.load()?.yeastId).toBe(yeastId);
+    }
   });
 });

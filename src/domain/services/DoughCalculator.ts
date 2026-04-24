@@ -4,6 +4,7 @@ export interface DoughInputs {
   hydrationPct: number;
   saltPct: number;
   oilPct: number;
+  yeastPct: number;
 }
 
 export interface RecipeResult {
@@ -12,6 +13,7 @@ export interface RecipeResult {
   waterG: number;
   saltG: number;
   oilG: number;
+  yeastG: number;
 }
 
 export class DoughCalculator {
@@ -24,15 +26,17 @@ export class DoughCalculator {
     return Math.round(2 * Math.sqrt(g / (0.65 * Math.PI)));
   }
 
-  static compute({ numPizzas, ballWeightG, hydrationPct, saltPct, oilPct }: DoughInputs): RecipeResult {
+  static compute({ numPizzas, ballWeightG, hydrationPct, saltPct, oilPct, yeastPct }: DoughInputs): RecipeResult {
     const h = hydrationPct / 100;
     const s = saltPct / 100;
     const o = oilPct / 100;
+    const y = yeastPct / 100;
     const totalDough = numPizzas * ballWeightG;
     const flourG = Math.round(totalDough / (1 + h + s + o));
     const waterG = Math.round(flourG * h);
     const saltG = Math.round(flourG * s * 10) / 10;
     const oilG = Math.round(flourG * o * 10) / 10;
-    return { totalDough, flourG, waterG, saltG, oilG };
+    const yeastG = Math.round(flourG * y * 10) / 10;
+    return { totalDough, flourG, waterG, saltG, oilG, yeastG };
   }
 }
