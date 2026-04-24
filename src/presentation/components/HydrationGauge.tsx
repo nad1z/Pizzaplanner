@@ -21,8 +21,8 @@ export function HydrationGauge({ value, styleMin, styleMax, flourMin, flourMax }
     const ea = pctToRad(endPct);
     const sx = cx + R * Math.cos(sa), sy = cy + R * Math.sin(sa);
     const ex = cx + R * Math.cos(ea), ey = cy + R * Math.sin(ea);
-    const large = endPct - startPct > 50 ? 1 : 0;
-    return `M ${sx.toFixed(1)} ${sy.toFixed(1)} A ${R} ${R} 0 ${large} 1 ${ex.toFixed(1)} ${ey.toFixed(1)}`;
+    // Semicircle arcs are always ≤ 180° so large-arc flag is always 0
+    return `M ${sx.toFixed(1)} ${sy.toFixed(1)} A ${R} ${R} 0 0 1 ${ex.toFixed(1)} ${ey.toFixed(1)}`;
   };
 
   // Needle
