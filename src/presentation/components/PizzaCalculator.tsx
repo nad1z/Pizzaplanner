@@ -1,6 +1,8 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { PizzaStyle } from '../../domain/models/PizzaStyle';
 import type { PizzaStyleId } from '../../domain/models/PizzaStyle';
+import { YEAST_TYPES } from '../../domain/models/YeastType';
+import type { YeastTypeId } from '../../domain/models/YeastType';
 import { DoughCalculator } from '../../domain/services/DoughCalculator';
 import { FIELD_BOUNDS, absoluteError } from '../../domain/validation';
 import { StorageManager } from '../../infrastructure/StorageManager';
@@ -43,6 +45,7 @@ function getDefaults(styleId: PizzaStyleId): CalcState {
     ballWeightG,
     pizzaDiameterCm: DoughCalculator.diameterFromBallWeight(ballWeightG),
     hydrationPct: s.hydration.recommended,
+    yeastId: 'idy',
   };
 }
 
@@ -56,9 +59,10 @@ export function PizzaCalculator() {
   useEffect(() => { StorageManager.save(state); }, [state]);
 
   const style = PizzaStyle.STYLES[state.styleId];
+  const yeast = YEAST_TYPES[state.yeastId];
   const recipe = useMemo(
-    () => DoughCalculator.compute({ ...state, saltPct: style.saltPercent, oilPct: style.oilPercent }),
-    [state, style],
+    () => DoughCalculator.compute({ ...state, saltPct: style.saltPercent, oilPct: style.oilPercent, yeastPct: yeast.flourPercent }),
+    [state, style, yeast],
   );
 
   const update = useCallback((patch: Partial<CalcState>) => {
@@ -157,6 +161,22 @@ export function PizzaCalculator() {
               update({ hydrationPct: Math.round(waterG / recipe.flourG * 100) });
             }} />
 
+          <div className="flex flex-col gap-2">
+            <span style={{ color: '#f5e6c8aa', fontSize: 12 }} className="uppercase tracking-widest">Yeast Type</span>
+            <div className="flex gap-2 flex-wrap">
+              {(Object.entries(YEAST_TYPES) as [YeastTypeId, typeof YEAST_TYPES[YeastTypeId]][]).map(([id, y]) => (
+                <button key={id} onClick={() => update({ yeastId: id })}
+                  style={{
+                    padding: '6px 14px', borderRadius: 999, fontSize: 12, fontFamily: 'DM Sans', fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s',
+                    background: state.yeastId === id ? '#c0522a' : '#2a1e0e',
+                    color:      state.yeastId === id ? '#fafaf0' : '#f5e6c8aa',
+                    border: `1px solid ${state.yeastId === id ? '#c0522a' : '#3a2a18'}`,
+                  }}>{y.name}</button>
+              ))}
+            </div>
+            <span style={{ color: '#f5e6c850', fontSize: 11 }}>{yeast.description}</span>
+          </div>
+
           <button onClick={reset} style={{ marginTop: 4, color: '#c0522a66', fontSize: 12, background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', padding: 0 }}>
             ↺ Reset to defaults
           </button>
@@ -170,6 +190,7 @@ export function PizzaCalculator() {
             <Row label="Water"       value={recipe.waterG}     unit="g" />
             <Row label="Salt"        value={recipe.saltG}      unit="g" />
             {style.oilPercent > 0 && <Row label="Oil" value={recipe.oilG} unit="g" />}
+            <Row label={yeast.name}  value={recipe.yeastG}     unit="g" />
             <Row label="Total dough" value={recipe.totalDough} unit="g" accent />
           </div>
           <div style={{ marginTop: 16, padding: '12px 16px', background: '#2a1e0e', borderRadius: 12, border: '1px solid #3a2a1844' }}>

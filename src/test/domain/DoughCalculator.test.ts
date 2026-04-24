@@ -48,6 +48,7 @@ describe('DoughCalculator', () => {
         hydrationPct: 62,
         saltPct: 2.8,
         oilPct: 0,
+        yeastPct: 0,
       });
       expect(result.totalDough).toBe(960);
       expect(result.flourG).toBe(583);
@@ -61,6 +62,7 @@ describe('DoughCalculator', () => {
         hydrationPct: 65,
         saltPct: 2,
         oilPct: 2,
+        yeastPct: 0,
       });
       expect(result.totalDough).toBe(900);
     });
@@ -72,6 +74,7 @@ describe('DoughCalculator', () => {
         hydrationPct: 70,
         saltPct: 2,
         oilPct: 0,
+        yeastPct: 0,
       });
       expect(Math.abs(result.waterG - result.flourG * 0.70)).toBeLessThanOrEqual(1);
     });
@@ -83,6 +86,7 @@ describe('DoughCalculator', () => {
         hydrationPct: 62,
         saltPct: 0,
         oilPct: 0,
+        yeastPct: 0,
       });
       expect(result.saltG).toBe(0);
     });
@@ -94,8 +98,33 @@ describe('DoughCalculator', () => {
         hydrationPct: 62,
         saltPct: 2.8,
         oilPct: 0,
+        yeastPct: 0,
       });
       expect(result.oilG).toBe(0);
+    });
+
+    it('yeastG is zero when yeastPct is zero', () => {
+      const result = DoughCalculator.compute({
+        numPizzas: 1,
+        ballWeightG: 250,
+        hydrationPct: 62,
+        saltPct: 2.8,
+        oilPct: 0,
+        yeastPct: 0,
+      });
+      expect(result.yeastG).toBe(0);
+    });
+
+    it('yeastG equals flourG × yeastPct / 100 within rounding', () => {
+      const result = DoughCalculator.compute({
+        numPizzas: 4,
+        ballWeightG: 240,
+        hydrationPct: 62,
+        saltPct: 2.8,
+        oilPct: 0,
+        yeastPct: 0.3,
+      });
+      expect(Math.abs(result.yeastG - result.flourG * 0.003)).toBeLessThanOrEqual(0.1);
     });
 
     it('flourG + waterG + saltG + oilG approximates totalDough', () => {
@@ -105,6 +134,7 @@ describe('DoughCalculator', () => {
         hydrationPct: 65,
         saltPct: 2,
         oilPct: 2,
+        yeastPct: 0,
       });
       const sum = result.flourG + result.waterG + result.saltG + result.oilG;
       expect(Math.abs(sum - result.totalDough)).toBeLessThanOrEqual(2);
