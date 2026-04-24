@@ -6,16 +6,17 @@ import { StorageManager } from '../../infrastructure/StorageManager';
 import { getFlourRecommendations } from '../../domain/services/FlourRecommender';
 import { FlourCard } from './FlourCard';
 
-const STYLE_NAMES = ['Neapolitan', 'New York', 'Roman', 'Brooklyn', 'Detroit', 'Sicilian'] as const;
+const STYLE_NAMES = ['Neapolitan', 'Neo Neapolitan', 'New York', 'Roman', 'Brooklyn', 'Detroit', 'Sicilian'] as const;
 type StyleName = typeof STYLE_NAMES[number];
 
 const STYLE_ID_TO_NAME: Record<PizzaStyleId, StyleName> = {
-  neapolitan: 'Neapolitan',
-  newyork:    'New York',
-  roman:      'Roman',
-  brooklyn:   'Brooklyn',
-  detroit:    'Detroit',
-  sicilian:   'Sicilian',
+  neapolitan:   'Neapolitan',
+  neonapolitan: 'Neo Neapolitan',
+  newyork:      'New York',
+  roman:        'Roman',
+  brooklyn:     'Brooklyn',
+  detroit:      'Detroit',
+  sicilian:     'Sicilian',
 };
 
 interface FlourGuideProps {
