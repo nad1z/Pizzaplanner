@@ -3,7 +3,9 @@ import { PizzaStyle } from '../../domain/models/PizzaStyle';
 import type { PizzaStyleId } from '../../domain/models/PizzaStyle';
 import { YEAST_TYPES } from '../../domain/models/YeastType';
 import type { YeastTypeId } from '../../domain/models/YeastType';
+import type { FlourData } from '../../domain/models/FlourType';
 import { DoughCalculator } from '../../domain/services/DoughCalculator';
+import { getFlourWarnings } from '../../domain/services/FlourRecommender';
 import { FIELD_BOUNDS, absoluteError } from '../../domain/validation';
 import { StorageManager } from '../../infrastructure/StorageManager';
 import type { PersistedState } from '../../infrastructure/StorageManager';
@@ -46,13 +48,21 @@ function getDefaults(styleId: PizzaStyleId): CalcState {
     pizzaDiameterCm: DoughCalculator.diameterFromBallWeight(ballWeightG),
     hydrationPct: s.hydration.recommended,
     yeastId: 'idy',
+    fermentationHours: 24,
   };
 }
 
-export function PizzaCalculator() {
+interface PizzaCalculatorProps {
+  selectedFlour: FlourData | null;
+  pendingApply: { hydration: number; fermentation: number } | null;
+  onClearApply: () => void;
+  onNavigateToFlourGuide: () => void;
+}
+
+export function PizzaCalculator({ selectedFlour, pendingApply, onClearApply, onNavigateToFlourGuide }: PizzaCalculatorProps) {
   const [state, setState] = useState<CalcState>(() => {
     const saved = StorageManager.load();
-    return (saved && PizzaStyle.STYLES[saved.styleId]) ? saved : getDefaults('neapolitan');
+    return (saved && PizzaStyle.STYLES[saved.styleId]) ? { fermentationHours: 24, ...saved } : getDefaults('neapolitan');
   });
   const [dismissed, setDismissed] = useState(false);
 
@@ -60,6 +70,8 @@ export function PizzaCalculator() {
 
   const style = PizzaStyle.STYLES[state.styleId];
   const yeast = YEAST_TYPES[state.yeastId];
+  const fermentation = state.fermentationHours ?? 24;
+
   const recipe = useMemo(
     () => DoughCalculator.compute({ ...state, saltPct: style.saltPercent, oilPct: style.oilPercent, yeastPct: yeast.flourPercent }),
     [state, style, yeast],
@@ -82,11 +94,16 @@ export function PizzaCalculator() {
   const ballValidity = validityLevel(state.ballWeightG,  style.ballWeight.min, style.ballWeight.max);
 
   const fieldErrors = {
-    numPizzas:       absoluteError(state.numPizzas,       FIELD_BOUNDS.numPizzas,       ''),
-    ballWeightG:     absoluteError(state.ballWeightG,     FIELD_BOUNDS.ballWeightG,     'g'),
-    pizzaDiameterCm: absoluteError(state.pizzaDiameterCm, FIELD_BOUNDS.pizzaDiameterCm, 'cm'),
-    hydrationPct:    absoluteError(state.hydrationPct,    FIELD_BOUNDS.hydrationPct,    '%'),
+    numPizzas:        absoluteError(state.numPizzas,        FIELD_BOUNDS.numPizzas,        ''),
+    ballWeightG:      absoluteError(state.ballWeightG,      FIELD_BOUNDS.ballWeightG,      'g'),
+    pizzaDiameterCm:  absoluteError(state.pizzaDiameterCm,  FIELD_BOUNDS.pizzaDiameterCm,  'cm'),
+    hydrationPct:     absoluteError(state.hydrationPct,     FIELD_BOUNDS.hydrationPct,     '%'),
+    fermentationHours:absoluteError(fermentation,           FIELD_BOUNDS.fermentationHours,'h'),
   };
+
+  const flourWarnings = selectedFlour
+    ? getFlourWarnings(selectedFlour, state.hydrationPct, fermentation, state.styleId)
+    : [];
 
   const suggestedStyle = useMemo<SuggestedStyle | null>(() => {
     const currDist = Math.abs(state.hydrationPct - style.hydration.recommended);
@@ -123,6 +140,25 @@ export function PizzaCalculator() {
       </div>
 
       <p className="text-center mb-8" style={{ color: '#f5e6c870', fontSize: 14, fontStyle: 'italic' }}>{style.description}</p>
+
+      {/* Apply flour banner */}
+      {pendingApply && selectedFlour && (
+        <div style={{ background: '#2a1e0e', border: '1px solid #c0522a55', borderRadius: 14, padding: '12px 20px', marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
+          <span style={{ fontSize: 13, color: '#f5e6c8cc' }}>
+            🌾 <strong style={{ color: '#f5e6c8' }}>{selectedFlour.name}</strong> suggests {pendingApply.hydration}% hydration &amp; {pendingApply.fermentation}h fermentation
+          </span>
+          <div className="flex gap-3" style={{ flexShrink: 0 }}>
+            <button onClick={() => { update({ hydrationPct: pendingApply.hydration, fermentationHours: pendingApply.fermentation }); onClearApply(); }}
+              style={{ fontSize: 12, color: '#c0522a', background: '#c0522a22', border: 'none', borderRadius: 8, padding: '4px 12px', cursor: 'pointer', fontWeight: 600 }}>
+              Apply
+            </button>
+            <button onClick={onClearApply}
+              style={{ fontSize: 12, color: '#f5e6c850', background: 'none', border: 'none', cursor: 'pointer' }}>
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="grid gap-6" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
         <div className="flex flex-col gap-4" style={{ background: '#21160a', borderRadius: 20, padding: 24, border: '1px solid #3a2a18' }}>
@@ -161,6 +197,10 @@ export function PizzaCalculator() {
               update({ hydrationPct: Math.round(waterG / recipe.flourG * 100) });
             }} />
 
+          <InputField label="Fermentation" unit="h" value={fermentation} step={1} min={1} max={168}
+            error={fieldErrors.fermentationHours}
+            onChange={v => update({ fermentationHours: Math.max(1, Math.round(v)) })} />
+
           <div className="flex flex-col gap-2">
             <span style={{ color: '#f5e6c8aa', fontSize: 12 }} className="uppercase tracking-widest">Yeast Type</span>
             <div className="flex gap-2 flex-wrap">
@@ -176,6 +216,21 @@ export function PizzaCalculator() {
             </div>
             <span style={{ color: '#f5e6c850', fontSize: 11 }}>{yeast.description}</span>
           </div>
+
+          {/* Selected flour indicator */}
+          {selectedFlour && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#2a1e0e', borderRadius: 10, padding: '8px 12px', border: '1px solid #c0522a33' }}>
+              <span style={{ fontSize: 12, color: '#f5e6c8aa' }}>🌾 <span style={{ color: '#f5e6c8' }}>{selectedFlour.name}</span></span>
+              <button onClick={onNavigateToFlourGuide} style={{ fontSize: 11, color: '#c0522a', background: 'none', border: 'none', cursor: 'pointer' }}>
+                Change
+              </button>
+            </div>
+          )}
+          {!selectedFlour && (
+            <button onClick={onNavigateToFlourGuide} style={{ fontSize: 12, color: '#c0522a66', background: 'none', border: '1px dashed #c0522a33', borderRadius: 10, padding: '8px 12px', cursor: 'pointer', textAlign: 'left' }}>
+              🌾 Select a flour from Flour Guide
+            </button>
+          )}
 
           <button onClick={reset} style={{ marginTop: 4, color: '#c0522a66', fontSize: 12, background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', padding: 0 }}>
             ↺ Reset to defaults
@@ -203,6 +258,15 @@ export function PizzaCalculator() {
       </div>
 
       <div className="flex flex-col gap-3 mt-6">
+        {/* Flour warnings */}
+        {flourWarnings.map((w, i) => (
+          <div key={i} style={{ background: '#2a1e0e', border: `1px solid ${w.level === 'orange' ? '#f59e0b55' : '#eab30855'}`, borderRadius: 14, padding: '12px 20px' }}>
+            <span style={{ fontSize: 13, color: w.level === 'orange' ? '#f59e0bcc' : '#eab308cc' }}>
+              ⚠️ {w.message}
+            </span>
+          </div>
+        ))}
+
         {!dismissed && suggestedStyle && (
           <div style={{ background: '#2a1e0e', border: '1px solid #c0522a55', borderRadius: 14, padding: '12px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: 13, color: '#f5e6c8cc' }}>

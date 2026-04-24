@@ -7,10 +7,10 @@ import '@fontsource/dm-sans/300.css';
 import '@fontsource/dm-sans/400.css';
 import '@fontsource/dm-sans/500.css';
 import './styles/styles.css';
-import { PizzaCalculator } from './presentation/components/PizzaCalculator';
+import { App } from './presentation/components/App';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <PizzaCalculator />
+    <App />
   </React.StrictMode>,
 );
