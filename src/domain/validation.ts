@@ -7,10 +7,11 @@ export interface FieldBounds {
 }
 
 export const FIELD_BOUNDS = {
-  numPizzas:       { min: 1,  max: 50   },
-  ballWeightG:     { min: 50, max: 1200 },
-  pizzaDiameterCm: { min: 10, max: 60   },
-  hydrationPct:    { min: 40, max: 100  },
+  numPizzas:        { min: 1,  max: 50   },
+  ballWeightG:      { min: 50, max: 1200 },
+  pizzaDiameterCm:  { min: 10, max: 60   },
+  hydrationPct:     { min: 40, max: 100  },
+  fermentationHours:{ min: 1,  max: 168  },
 } as const satisfies Record<string, FieldBounds>;
 
 export function isValidStyleId(id: unknown): id is PizzaStyleId {

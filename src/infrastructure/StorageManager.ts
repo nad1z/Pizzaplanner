@@ -10,6 +10,7 @@ export interface PersistedState {
   pizzaDiameterCm: number;
   hydrationPct: number;
   yeastId: YeastTypeId;
+  fermentationHours?: number;
 }
 
 function isValidPersistedState(raw: unknown): raw is PersistedState {
@@ -21,7 +22,8 @@ function isValidPersistedState(raw: unknown): raw is PersistedState {
     typeof d.ballWeightG     === 'number' && d.ballWeightG     >= FIELD_BOUNDS.ballWeightG.min     && d.ballWeightG     <= FIELD_BOUNDS.ballWeightG.max &&
     typeof d.pizzaDiameterCm === 'number' && d.pizzaDiameterCm >= FIELD_BOUNDS.pizzaDiameterCm.min && d.pizzaDiameterCm <= FIELD_BOUNDS.pizzaDiameterCm.max &&
     typeof d.hydrationPct    === 'number' && d.hydrationPct    >= FIELD_BOUNDS.hydrationPct.min    && d.hydrationPct    <= FIELD_BOUNDS.hydrationPct.max &&
-    typeof d.yeastId === 'string' && d.yeastId in YEAST_TYPES
+    typeof d.yeastId === 'string' && d.yeastId in YEAST_TYPES &&
+    (d.fermentationHours === undefined || (typeof d.fermentationHours === 'number' && d.fermentationHours >= FIELD_BOUNDS.fermentationHours.min && d.fermentationHours <= FIELD_BOUNDS.fermentationHours.max))
   );
 }
 
