@@ -2,11 +2,11 @@ import { describe, it, expect } from 'vitest';
 import { PizzaStyle } from '../../domain/models/PizzaStyle';
 import type { PizzaStyleId } from '../../domain/models/PizzaStyle';
 
-const ALL_IDS: PizzaStyleId[] = ['neapolitan', 'newyork', 'roman', 'brooklyn', 'detroit', 'sicilian'];
+const ALL_IDS: PizzaStyleId[] = ['neapolitan', 'neonapolitan', 'newyork', 'roman', 'brooklyn', 'detroit', 'sicilian'];
 
 describe('PizzaStyle', () => {
-  it('defines all six styles', () => {
-    expect(Object.keys(PizzaStyle.STYLES)).toHaveLength(6);
+  it('defines all seven styles', () => {
+    expect(Object.keys(PizzaStyle.STYLES)).toHaveLength(7);
     for (const id of ALL_IDS) {
       expect(PizzaStyle.STYLES[id]).toBeDefined();
     }

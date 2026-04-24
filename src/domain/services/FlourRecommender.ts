@@ -13,12 +13,13 @@ export interface FlourRecommendation {
 }
 
 const STYLE_DISPLAY_NAME: Record<PizzaStyleId, string> = {
-  neapolitan: 'Neapolitan',
-  newyork:    'New York',
-  roman:      'Roman',
-  brooklyn:   'Brooklyn',
-  detroit:    'Detroit',
-  sicilian:   'Sicilian',
+  neapolitan:   'Neapolitan',
+  neonapolitan: 'Neo Neapolitan',
+  newyork:      'New York',
+  roman:        'Roman',
+  brooklyn:     'Brooklyn',
+  detroit:      'Detroit',
+  sicilian:     'Sicilian',
 };
 
 export function getFlourWarnings(

@@ -239,7 +239,13 @@ export function PizzaCalculator({ selectedFlour, pendingApply, onClearApply, onN
 
         <div style={{ background: '#21160a', borderRadius: 20, padding: 24, border: '1px solid #3a2a18' }}>
           <h2 className="serif" style={{ fontSize: 20, color: '#fafaf0', marginBottom: 16 }}>Recipe</h2>
-          <HydrationGauge value={state.hydrationPct} min={style.hydration.min} max={style.hydration.max} />
+          <HydrationGauge
+            value={state.hydrationPct}
+            styleMin={style.hydration.min}
+            styleMax={style.hydration.max}
+            flourMin={selectedFlour?.hydration_min}
+            flourMax={selectedFlour?.hydration_max}
+          />
           <div style={{ marginTop: 16 }}>
             <Row label="Flour"       value={recipe.flourG}     unit="g" />
             <Row label="Water"       value={recipe.waterG}     unit="g" />
