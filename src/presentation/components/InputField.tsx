@@ -35,15 +35,20 @@ export function InputField({ label, unit, value, onChange, validity, error, step
 
   const dot = validity && !error ? DOT_CLASSES[validity] : null;
 
-  // Clamp the current value into [fmin, fmax] before stepping, so a single
-  // click always lands inside the valid range when starting from outside it.
+  // Snap to the nearest step-grid boundary, then move one step.
+  // This keeps repeated clicks on clean multiples regardless of where the
+  // value started (e.g. a typed-in 583g snaps to 580 on first − click).
   const stepDown = () => {
     const clamped = fmax !== undefined ? Math.min(fmax, value) : value;
-    onChange(Math.max(fmin ?? -Infinity, clamped - step));
+    const base = Math.floor(clamped / step) * step;
+    const next = base < clamped ? base : base - step;
+    onChange(Math.max(fmin ?? -Infinity, next));
   };
   const stepUp = () => {
     const clamped = fmin !== undefined ? Math.max(fmin, value) : value;
-    onChange(Math.min(fmax ?? Infinity, clamped + step));
+    const base = Math.ceil(clamped / step) * step;
+    const next = base > clamped ? base : base + step;
+    onChange(Math.min(fmax ?? Infinity, next));
   };
 
   return (
