@@ -4,70 +4,82 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Pizzaplanner is a pizza dough calculator and planner. The app lets users select a pizza style (Neapolitan, New York, Roman, Brooklyn, Detroit, Sicilian) and compute exact ingredient quantities — flour, water, salt, oil — based on number of pizzas, ball weight, diameter, and hydration percentage. All six key inputs are bidirectionally linked.
+Pizzaplanner is a pizza dough calculator and planner. Users select a pizza style (Neapolitan, Neo Neapolitan, New York, Roman, Brooklyn, Detroit, Sicilian), set inputs (number of pizzas, ball weight, diameter, hydration, fermentation hours, yeast type), and receive exact ingredient quantities. They can also explore a Flour Guide to find the best flour for their recipe.
 
-## Running Locally
-
-No build step required. Open `index.html` directly in a browser, or serve with any static HTTP server:
+## Commands
 
 ```bash
-python -m http.server 8080
-# then visit http://localhost:8080
+npm run dev        # start Vite dev server at http://localhost:5173/Pizzaplanner/
+npm run build      # tsc type-check + Vite production build
+npm run preview    # serve the production build
+npm run test       # run all tests (Vitest, single pass)
+npm run test:watch # Vitest in watch mode
 ```
 
-`index.html` loads React, ReactDOM, Babel, and Tailwind from CDN and renders `PizzaCalculator` inline.
-
-## File Structure
-
-```
-index.html        — Single-page app: CDN imports + inline JSX component
-README.md         — One-line project description
-CLAUDE.md         — This file
+Run a single test file:
+```bash
+npx vitest run src/test/domain/DoughCalculator.test.ts
 ```
 
-## Stack
+## Architecture
 
-- **React 18** (CDN, no build step) with hooks (`useState`, `useMemo`, `useEffect`)
-- **Babel standalone** for in-browser JSX transpilation
-- **Tailwind CSS** (CDN) — utility classes only, no config file
-- **Google Fonts** — Playfair Display (headings) + DM Sans (body) via `@import`
-- **No package manager, no bundler, no test framework**
+The project uses a layered architecture inside `src/`:
 
-## Architecture: OOP Classes + React
+```
+domain/
+  models/       — PizzaStyle, FlourType, YeastType (pure data, no side effects)
+  services/     — DoughCalculator, FlourRecommender (static methods only)
+  validation.ts — FIELD_BOUNDS constants + absoluteError / isValidStyleId helpers
+infrastructure/
+  StorageManager.ts   — localStorage wrapper (key: "pizza-calc-v1")
+  UrlStateManager.ts  — URL search param sync (short keys: s/n/w/d/h/y/f/l/u)
+i18n/
+  types.ts  — AppTranslation interface (shape contract for all strings)
+  en.ts     — English strings
+  he.ts     — Hebrew strings (RTL; document.dir is set in App.tsx)
+  index.ts  — LanguageContext, useTranslation(), loadLanguage/saveLanguage
+presentation/
+  components/   — React components (App, PizzaCalculator, FlourGuide, etc.)
+  utils/        — validity.ts (validityLevel, DOT_CLASSES, RING_COLORS)
+```
 
-The component in `index.html` uses three plain ES6 classes before the React component:
+### Domain layer
 
-### `PizzaStyle`
-Holds per-style constants: hydration range, ball weight range, salt %, oil %, description, emoji. A static `STYLES` map keyed by style ID provides all six pizza styles.
+**`PizzaStyle`** — `STYLES` map keyed by `PizzaStyleId`. Each style holds hydration range, ball weight range, `saltPercent`, `oilPercent`, emoji, and description.
 
-### `DoughCalculator`
-Pure calculation class — no state, no side effects. All methods are static. Key relationships:
+**`DoughCalculator`** — All static. K=0.31 g/cm² constant calibrated to real-world pizzas.
 - `totalDough = numPizzas × ballWeight`
-- `flourG = totalDough / (1 + hydration + saltPct + oilPct)`
-- `waterG = flourG × hydration`
-- `saltG = flourG × saltPct` (display only)
-- `oilG = flourG × oilPct` (display only)
-- `ballWeight ↔ diameterCm`: `ballWeight = 0.65 × π × (diameter/2)²`
+- `flourG = totalDough / (1 + h + s + o)` (baker's percentages)
+- `ballWeight ↔ diameterCm` are bidirectional via `K × π × r²`
+- `yeastPct` is passed at compute time (from `YEAST_TYPES[id].flourPercent`)
 
-When any input changes, all others are recalculated from it as the source of truth.
+**`FlourRecommender`** — Scores every flour against style, hydration proximity, and fermentation window; returns top N. `getFlourWarnings` checks fermentation overrun, hydration overrun, and Detroit-specific strength floor.
 
-### `StorageManager`
-Thin wrapper around `localStorage` key `"pizza-calc-v1"`. Persists `{styleId, numPizzas, ballWeightG, pizzaDiameterCm, hydrationPct}`. The React component calls `StorageManager.save()` in a `useEffect` on every state change and `StorageManager.load()` on mount.
+**`YEAST_TYPES`** — Three entries (`idy`, `ady`, `sourdough`) each with a `flourPercent` used as baker's percentage. Sourdough is 20% (starter weight), commercial yeasts are ~0.3–0.4%.
 
-## UI Conventions
+### Infrastructure layer
 
-- **Dark theme**: background `#1a1209`, text `#f5e6c8`, accent `#c0522a`, cards `#fafaf0`
-- **Layout**: style selector (pill tabs, top) → two-column (inputs left, recipe card right) → validation banners bottom
-- **Inputs**: large number fields with ± stepper buttons, unit label inside field, flash animation on value change
-- **Hydration gauge**: SVG semicircle arc, needle at current hydration %, colored red/yellow/green by validity
-- **Validation badges**: per-input colored dot (🟢 in range, 🟡 slightly out, 🔴 critically out >10% beyond range)
-- **Style suggestion banner**: dismissible, shown when current hydration matches a different style's recommended range better
+**`StorageManager`** — Validates the full `PersistedState` shape (including all `FIELD_BOUNDS`) before accepting loaded data. `save()` is called on every state change via `useEffect`.
+
+**`UrlStateManager`** — Reads URL params once on module load into `_cache` (avoiding re-parsing). `patch()` updates cache and calls `history.replaceState`. URL params are kept intentionally short for shareable links.
+
+### Presentation layer
+
+**`App`** — Owns `lang`, `view` (`'calculator' | 'flour-guide'`), `selectedFlour`, and `pendingApply`. Wraps everything in `LanguageContext.Provider`. Flour selection in `FlourGuide` triggers a `pendingApply` banner in `PizzaCalculator`.
+
+**`PizzaCalculator`** — All calculator state lives in a single `useState<CalcState>` object. `useMemo` recomputes the recipe on every change. The `update()` callback handles the ball-weight ↔ diameter bidirectional link. Flour and water inputs are also editable and back-calculate into `ballWeightG` and `hydrationPct` respectively.
+
+**`FlourGuide`** — Browses and filters `FLOURS`. Selecting a flour and pressing "Apply" returns to the calculator with `pendingApply` populated, letting the user confirm before overwriting hydration/fermentation.
+
+### i18n
+
+All UI strings come from `useTranslation()`. Adding a new language requires: adding a translation file implementing `AppTranslation`, registering it in `TRANSLATIONS` and `LANGUAGES` in `index.ts`, and adding the `LanguageId` union.
 
 ## Key Conventions
 
-- Keep the main React component under 350 lines; extraction into separate files only when genuinely needed
-- No external JS libraries beyond React + Babel + Tailwind
-- Add CSS only via Tailwind utilities or a single `<style>` block in `index.html`
-- No comments unless the reason is non-obvious
-- Inputs are controlled — all values live in a single `useState` object, recalculated via `useMemo` on every change
-- Style defaults are the single source of truth for initial/reset state
+- All values live in a single `useState` object in `PizzaCalculator`; no separate state per field.
+- Style defaults are the single source of truth when switching styles or resetting. `getDefaults(styleId)` sets all fields from `PizzaStyle.STYLES[styleId]`.
+- `FIELD_BOUNDS` in `validation.ts` is the authoritative range for all numeric inputs; both `StorageManager` and `UrlStateManager` validate against it on load.
+- CSS: Tailwind utilities + a `<style>` block in `index.html`. Colors are inline `style` props using the dark-theme palette (`#1a1209` bg, `#f5e6c8` text, `#c0522a` accent, `#fafaf0` cards).
+- No external JS libraries beyond React, Tailwind, and fontsource packages.
+- Tests live in `src/test/` mirroring the `src/` structure. Run with Vitest + jsdom.
