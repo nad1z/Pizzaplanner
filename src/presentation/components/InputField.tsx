@@ -65,7 +65,7 @@ export function InputField({ label, unit, value, onChange, validity, error, step
           value={value}
           min={fmin}
           max={fmax}
-          step={step}
+          step="any"
           onChange={e => onChange(Number(e.target.value))}
           style={{ color: error ? '#ef4444' : '#f5e6c8', background: 'transparent', fontSize: 22, fontFamily: 'DM Sans', textAlign: 'center', width: '100%' }}
           className="h-14 outline-none px-1"

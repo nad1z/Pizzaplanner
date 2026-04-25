@@ -202,7 +202,7 @@ export function PizzaCalculator({ selectedFlour, pendingApply, onClearApply, onN
             label={t.calc.labels.diameter}
             unit={dimUnit === 'in' ? '"' : 'cm'}
             value={dimDisplayVal}
-            step={dimUnit === 'in' ? 0.5 : 1}
+            step={dimUnit === 'in' ? 1 : 2}
             min={dimDisplayBounds.min}
             max={dimDisplayBounds.max}
             error={fieldErrors.pizzaDiameterCm}
