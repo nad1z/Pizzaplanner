@@ -228,7 +228,7 @@ export function PizzaCalculator({ selectedFlour, pendingApply, onClearApply, onN
             error={fieldErrors.hydrationPct}
             onChange={v => update({ hydrationPct: Math.round(v) })} />
 
-          <InputField label={t.calc.labels.flour} unit="g" value={recipe.flourG} step={10} min={50}
+          <InputField label={t.calc.labels.flour} unit="g" value={recipe.flourG} step={10} min={50} snapToStep={false}
             onChange={v => {
               const flourG = Math.round(v);
               if (flourG <= 0 || state.numPizzas <= 0) return;
@@ -236,7 +236,7 @@ export function PizzaCalculator({ selectedFlour, pendingApply, onClearApply, onN
               update({ ballWeightG: Math.round(totalDough / state.numPizzas) });
             }} />
 
-          <InputField label={t.calc.labels.water} unit="g" value={recipe.waterG} step={10} min={10}
+          <InputField label={t.calc.labels.water} unit="g" value={recipe.waterG} step={10} min={10} snapToStep={false}
             onChange={v => {
               const waterG = Math.round(v);
               if (recipe.flourG <= 0) return;
