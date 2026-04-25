@@ -36,7 +36,7 @@ function Row({ label, value, unit, accent = false }: RowProps) {
   return (
     <div className="flex justify-between items-baseline py-3" style={{ borderBottom: '1px solid #3a2a1833' }}>
       <span style={{ color: '#f5e6c8aa', fontSize: 13 }} className="uppercase tracking-wider">{label}</span>
-      <span style={{ color: accent ? '#c0522a' : '#fafaf0', fontSize: accent ? 22 : 18, fontFamily: accent ? 'Playfair Display' : 'DM Sans', fontWeight: accent ? 700 : 400 }}>
+      <span style={{ color: accent ? '#c0522a' : '#fafaf0', fontSize: accent ? 22 : 18, fontWeight: accent ? 700 : 400 }}>
         {value}<span style={{ fontSize: 12, marginLeft: 3, color: '#f5e6c870' }}>{unit}</span>
       </span>
     </div>
@@ -156,7 +156,7 @@ export function PizzaCalculator({ selectedFlour, pendingApply, onClearApply, onN
         {(Object.entries(PizzaStyle.STYLES) as [PizzaStyleId, PizzaStyle][]).map(([id, s]) => (
           <button key={id} onClick={() => handleStyleChange(id)}
             style={{
-              padding: '8px 18px', borderRadius: 999, fontSize: 13, fontFamily: 'DM Sans', fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s',
+              padding: '8px 18px', borderRadius: 999, fontSize: 13, fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s',
               background: state.styleId === id ? '#c0522a' : '#2a1e0e',
               color:      state.styleId === id ? '#fafaf0' : '#f5e6c8aa',
               border: `1px solid ${state.styleId === id ? '#c0522a' : '#3a2a18'}`,
@@ -253,7 +253,7 @@ export function PizzaCalculator({ selectedFlour, pendingApply, onClearApply, onN
               {(Object.keys(YEAST_TYPES) as YeastTypeId[]).map(id => (
                 <button key={id} onClick={() => update({ yeastId: id })}
                   style={{
-                    padding: '6px 14px', borderRadius: 999, fontSize: 12, fontFamily: 'DM Sans', fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s',
+                    padding: '6px 14px', borderRadius: 999, fontSize: 12, fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s',
                     background: state.yeastId === id ? '#c0522a' : '#2a1e0e',
                     color:      state.yeastId === id ? '#fafaf0' : '#f5e6c8aa',
                     border: `1px solid ${state.yeastId === id ? '#c0522a' : '#3a2a18'}`,
@@ -314,7 +314,7 @@ export function PizzaCalculator({ selectedFlour, pendingApply, onClearApply, onN
         {flourWarnings.map((w, i) => (
           <div key={i} style={{ background: '#2a1e0e', border: `1px solid ${w.level === 'orange' ? '#f59e0b55' : '#eab30855'}`, borderRadius: 14, padding: '12px 20px' }}>
             <span style={{ fontSize: 13, color: w.level === 'orange' ? '#f59e0bcc' : '#eab308cc' }}>
-              ⚠️ {w.message}
+              ⚠️ {t.warnings[w.key]}
             </span>
           </div>
         ))}
