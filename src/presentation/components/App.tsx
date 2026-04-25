@@ -161,7 +161,7 @@ function AppInner({ lang, view, menuOpen, copied, menuRef, selectedFlour, pendin
                 style={{
                   flex: 1, background: '#2a1e0e', border: '1px solid #3a2a18',
                   borderRadius: 6, color: '#f5e6c8', fontSize: 12,
-                  padding: '4px 6px', cursor: 'pointer', fontFamily: 'DM Sans',
+                  padding: '4px 6px', cursor: 'pointer',
                 }}
               >
                 {(Object.keys(LANGUAGES) as LanguageId[]).map(id => (
@@ -173,7 +173,7 @@ function AppInner({ lang, view, menuOpen, copied, menuRef, selectedFlour, pendin
               display: 'flex', alignItems: 'center', gap: 8,
               width: '100%', padding: '10px 18px', background: 'none', border: 'none',
               cursor: 'pointer', color: copied ? '#4ade80' : '#f5e6c8aa',
-              fontSize: 13, fontFamily: 'DM Sans', textAlign: 'left', transition: 'color 0.2s',
+              fontSize: 13, textAlign: 'left', transition: 'color 0.2s',
             }}>
               {copied ? '✓' : '🔗'} {copied ? t.calc.buttons.copied : t.calc.buttons.copyLink}
             </button>
@@ -213,7 +213,7 @@ function NavItem({ label, active, onClick, badge }: NavItemProps) {
       display: 'flex', justifyContent: 'space-between', alignItems: 'center',
       width: '100%', padding: '10px 18px', background: 'none', border: 'none',
       cursor: 'pointer', color: active ? '#c0522a' : '#f5e6c8',
-      fontSize: 14, fontFamily: 'DM Sans', textAlign: 'left',
+      fontSize: 14, textAlign: 'left',
     }}>
       <span>{label}</span>
       {badge && (

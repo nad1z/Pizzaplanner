@@ -112,6 +112,14 @@ export const en: AppTranslation = {
     'Kemah HaAretz Pizza 00 Long':     'Israeli Tipo 00 pizza flour (imported from Italy) for long cold fermentation — W300–320 at 14% protein, delivers complex flavour and open, airy crumb.',
     'Kemah HaAretz Pizza & Focaccia':  'Israeli 00 pizza and focaccia flour from Kemah HaAretz — versatile medium-strength flour for classic pizza styles and high-hydration focaccia.',
   },
+  flourTypes: {
+    '00':             '00',
+    '0':              '0',
+    'Bread Flour':    'Bread Flour',
+    'Strong Bread':   'Strong Bread',
+    'Manitoba':       'Manitoba',
+    'Pizza/Focaccia': 'Pizza/Focaccia',
+  },
   warnings: {
     fermentOverrun:  'This flour may break down over long fermentation',
     hydrationTooHigh:'Hydration may be too high for this flour',
