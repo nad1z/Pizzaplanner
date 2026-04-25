@@ -27,8 +27,7 @@ export class DoughCalculator {
 
   static diameterFromBallWeight(g: number): number {
     if (!Number.isFinite(g) || g <= 0) return 0;
-    const raw = 2 * Math.sqrt(g / (this.K * Math.PI));
-    return Math.round(raw / 2) * 2;
+    return Math.round(2 * Math.sqrt(g / (this.K * Math.PI)));
   }
 
   static compute({ numPizzas, ballWeightG, hydrationPct, saltPct, oilPct, yeastPct }: DoughInputs): RecipeResult {
