@@ -9,11 +9,12 @@
 body {
   margin: 0;
   background: #1a1209;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Rubik', sans-serif;
 }
 
 h1, h2, h3, .serif {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Rubik', sans-serif;
+  font-weight: 600;
 }
 
 @keyframes flash {

@@ -3,7 +3,7 @@ import type { FlourData } from '../models/FlourType';
 import type { PizzaStyleId } from '../models/PizzaStyle';
 
 export interface FlourWarning {
-  message: string;
+  key: 'fermentOverrun' | 'hydrationTooHigh' | 'detroitTooWeak';
   level: 'yellow' | 'orange';
 }
 
@@ -31,13 +31,13 @@ export function getFlourWarnings(
   const warnings: FlourWarning[] = [];
 
   if (fermentationHours > flour.fermentation_max) {
-    warnings.push({ message: 'This flour may break down over long fermentation', level: 'yellow' });
+    warnings.push({ key: 'fermentOverrun', level: 'yellow' });
   }
   if (hydrationPct > flour.hydration_max) {
-    warnings.push({ message: 'Hydration may be too high for this flour', level: 'orange' });
+    warnings.push({ key: 'hydrationTooHigh', level: 'orange' });
   }
   if (styleId === 'detroit' && flour.w_value < 300) {
-    warnings.push({ message: 'This flour may lack strength for Detroit-style pizza', level: 'yellow' });
+    warnings.push({ key: 'detroitTooWeak', level: 'yellow' });
   }
 
   return warnings;

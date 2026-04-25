@@ -16,6 +16,16 @@ const STYLE_ID_TO_EN: Record<PizzaStyleId, string> = {
   sicilian:     'Sicilian',
 };
 
+const EN_TO_STYLE_ID: Record<string, PizzaStyleId> = {
+  'Neapolitan':     'neapolitan',
+  'Neo Neapolitan': 'neonapolitan',
+  'New York':       'newyork',
+  'Roman':          'roman',
+  'Brooklyn':       'brooklyn',
+  'Detroit':        'detroit',
+  'Sicilian':       'sicilian',
+};
+
 interface FlourCardProps {
   flour: FlourData;
   isSelected: boolean;
@@ -44,8 +54,8 @@ export function FlourCard({ flour, isSelected, filterStyleId, currentHydration, 
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
           <div>
-            <h3 style={{ fontSize: 17, fontFamily: 'Playfair Display', color: '#fafaf0', marginBottom: 2 }}>{flour.name}</h3>
-            <span style={{ fontSize: 12, color: '#f5e6c870' }}>{flour.brand} · Type {flour.type}</span>
+            <h3 style={{ fontSize: 17, color: '#fafaf0', marginBottom: 2 }}>{flour.name}</h3>
+            <span style={{ fontSize: 12, color: '#f5e6c870' }}>{flour.brand} · {t.flourTypeLabel} {flour.type}</span>
           </div>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0, marginLeft: 12 }}>
             <button onClick={() => onSelect(isSelected ? null : flour)} style={{
@@ -89,12 +99,22 @@ export function FlourCard({ flour, isSelected, filterStyleId, currentHydration, 
 
         {/* Style badges */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginTop: 12 }}>
-          {flour.recommended_styles.map(s => (
-            <span key={s} style={{ fontSize: 11, padding: '2px 9px', borderRadius: 999, background: '#c0522a22', color: '#c0522a', border: '1px solid #c0522a44' }}>{s}</span>
-          ))}
-          {flour.secondary_styles.map(s => (
-            <span key={s} style={{ fontSize: 11, padding: '2px 9px', borderRadius: 999, background: '#3a2a18', color: '#f5e6c870', border: '1px solid #3a2a18' }}>{s}</span>
-          ))}
+          {flour.recommended_styles.map(s => {
+            const id = EN_TO_STYLE_ID[s];
+            return (
+              <span key={s} style={{ fontSize: 11, padding: '2px 9px', borderRadius: 999, background: '#c0522a22', color: '#c0522a', border: '1px solid #c0522a44' }}>
+                {id ? t.styles[id].name : s}
+              </span>
+            );
+          })}
+          {flour.secondary_styles.map(s => {
+            const id = EN_TO_STYLE_ID[s];
+            return (
+              <span key={s} style={{ fontSize: 11, padding: '2px 9px', borderRadius: 999, background: '#3a2a18', color: '#f5e6c870', border: '1px solid #3a2a18' }}>
+                {id ? t.styles[id].name : s}
+              </span>
+            );
+          })}
         </div>
 
         {/* Style score when filtered */}
@@ -118,21 +138,28 @@ export function FlourCard({ flour, isSelected, filterStyleId, currentHydration, 
 
       {expanded && (
         <div style={{ padding: '16px 20px', background: '#1a1209', borderTop: '1px solid #3a2a1833' }}>
-          <p style={{ fontSize: 13, color: '#f5e6c8cc', marginBottom: 14, lineHeight: 1.6 }}>{flour.description}</p>
+          <p style={{ fontSize: 13, color: '#f5e6c8cc', marginBottom: 14, lineHeight: 1.6 }}>
+            {t.flourDescriptions[flour.name] ?? flour.description}
+          </p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             <div>
               <div style={{ fontSize: 10, color: '#f5e6c870', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>{t.card.fermentation}</div>
               <p style={{ fontSize: 13, color: '#f5e6c8', marginBottom: 4 }}>{flour.fermentation_hours}h</p>
               <p style={{ fontSize: 11, color: '#f5e6c870' }}>
-                {flour.fermentation_type.map(ft => ft.replace(/_/g, ' ')).join(', ')}
+                {flour.fermentation_type.map(ft => t.fermentationTypes[ft as keyof typeof t.fermentationTypes] ?? ft.replace(/_/g, ' ')).join(', ')}
               </p>
             </div>
             <div>
               <div style={{ fontSize: 10, color: '#f5e6c870', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>{t.card.notIdealFor}</div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                {flour.not_ideal_for.map(s => (
-                  <span key={s} style={{ fontSize: 11, padding: '2px 8px', borderRadius: 999, background: '#3a1a0a', color: '#f58668aa', border: '1px solid #5a2a1844' }}>{s}</span>
-                ))}
+                {flour.not_ideal_for.map(s => {
+                  const id = EN_TO_STYLE_ID[s];
+                  return (
+                    <span key={s} style={{ fontSize: 11, padding: '2px 8px', borderRadius: 999, background: '#3a1a0a', color: '#f58668aa', border: '1px solid #5a2a1844' }}>
+                      {id ? t.styles[id].name : s}
+                    </span>
+                  );
+                })}
               </div>
             </div>
           </div>

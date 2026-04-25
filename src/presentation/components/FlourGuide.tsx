@@ -98,7 +98,7 @@ export function FlourGuide({ selectedFlour, onSelectFlour, onApplyFlour }: Flour
                     </button>
                   </div>
                 </div>
-                <p style={{ fontSize: 12, color: '#f5e6c870', marginTop: 4 }}>{flour.description}</p>
+                <p style={{ fontSize: 12, color: '#f5e6c870', marginTop: 4 }}>{t.flourDescriptions[flour.name] ?? flour.description}</p>
               </div>
             );
           })}

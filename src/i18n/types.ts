@@ -89,4 +89,17 @@ export interface AppTranslation {
     sicilian:     { name: string; description: string };
     focaccia:     { name: string; description: string };
   };
+  flourDescriptions: Record<string, string>;
+  warnings: {
+    fermentOverrun: string;
+    hydrationTooHigh: string;
+    detroitTooWeak: string;
+  };
+  fermentationTypes: {
+    room_temp: string;
+    short_cold: string;
+    cold_ferment: string;
+    long_cold: string;
+  };
+  flourTypeLabel: string;
 }
