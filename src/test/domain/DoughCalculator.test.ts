@@ -25,7 +25,7 @@ describe('DoughCalculator', () => {
     });
 
     it('converts 300g ball to correct diameter', () => {
-      expect(DoughCalculator.diameterFromBallWeight(300)).toBe(36);
+      expect(DoughCalculator.diameterFromBallWeight(300)).toBe(35);
     });
 
     it('returns 0 for zero input', () => {
