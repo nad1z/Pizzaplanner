@@ -1,15 +1,15 @@
 import { useState, useMemo } from 'react';
 import { FLOURS } from '../../domain/models/FlourType';
 import type { FlourData } from '../../domain/models/FlourType';
+import { PizzaStyle } from '../../domain/models/PizzaStyle';
 import type { PizzaStyleId } from '../../domain/models/PizzaStyle';
 import { StorageManager } from '../../infrastructure/StorageManager';
 import { getFlourRecommendations } from '../../domain/services/FlourRecommender';
+import { useTranslation } from '../../i18n';
 import { FlourCard } from './FlourCard';
 
-const STYLE_NAMES = ['Neapolitan', 'Neo Neapolitan', 'New York', 'Roman', 'Brooklyn', 'Detroit', 'Sicilian'] as const;
-type StyleName = typeof STYLE_NAMES[number];
-
-const STYLE_ID_TO_NAME: Record<PizzaStyleId, StyleName> = {
+// English style names are the keys used in flour.style_scores
+const STYLE_ID_TO_EN: Record<PizzaStyleId, string> = {
   neapolitan:   'Neapolitan',
   neonapolitan: 'Neo Neapolitan',
   newyork:      'New York',
@@ -26,19 +26,19 @@ interface FlourGuideProps {
 }
 
 export function FlourGuide({ selectedFlour, onSelectFlour, onApplyFlour }: FlourGuideProps) {
-  const [filterStyle, setFilterStyle] = useState<StyleName | null>(null);
+  const t = useTranslation();
+  const [filterStyle, setFilterStyle] = useState<PizzaStyleId | null>(null);
 
-  // Read current calc state from localStorage (PizzaCalculator saves on every change)
   const saved = StorageManager.load();
   const calcStyleId: PizzaStyleId = saved?.styleId ?? 'neapolitan';
   const calcHydration = saved?.hydrationPct ?? 62;
   const calcFermentation = saved?.fermentationHours ?? 24;
-  const calcStyleName = STYLE_ID_TO_NAME[calcStyleId];
 
   const sortedFlours = useMemo(() => {
     if (filterStyle) {
+      const enName = STYLE_ID_TO_EN[filterStyle];
       return [...FLOURS].sort((a, b) =>
-        (b.style_scores[filterStyle] ?? 0) - (a.style_scores[filterStyle] ?? 0),
+        (b.style_scores[enName] ?? 0) - (a.style_scores[enName] ?? 0),
       );
     }
     return [...FLOURS].sort((a, b) => b.w_value - a.w_value);
@@ -57,15 +57,15 @@ export function FlourGuide({ selectedFlour, onSelectFlour, onApplyFlour }: Flour
   return (
     <div style={{ color: '#f5e6c8', padding: '72px 16px 48px', maxWidth: 800, margin: '0 auto' }}>
       <div className="mb-8">
-        <h1 className="serif" style={{ fontSize: 32, color: '#fafaf0', marginBottom: 4 }}>Flour Guide</h1>
-        <p style={{ color: '#f5e6c870', fontSize: 14 }}>Find the right flour for your pizza style</p>
+        <h1 className="serif" style={{ fontSize: 32, color: '#fafaf0', marginBottom: 4 }}>{t.guide.title}</h1>
+        <p style={{ color: '#f5e6c870', fontSize: 14 }}>{t.guide.subtitle}</p>
       </div>
 
       {/* Recommendations */}
       <section style={{ marginBottom: 36 }}>
-        <h2 className="serif" style={{ fontSize: 20, color: '#fafaf0', marginBottom: 4 }}>Recommended for your setup</h2>
+        <h2 className="serif" style={{ fontSize: 20, color: '#fafaf0', marginBottom: 4 }}>{t.guide.recommended}</h2>
         <p style={{ fontSize: 12, color: '#f5e6c860', marginBottom: 14 }}>
-          {calcStyleName} · {calcHydration}% hydration · {calcFermentation}h fermentation
+          {t.guide.recommendedFor(t.styles[calcStyleId].name, calcHydration, calcFermentation)}
         </p>
         <div className="flex flex-col gap-3">
           {recommendations.map(({ flour }) => {
@@ -94,7 +94,7 @@ export function FlourGuide({ selectedFlour, onSelectFlour, onApplyFlour }: Flour
                       onClick={e => { e.stopPropagation(); handleApply(flour); }}
                       style={{ fontSize: 12, color: '#c0522a', background: 'none', border: '1px solid #c0522a44', borderRadius: 8, padding: '4px 10px', cursor: 'pointer' }}
                     >
-                      Apply
+                      {t.guide.apply}
                     </button>
                   </div>
                 </div>
@@ -107,26 +107,26 @@ export function FlourGuide({ selectedFlour, onSelectFlour, onApplyFlour }: Flour
 
       {/* Filter pills */}
       <div style={{ marginBottom: 20 }}>
-        <h2 className="serif" style={{ fontSize: 20, color: '#fafaf0', marginBottom: 12 }}>All Flours</h2>
+        <h2 className="serif" style={{ fontSize: 20, color: '#fafaf0', marginBottom: 12 }}>{t.guide.allFlours}</h2>
         <div className="flex flex-wrap gap-2">
           <button onClick={() => setFilterStyle(null)} style={{
             padding: '6px 14px', borderRadius: 999, fontSize: 12, cursor: 'pointer',
             background: !filterStyle ? '#c0522a' : '#2a1e0e',
             color:      !filterStyle ? '#fafaf0'  : '#f5e6c8aa',
             border: `1px solid ${!filterStyle ? '#c0522a' : '#3a2a18'}`,
-          }}>All</button>
-          {STYLE_NAMES.map(name => (
-            <button key={name} onClick={() => setFilterStyle(name)} style={{
+          }}>{t.guide.allFilter}</button>
+          {(Object.keys(PizzaStyle.STYLES) as PizzaStyleId[]).map(id => (
+            <button key={id} onClick={() => setFilterStyle(id)} style={{
               padding: '6px 14px', borderRadius: 999, fontSize: 12, cursor: 'pointer',
-              background: filterStyle === name ? '#c0522a' : '#2a1e0e',
-              color:      filterStyle === name ? '#fafaf0'  : '#f5e6c8aa',
-              border: `1px solid ${filterStyle === name ? '#c0522a' : '#3a2a18'}`,
-            }}>{name}</button>
+              background: filterStyle === id ? '#c0522a' : '#2a1e0e',
+              color:      filterStyle === id ? '#fafaf0'  : '#f5e6c8aa',
+              border: `1px solid ${filterStyle === id ? '#c0522a' : '#3a2a18'}`,
+            }}>{t.styles[id].name}</button>
           ))}
         </div>
         {filterStyle && (
           <p style={{ fontSize: 12, color: '#f5e6c860', marginTop: 8 }}>
-            Sorted by score for {filterStyle} (descending)
+            {t.guide.sortedBy(t.styles[filterStyle].name)}
           </p>
         )}
       </div>
@@ -138,7 +138,7 @@ export function FlourGuide({ selectedFlour, onSelectFlour, onApplyFlour }: Flour
             key={flour.name}
             flour={flour}
             isSelected={selectedFlour?.name === flour.name}
-            filterStyle={filterStyle}
+            filterStyleId={filterStyle}
             currentHydration={calcHydration}
             onSelect={onSelectFlour}
             onApply={() => handleApply(flour)}
