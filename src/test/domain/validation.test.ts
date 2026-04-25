@@ -23,12 +23,12 @@ describe('isValidStyleId', () => {
 });
 
 describe('absoluteError', () => {
-  const bounds = FIELD_BOUNDS.hydrationPct; // { min: 40, max: 100 }
+  const bounds = FIELD_BOUNDS.hydrationPct; // { min: 40, max: 115 }
 
   it('returns undefined when value is within bounds', () => {
-    expect(absoluteError(62, bounds, '%')).toBeUndefined();
-    expect(absoluteError(40, bounds, '%')).toBeUndefined();
-    expect(absoluteError(100, bounds, '%')).toBeUndefined();
+    expect(absoluteError(62,  bounds, '%')).toBeUndefined();
+    expect(absoluteError(40,  bounds, '%')).toBeUndefined();
+    expect(absoluteError(115, bounds, '%')).toBeUndefined();
   });
 
   it('returns a min message when value is below min', () => {
@@ -41,7 +41,7 @@ describe('absoluteError', () => {
   it('returns a max message when value is above max', () => {
     const err = absoluteError(150, bounds, '%');
     expect(err).toMatch(/maximum/i);
-    expect(err).toContain('100');
+    expect(err).toContain('115');
     expect(err).toContain('%');
   });
 

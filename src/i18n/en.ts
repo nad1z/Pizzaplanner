@@ -89,5 +89,6 @@ export const en: AppTranslation = {
     brooklyn:     { name: 'Brooklyn',       description: 'Hearty thin-to-medium crust with crunch, gas-oven fired — classic New York tradition' },
     detroit:      { name: 'Detroit',        description: 'Square, oiled pan pizza — crispy caramelised edges, cheese to the crust' },
     sicilian:     { name: 'Sicilian',       description: 'Thick, wide and soft with a bready crumb and generous toppings' },
+    focaccia:     { name: 'Focaccia',       description: 'Ligurian-style olive oil flatbread — dimpled, golden, airy crumb with a crispy bottom' },
   },
 };

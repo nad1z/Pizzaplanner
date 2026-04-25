@@ -5,7 +5,8 @@ export type PizzaStyleId =
   | 'roman'
   | 'brooklyn'
   | 'detroit'
-  | 'sicilian';
+  | 'sicilian'
+  | 'focaccia';
 
 export interface HydrationRange {
   min: number;
@@ -54,6 +55,7 @@ export class PizzaStyle {
     roman:         new PizzaStyle({ name: 'Roman',          emoji: '🏛️', hydration: { min: 70, max: 85, recommended: 78 }, ballWeight: { min: 600, max: 900 }, saltPercent: 2.5, oilPercent: 3,   description: 'High-hydration focaccia-style baked in a tray' }),
     brooklyn:      new PizzaStyle({ name: 'Brooklyn',       emoji: '🌉', hydration: { min: 60, max: 68, recommended: 64 }, ballWeight: { min: 220, max: 300 }, saltPercent: 2.0, oilPercent: 1.5, description: 'Thicker than NY, crispy bottom, chewier edge' }),
     detroit:       new PizzaStyle({ name: 'Detroit',        emoji: '🏭', hydration: { min: 65, max: 75, recommended: 70 }, ballWeight: { min: 400, max: 600 }, saltPercent: 2.0, oilPercent: 2,   description: 'Deep dish, crispy laced cheese edges, airy crumb' }),
-    sicilian:      new PizzaStyle({ name: 'Sicilian',       emoji: '🌊', hydration: { min: 65, max: 72, recommended: 68 }, ballWeight: { min: 500, max: 750 }, saltPercent: 2.2, oilPercent: 3,   description: 'Thick, spongy square slices with a crispy base' }),
+    sicilian:      new PizzaStyle({ name: 'Sicilian',       emoji: '🌊', hydration: { min: 65, max: 72,  recommended: 68 }, ballWeight: { min: 500,  max: 750  }, saltPercent: 2.2, oilPercent: 3,   description: 'Thick, spongy square slices with a crispy base' }),
+    focaccia:      new PizzaStyle({ name: 'Focaccia',       emoji: '🫒', hydration: { min: 70, max: 100, recommended: 80 }, ballWeight: { min: 400,  max: 1500 }, saltPercent: 2.2, oilPercent: 5,   description: 'Ligurian-style flatbread — olive-oil rich, airy crumb, dimpled and golden crust' }),
   };
 }
