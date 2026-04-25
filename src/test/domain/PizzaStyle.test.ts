@@ -2,11 +2,11 @@ import { describe, it, expect } from 'vitest';
 import { PizzaStyle } from '../../domain/models/PizzaStyle';
 import type { PizzaStyleId } from '../../domain/models/PizzaStyle';
 
-const ALL_IDS: PizzaStyleId[] = ['neapolitan', 'neonapolitan', 'newyork', 'roman', 'brooklyn', 'detroit', 'sicilian'];
+const ALL_IDS: PizzaStyleId[] = ['neapolitan', 'neonapolitan', 'newyork', 'roman', 'brooklyn', 'detroit', 'sicilian', 'focaccia'];
 
 describe('PizzaStyle', () => {
-  it('defines all seven styles', () => {
-    expect(Object.keys(PizzaStyle.STYLES)).toHaveLength(7);
+  it('defines all eight styles', () => {
+    expect(Object.keys(PizzaStyle.STYLES)).toHaveLength(8);
     for (const id of ALL_IDS) {
       expect(PizzaStyle.STYLES[id]).toBeDefined();
     }
@@ -48,11 +48,11 @@ describe('PizzaStyle', () => {
     expect(PizzaStyle.STYLES.neapolitan.oilPercent).toBe(0);
   });
 
-  it('roman has the highest hydration range', () => {
-    const romanMax = PizzaStyle.STYLES.roman.hydration.max;
+  it('focaccia has the highest hydration range', () => {
+    const focacciaMax = PizzaStyle.STYLES.focaccia.hydration.max;
     for (const id of ALL_IDS) {
-      if (id !== 'roman') {
-        expect(PizzaStyle.STYLES[id].hydration.max).toBeLessThanOrEqual(romanMax);
+      if (id !== 'focaccia') {
+        expect(PizzaStyle.STYLES[id].hydration.max).toBeLessThanOrEqual(focacciaMax);
       }
     }
   });

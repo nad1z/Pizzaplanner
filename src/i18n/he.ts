@@ -89,6 +89,7 @@ export const he: AppTranslation = {
     brooklyn:     { name: 'ברוקלין',         description: 'קרום דק-בינוני עם פצפוץ, כבד יותר מניו יורק — מסורת קלאסית בכבשן גז' },
     detroit:      { name: 'דטרויט',          description: 'פיצה מרובעת ועמוקה — קרום פריך ומקורמל, גבינה עד הקצוות' },
     sicilian:     { name: 'סיציליאנית',      description: 'עבה, רחב ורך עם קרום לחמי ותוספות נדיבות' },
+    focaccia:     { name: 'פוקאצ׳ה',         description: 'לחם שמן זית ליגורי — שקוע, זהוב, פירור אוורירי עם תחתית פריכה' },
   },
   flourDescriptions: {
     'Caputo Pizzeria 00':              'קמח פיצה נאפוליטני קלאסי עם אלסטיות מאוזנת.',
