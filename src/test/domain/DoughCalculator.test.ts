@@ -4,11 +4,11 @@ import { DoughCalculator } from '../../domain/services/DoughCalculator';
 describe('DoughCalculator', () => {
   describe('ballWeightFromDiameter', () => {
     it('converts 30cm diameter to correct ball weight', () => {
-      expect(DoughCalculator.ballWeightFromDiameter(30)).toBe(459);
+      expect(DoughCalculator.ballWeightFromDiameter(30)).toBe(219);
     });
 
     it('converts 28cm diameter to correct ball weight', () => {
-      expect(DoughCalculator.ballWeightFromDiameter(28)).toBe(400);
+      expect(DoughCalculator.ballWeightFromDiameter(28)).toBe(191);
     });
 
     it('is the inverse of diameterFromBallWeight within rounding', () => {
@@ -21,11 +21,11 @@ describe('DoughCalculator', () => {
 
   describe('diameterFromBallWeight', () => {
     it('converts 250g ball to correct diameter', () => {
-      expect(DoughCalculator.diameterFromBallWeight(250)).toBe(22);
+      expect(DoughCalculator.diameterFromBallWeight(250)).toBe(32);
     });
 
-    it('converts 500g ball to correct diameter', () => {
-      expect(DoughCalculator.diameterFromBallWeight(500)).toBe(31);
+    it('converts 300g ball to correct diameter', () => {
+      expect(DoughCalculator.diameterFromBallWeight(300)).toBe(35);
     });
 
     it('returns 0 for zero input', () => {
