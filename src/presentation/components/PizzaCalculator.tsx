@@ -91,10 +91,10 @@ export function PizzaCalculator({ selectedFlour, pendingApply, onClearApply, onN
   const fermentation = state.fermentationHours ?? 24;
   const dimUnit = (state.diameterUnit ?? 'cm') as DiameterUnit;
   const dimDisplayVal = dimUnit === 'in'
-    ? Math.round(state.pizzaDiameterCm * CM_TO_IN * 10) / 10
+    ? Math.round(state.pizzaDiameterCm * CM_TO_IN)
     : state.pizzaDiameterCm;
   const dimDisplayBounds = dimUnit === 'in'
-    ? { min: Math.round(FIELD_BOUNDS.pizzaDiameterCm.min * CM_TO_IN * 10) / 10, max: Math.round(FIELD_BOUNDS.pizzaDiameterCm.max * CM_TO_IN * 10) / 10 }
+    ? { min: Math.round(FIELD_BOUNDS.pizzaDiameterCm.min * CM_TO_IN), max: Math.round(FIELD_BOUNDS.pizzaDiameterCm.max * CM_TO_IN) }
     : FIELD_BOUNDS.pizzaDiameterCm;
 
   const recipe = useMemo(
@@ -206,7 +206,7 @@ export function PizzaCalculator({ selectedFlour, pendingApply, onClearApply, onN
             min={dimDisplayBounds.min}
             max={dimDisplayBounds.max}
             error={fieldErrors.pizzaDiameterCm}
-            onChange={v => update({ pizzaDiameterCm: Math.round(dimUnit === 'in' ? v * IN_TO_CM : v) })}
+            onChange={v => update({ pizzaDiameterCm: Math.round((dimUnit === 'in' ? v * IN_TO_CM : v) / 2) * 2 })}
             labelExtra={
               <div className="flex gap-1">
                 {(['cm', 'in'] as DiameterUnit[]).map(u => (
