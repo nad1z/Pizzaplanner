@@ -12,10 +12,11 @@ interface InputFieldProps {
   step?: number;
   min?: number;
   max?: number;
+  snapToStep?: boolean;
   labelExtra?: React.ReactNode;
 }
 
-export function InputField({ label, unit, value, onChange, validity, error, step = 1, min: fmin, max: fmax, labelExtra }: InputFieldProps) {
+export function InputField({ label, unit, value, onChange, validity, error, step = 1, min: fmin, max: fmax, snapToStep = true, labelExtra }: InputFieldProps) {
   const flashRef = useRef<HTMLDivElement>(null);
   const prevVal = useRef(value);
   const [localValue, setLocalValue] = useState<string>(String(value));
@@ -35,19 +36,24 @@ export function InputField({ label, unit, value, onChange, validity, error, step
 
   const dot = validity && !error ? DOT_CLASSES[validity] : null;
 
-  // Snap to the nearest step-grid boundary, then move one step.
-  // This keeps repeated clicks on clean multiples regardless of where the
-  // value started (e.g. a typed-in 583g snaps to 580 on first − click).
+  // Snap to the nearest step-grid boundary before moving (snapToStep=true, the
+  // default). This means a typed-in 583g snaps to 580 on the first − click,
+  // then 570, 560… Primary/stored fields benefit from this; derived/back-
+  // calculated fields (flour, water) must use snapToStep=false because the
+  // round-trip through compute() creates a fixed-point trap where snapping
+  // always resolves to the same intermediate value and the button appears stuck.
   const stepDown = () => {
     const clamped = fmax !== undefined ? Math.min(fmax, value) : value;
-    const base = Math.floor(clamped / step) * step;
-    const next = base < clamped ? base : base - step;
+    const next = snapToStep
+      ? (() => { const base = Math.floor(clamped / step) * step; return base < clamped ? base : base - step; })()
+      : clamped - step;
     onChange(Math.max(fmin ?? -Infinity, next));
   };
   const stepUp = () => {
     const clamped = fmin !== undefined ? Math.max(fmin, value) : value;
-    const base = Math.ceil(clamped / step) * step;
-    const next = base > clamped ? base : base + step;
+    const next = snapToStep
+      ? (() => { const base = Math.ceil(clamped / step) * step; return base > clamped ? base : base + step; })()
+      : clamped + step;
     onChange(Math.min(fmax ?? Infinity, next));
   };
 
