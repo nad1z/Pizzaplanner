@@ -1,0 +1,91 @@
+import type { AppTranslation } from './types';
+
+export const he: AppTranslation = {
+  dir: 'rtl',
+  nav: {
+    calculator: '🍕 מחשבון',
+    flourGuide:  '🌾 מדריך קמחים',
+  },
+  lang: { label: 'שפה', en: 'English', he: 'עברית' },
+  calc: {
+    title: 'Pizzaplanner',
+    subtitle: 'מחשבון הפיצה הטוב ביותר.',
+    yourDough: 'הבצק שלך',
+    recipe: 'מתכון',
+    labels: {
+      pizzas:       'פיצות',
+      ballWeight:   'משקל כדור',
+      diameter:     'קוטר',
+      hydration:    'הידרציה',
+      flour:        'קמח',
+      water:        'מים',
+      fermentation: 'התפחה',
+      yeastType:    'סוג שמרים',
+      totalDough:   'סה"כ בצק',
+      salt:         'מלח',
+      oil:          'שמן',
+    },
+    perPizza: 'לפיצה',
+    buttons: {
+      apply:       'החל',
+      change:      'שנה',
+      selectFlour: '🌾 בחר קמח ממדריך הקמחים',
+      reset:       '↺ אפס לברירת מחדל',
+      switch:      'החלף',
+    },
+    flourSuggests: (name, h, f) =>
+      `🌾 ${name} מציע ${h}% הידרציה ו-${f} שעות התפחה`,
+    hydrationLooksLike: (pct, style) =>
+      `ההידרציה שלך (${pct}%) נראית יותר כמו ${style} — רוצה להחליף?`,
+    hydrationOutside: (pct, sev, style, min, max) =>
+      `הידרציה ${pct}% היא ${sev} מחוץ לטווח ${style} (${min}–${max}%)`,
+    ballWeightOutside: (g, sev, style, min, max) =>
+      `משקל כדור ${g}ג׳ הוא ${sev} מחוץ לטווח ${style} (${min}–${max}ג׳)`,
+    severity: { critically: 'בצורה קריטית', slightly: 'מעט' },
+  },
+  guide: {
+    title:    'מדריך קמחים',
+    subtitle: 'מצא את הקמח המתאים לסגנון הפיצה שלך',
+    recommended:    'מומלץ לסיכום שלך',
+    recommendedFor: (style, h, f) => `${style} · ${h}% הידרציה · ${f} שעות התפחה`,
+    allFlours:  'כל הקמחים',
+    allFilter:  'הכל',
+    sortedBy:   (style) => `ממוין לפי ציון עבור ${style} (יורד)`,
+    apply: 'החל',
+  },
+  card: {
+    protein:       'חלבון',
+    strength:      'חוזק',
+    hydrationLabel:'הידרציה',
+    fermentLabel:  'התפחה',
+    hydrationRange:'טווח הידרציה',
+    moreDetails:   'פרטים נוספים',
+    fermentation:  'התפחה',
+    notIdealFor:   'לא מומלץ עבור',
+    selected:      '✓ נבחר',
+    select:        'בחר',
+    apply:         'החל',
+    scoreFor: (style) => `עבור ${style}`,
+    optimal:  (val)   => `אופטימלי ${val}%`,
+    yours:    (val)   => `שלך ${val}%`,
+  },
+  gauge: {
+    hydration:  'הידרציה',
+    styleRange: (min, max) => `סגנון ${min}–${max}%`,
+    flourRange: (min, max) => `קמח ${min}–${max}%`,
+  },
+  yeast: {
+    idy:      { name: 'שמרים יבשים מיידיים', description: 'מערבבים ישירות לקמח' },
+    ady:      { name: 'שמרים יבשים פעילים',  description: 'ממיסים במים חמים תחילה' },
+    sourdough:{ name: 'מחמצת',               description: 'מחמצת טבעית, 20% מהקמח' },
+  },
+  styles: {
+    neapolitan:   { name: 'נאפוליטנית',     description: 'פיצה איטלקית קלאסית בתנור עצים — קמח 00, התפחה קצרה, קורניצ׳ון מנופח ומנוקד' },
+    neonapolitan: { name: 'ניאו נאפוליטנית',description: 'נאפוליטנית עכשווית בהידרציה גבוהה — פירור פתוח, קורניצ׳ון אוורירי, קליפה מנומרת' },
+    newyork:      { name: 'ניו יורק',        description: 'פרוסות גדולות וכפיפות, קרום לעיס עם שולי שחורים קלים' },
+    roman:        { name: 'רומית',           description: 'פיצה על תבנית (אל טאליו) — פריך מבחוץ, אוורירי מבפנים, הידרציה גבוהה' },
+    brooklyn:     { name: 'ברוקלין',         description: 'קרום דק-בינוני עם פצפוץ, כבד יותר מניו יורק — מסורת קלאסית בכבשן גז' },
+    detroit:      { name: 'דטרויט',          description: 'פיצה מרובעת ועמוקה — קרום פריך ומקורמל, גבינה עד הקצוות' },
+    sicilian:     { name: 'סיציליאנית',      description: 'עבה, רחב ורך עם קרום לחמי ותוספות נדיבות' },
+  },
+};

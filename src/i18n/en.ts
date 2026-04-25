@@ -1,0 +1,91 @@
+import type { AppTranslation } from './types';
+
+export const en: AppTranslation = {
+  dir: 'ltr',
+  nav: {
+    calculator: '🍕 Calculator',
+    flourGuide:  '🌾 Flour Guide',
+  },
+  lang: { label: 'Language', en: 'English', he: 'עברית' },
+  calc: {
+    title: 'Pizzaplanner',
+    subtitle: 'The best pizza calculator there is.',
+    yourDough: 'Your Dough',
+    recipe: 'Recipe',
+    labels: {
+      pizzas:       'Pizzas',
+      ballWeight:   'Ball Weight',
+      diameter:     'Diameter',
+      hydration:    'Hydration',
+      flour:        'Flour',
+      water:        'Water',
+      fermentation: 'Fermentation',
+      yeastType:    'Yeast Type',
+      totalDough:   'Total dough',
+      salt:         'Salt',
+      oil:          'Oil',
+    },
+    perPizza: 'Per pizza',
+    buttons: {
+      apply:       'Apply',
+      change:      'Change',
+      selectFlour: '🌾 Select a flour from Flour Guide',
+      reset:       '↺ Reset to defaults',
+      switch:      'Switch',
+    },
+    flourSuggests: (name, h, f) =>
+      `🌾 ${name} suggests ${h}% hydration & ${f}h fermentation`,
+    hydrationLooksLike: (pct, style) =>
+      `Your hydration (${pct}%) looks more like ${style} — try switching?`,
+    hydrationOutside: (pct, sev, style, min, max) =>
+      `Hydration ${pct}% is ${sev} outside the ${style} range (${min}–${max}%)`,
+    ballWeightOutside: (g, sev, style, min, max) =>
+      `Ball weight ${g}g is ${sev} outside the ${style} range (${min}–${max}g)`,
+    severity: { critically: 'critically', slightly: 'slightly' },
+  },
+  guide: {
+    title:    'Flour Guide',
+    subtitle: 'Find the right flour for your pizza style',
+    recommended:    'Recommended for your setup',
+    recommendedFor: (style, h, f) => `${style} · ${h}% hydration · ${f}h fermentation`,
+    allFlours:  'All Flours',
+    allFilter:  'All',
+    sortedBy:   (style) => `Sorted by score for ${style} (descending)`,
+    apply: 'Apply',
+  },
+  card: {
+    protein:       'Protein',
+    strength:      'Strength',
+    hydrationLabel:'Hydration',
+    fermentLabel:  'Ferment',
+    hydrationRange:'Hydration range',
+    moreDetails:   'More details',
+    fermentation:  'Fermentation',
+    notIdealFor:   'Not Ideal For',
+    selected:      '✓ Selected',
+    select:        'Select',
+    apply:         'Apply',
+    scoreFor: (style) => `for ${style}`,
+    optimal:  (val)   => `optimal ${val}%`,
+    yours:    (val)   => `yours ${val}%`,
+  },
+  gauge: {
+    hydration:  'hydration',
+    styleRange: (min, max) => `style ${min}–${max}%`,
+    flourRange: (min, max) => `flour ${min}–${max}%`,
+  },
+  yeast: {
+    idy:      { name: 'Instant Dry',  description: 'Mix directly into flour' },
+    ady:      { name: 'Active Dry',   description: 'Dissolve in warm water first' },
+    sourdough:{ name: 'Sourdough',    description: 'Natural starter, 20% of flour' },
+  },
+  styles: {
+    neapolitan:   { name: 'Neapolitan',     description: 'Classic wood-fired Italian pizza — 00 flour, short fermentation, puffy charred cornicione' },
+    neonapolitan: { name: 'Neo Neapolitan', description: 'Contemporary high-hydration Neapolitan — open crumb, airy cornicione, leopard-spotted crust' },
+    newyork:      { name: 'New York',       description: 'Large foldable slices, chewy and pliable crust with slight char on the edges' },
+    roman:        { name: 'Roman',          description: 'Teglia-style (al taglio) — crispy outside, airy inside, high hydration pan pizza' },
+    brooklyn:     { name: 'Brooklyn',       description: 'Hearty thin-to-medium crust with crunch, gas-oven fired — classic New York tradition' },
+    detroit:      { name: 'Detroit',        description: 'Square, oiled pan pizza — crispy caramelised edges, cheese to the crust' },
+    sicilian:     { name: 'Sicilian',       description: 'Thick, wide and soft with a bready crumb and generous toppings' },
+  },
+};
