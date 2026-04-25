@@ -12,9 +12,10 @@ interface InputFieldProps {
   step?: number;
   min?: number;
   max?: number;
+  labelExtra?: React.ReactNode;
 }
 
-export function InputField({ label, unit, value, onChange, validity, error, step = 1, min: fmin, max: fmax }: InputFieldProps) {
+export function InputField({ label, unit, value, onChange, validity, error, step = 1, min: fmin, max: fmax, labelExtra }: InputFieldProps) {
   const flashRef = useRef<HTMLDivElement>(null);
   const prevVal = useRef(value);
 
@@ -44,7 +45,10 @@ export function InputField({ label, unit, value, onChange, validity, error, step
     <div className="flex flex-col gap-1">
       <div className="flex items-center justify-between">
         <span style={{ color: '#f5e6c8aa', fontSize: 12 }} className="uppercase tracking-widest">{label}</span>
-        {dot && <span className={`w-2 h-2 rounded-full ${dot}`} />}
+        <div className="flex items-center gap-2">
+          {labelExtra}
+          {dot && <span className={`w-2 h-2 rounded-full ${dot}`} />}
+        </div>
       </div>
       <div
         ref={flashRef}

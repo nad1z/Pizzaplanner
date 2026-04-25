@@ -8,13 +8,17 @@ import { DoughCalculator } from '../../domain/services/DoughCalculator';
 import { getFlourWarnings } from '../../domain/services/FlourRecommender';
 import { FIELD_BOUNDS, absoluteError } from '../../domain/validation';
 import { StorageManager } from '../../infrastructure/StorageManager';
-import type { PersistedState } from '../../infrastructure/StorageManager';
+import type { PersistedState, DiameterUnit } from '../../infrastructure/StorageManager';
+import { UrlStateManager } from '../../infrastructure/UrlStateManager';
 import { validityLevel, RING_COLORS, DOT_CLASSES } from '../utils/validity';
 import { useTranslation } from '../../i18n';
 import { HydrationGauge } from './HydrationGauge';
 import { InputField } from './InputField';
 
 type CalcState = PersistedState;
+
+const CM_TO_IN = 0.393701;
+const IN_TO_CM = 2.54;
 
 interface SuggestedStyle {
   id: PizzaStyleId;
@@ -39,7 +43,7 @@ function Row({ label, value, unit, accent = false }: RowProps) {
   );
 }
 
-function getDefaults(styleId: PizzaStyleId): CalcState {
+function getDefaults(styleId: PizzaStyleId, diameterUnit?: DiameterUnit): CalcState {
   const s = PizzaStyle.STYLES[styleId];
   const ballWeightG = Math.round((s.ballWeight.min + s.ballWeight.max) / 2);
   return {
@@ -50,6 +54,7 @@ function getDefaults(styleId: PizzaStyleId): CalcState {
     hydrationPct: s.hydration.recommended,
     yeastId: 'idy',
     fermentationHours: 24,
+    diameterUnit: diameterUnit ?? 'cm',
   };
 }
 
@@ -63,15 +68,34 @@ interface PizzaCalculatorProps {
 export function PizzaCalculator({ selectedFlour, pendingApply, onClearApply, onNavigateToFlourGuide }: PizzaCalculatorProps) {
   const t = useTranslation();
   const [state, setState] = useState<CalcState>(() => {
-    const saved = StorageManager.load();
-    return (saved && PizzaStyle.STYLES[saved.styleId]) ? { fermentationHours: 24, ...saved } : getDefaults('neapolitan');
+    const fromUrl = UrlStateManager.readCalc();
+    const fromStorage = StorageManager.load();
+    if (fromUrl) {
+      const base = (fromStorage && PizzaStyle.STYLES[fromStorage.styleId])
+        ? { fermentationHours: 24, ...fromStorage }
+        : getDefaults(fromUrl.styleId);
+      return { ...base, ...fromUrl };
+    }
+    return (fromStorage && PizzaStyle.STYLES[fromStorage.styleId])
+      ? { fermentationHours: 24, diameterUnit: 'cm', ...fromStorage }
+      : getDefaults('neapolitan');
   });
   const [dismissed, setDismissed] = useState(false);
 
-  useEffect(() => { StorageManager.save(state); }, [state]);
+  useEffect(() => {
+    StorageManager.save(state);
+    UrlStateManager.updateCalc(state);
+  }, [state]);
 
   const style = PizzaStyle.STYLES[state.styleId];
   const fermentation = state.fermentationHours ?? 24;
+  const dimUnit = (state.diameterUnit ?? 'cm') as DiameterUnit;
+  const dimDisplayVal = dimUnit === 'in'
+    ? Math.round(state.pizzaDiameterCm * CM_TO_IN * 10) / 10
+    : state.pizzaDiameterCm;
+  const dimDisplayBounds = dimUnit === 'in'
+    ? { min: Math.round(FIELD_BOUNDS.pizzaDiameterCm.min * CM_TO_IN * 10) / 10, max: Math.round(FIELD_BOUNDS.pizzaDiameterCm.max * CM_TO_IN * 10) / 10 }
+    : FIELD_BOUNDS.pizzaDiameterCm;
 
   const recipe = useMemo(
     () => DoughCalculator.compute({ ...state, saltPct: style.saltPercent, oilPct: style.oilPercent, yeastPct: YEAST_TYPES[state.yeastId].flourPercent }),
@@ -95,11 +119,11 @@ export function PizzaCalculator({ selectedFlour, pendingApply, onClearApply, onN
   const ballValidity = validityLevel(state.ballWeightG,  style.ballWeight.min, style.ballWeight.max);
 
   const fieldErrors = {
-    numPizzas:        absoluteError(state.numPizzas,        FIELD_BOUNDS.numPizzas,        ''),
-    ballWeightG:      absoluteError(state.ballWeightG,      FIELD_BOUNDS.ballWeightG,      'g'),
-    pizzaDiameterCm:  absoluteError(state.pizzaDiameterCm,  FIELD_BOUNDS.pizzaDiameterCm,  'cm'),
-    hydrationPct:     absoluteError(state.hydrationPct,     FIELD_BOUNDS.hydrationPct,     '%'),
-    fermentationHours:absoluteError(fermentation,           FIELD_BOUNDS.fermentationHours,'h'),
+    numPizzas:        absoluteError(state.numPizzas,    FIELD_BOUNDS.numPizzas,        ''),
+    ballWeightG:      absoluteError(state.ballWeightG,  FIELD_BOUNDS.ballWeightG,      'g'),
+    pizzaDiameterCm:  absoluteError(dimDisplayVal,      dimDisplayBounds,              dimUnit === 'in' ? '"' : 'cm'),
+    hydrationPct:     absoluteError(state.hydrationPct, FIELD_BOUNDS.hydrationPct,     '%'),
+    fermentationHours:absoluteError(fermentation,       FIELD_BOUNDS.fermentationHours,'h'),
   };
 
   const flourWarnings = selectedFlour
@@ -118,8 +142,8 @@ export function PizzaCalculator({ selectedFlour, pendingApply, onClearApply, onN
     return best;
   }, [state.hydrationPct, state.styleId, style.hydration.recommended]);
 
-  const handleStyleChange = (id: PizzaStyleId) => { setDismissed(false); setState(getDefaults(id)); };
-  const reset = () => { StorageManager.clear(); setDismissed(false); setState(getDefaults('neapolitan')); };
+  const handleStyleChange = (id: PizzaStyleId) => { setDismissed(false); setState(prev => getDefaults(id, prev.diameterUnit)); };
+  const reset = () => { StorageManager.clear(); setDismissed(false); setState(prev => getDefaults('neapolitan', prev.diameterUnit)); };
 
   return (
     <div style={{ minHeight: '100vh', color: '#f5e6c8', padding: '24px 16px 48px' }} className="max-w-3xl mx-auto">
@@ -174,9 +198,30 @@ export function PizzaCalculator({ selectedFlour, pendingApply, onClearApply, onN
             error={fieldErrors.ballWeightG}
             onChange={v => update({ ballWeightG: Math.round(v) })} />
 
-          <InputField label={t.calc.labels.diameter} unit="cm" value={state.pizzaDiameterCm} step={1} min={10} max={60}
+          <InputField
+            label={t.calc.labels.diameter}
+            unit={dimUnit === 'in' ? '"' : 'cm'}
+            value={dimDisplayVal}
+            step={dimUnit === 'in' ? 0.5 : 1}
+            min={dimDisplayBounds.min}
+            max={dimDisplayBounds.max}
             error={fieldErrors.pizzaDiameterCm}
-            onChange={v => update({ pizzaDiameterCm: Math.round(v) })} />
+            onChange={v => update({ pizzaDiameterCm: Math.round(dimUnit === 'in' ? v * IN_TO_CM : v) })}
+            labelExtra={
+              <div className="flex gap-1">
+                {(['cm', 'in'] as DiameterUnit[]).map(u => (
+                  <button key={u} onClick={() => update({ diameterUnit: u })}
+                    style={{
+                      fontSize: 10, padding: '1px 6px', borderRadius: 4, cursor: 'pointer',
+                      border: '1px solid', lineHeight: '16px',
+                      background: dimUnit === u ? '#c0522a' : 'transparent',
+                      color: dimUnit === u ? '#fafaf0' : '#f5e6c860',
+                      borderColor: dimUnit === u ? '#c0522a' : '#3a2a18',
+                    }}>{u}</button>
+                ))}
+              </div>
+            }
+          />
 
           <InputField label={t.calc.labels.hydration} unit="%" value={state.hydrationPct} step={1} min={40} max={100}
             validity={fieldErrors.hydrationPct ? undefined : hydValidity}
@@ -258,7 +303,7 @@ export function PizzaCalculator({ selectedFlour, pendingApply, onClearApply, onN
           <div style={{ marginTop: 16, padding: '12px 16px', background: '#2a1e0e', borderRadius: 12, border: '1px solid #3a2a1844' }}>
             <div style={{ fontSize: 12, color: '#f5e6c870', marginBottom: 4 }}>{t.calc.perPizza}</div>
             <div style={{ fontSize: 14, color: '#f5e6c8' }}>
-              {state.ballWeightG}g ball · {state.pizzaDiameterCm}cm · {style.saltPercent}% salt{style.oilPercent > 0 ? ` · ${style.oilPercent}% oil` : ''}
+              {state.ballWeightG}g ball · {dimDisplayVal}{dimUnit === 'in' ? '"' : 'cm'} · {style.saltPercent}% salt{style.oilPercent > 0 ? ` · ${style.oilPercent}% oil` : ''}
             </div>
           </div>
         </div>

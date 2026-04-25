@@ -32,6 +32,8 @@ export const en: AppTranslation = {
       selectFlour: '🌾 Select a flour from Flour Guide',
       reset:       '↺ Reset to defaults',
       switch:      'Switch',
+      copyLink:    'Copy link',
+      copied:      'Copied!',
     },
     flourSuggests: (name, h, f) =>
       `🌾 ${name} suggests ${h}% hydration & ${f}h fermentation`,

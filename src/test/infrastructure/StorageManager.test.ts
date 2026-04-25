@@ -99,4 +99,21 @@ describe('StorageManager', () => {
       expect(StorageManager.load()?.yeastId).toBe(yeastId);
     }
   });
+
+  it('accepts diameterUnit cm and in', () => {
+    StorageManager.save({ ...SAMPLE, diameterUnit: 'cm' });
+    expect(StorageManager.load()?.diameterUnit).toBe('cm');
+    StorageManager.save({ ...SAMPLE, diameterUnit: 'in' });
+    expect(StorageManager.load()?.diameterUnit).toBe('in');
+  });
+
+  it('returns null for an invalid diameterUnit', () => {
+    localStorage.setItem('pizza-calc-v1', JSON.stringify({ ...SAMPLE, diameterUnit: 'feet' }));
+    expect(StorageManager.load()).toBeNull();
+  });
+
+  it('loads successfully when diameterUnit is absent (backward compat)', () => {
+    StorageManager.save(SAMPLE);
+    expect(StorageManager.load()?.diameterUnit).toBeUndefined();
+  });
 });

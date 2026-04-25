@@ -3,6 +3,8 @@ import type { PizzaStyleId } from '../domain/models/PizzaStyle';
 import { YEAST_TYPES } from '../domain/models/YeastType';
 import type { YeastTypeId } from '../domain/models/YeastType';
 
+export type DiameterUnit = 'cm' | 'in';
+
 export interface PersistedState {
   styleId: PizzaStyleId;
   numPizzas: number;
@@ -11,6 +13,7 @@ export interface PersistedState {
   hydrationPct: number;
   yeastId: YeastTypeId;
   fermentationHours?: number;
+  diameterUnit?: DiameterUnit;
 }
 
 function isValidPersistedState(raw: unknown): raw is PersistedState {
@@ -23,7 +26,8 @@ function isValidPersistedState(raw: unknown): raw is PersistedState {
     typeof d.pizzaDiameterCm === 'number' && d.pizzaDiameterCm >= FIELD_BOUNDS.pizzaDiameterCm.min && d.pizzaDiameterCm <= FIELD_BOUNDS.pizzaDiameterCm.max &&
     typeof d.hydrationPct    === 'number' && d.hydrationPct    >= FIELD_BOUNDS.hydrationPct.min    && d.hydrationPct    <= FIELD_BOUNDS.hydrationPct.max &&
     typeof d.yeastId === 'string' && d.yeastId in YEAST_TYPES &&
-    (d.fermentationHours === undefined || (typeof d.fermentationHours === 'number' && d.fermentationHours >= FIELD_BOUNDS.fermentationHours.min && d.fermentationHours <= FIELD_BOUNDS.fermentationHours.max))
+    (d.fermentationHours === undefined || (typeof d.fermentationHours === 'number' && d.fermentationHours >= FIELD_BOUNDS.fermentationHours.min && d.fermentationHours <= FIELD_BOUNDS.fermentationHours.max)) &&
+    (d.diameterUnit === undefined || d.diameterUnit === 'cm' || d.diameterUnit === 'in')
   );
 }
 
