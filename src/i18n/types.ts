@@ -89,6 +89,7 @@ export interface AppTranslation {
     sicilian:     { name: string; description: string };
   };
   flourDescriptions: Record<string, string>;
+  flourTypes: Record<string, string>;
   warnings: {
     fermentOverrun: string;
     hydrationTooHigh: string;

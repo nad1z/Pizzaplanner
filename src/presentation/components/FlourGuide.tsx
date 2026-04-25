@@ -84,7 +84,7 @@ export function FlourGuide({ selectedFlour, onSelectFlour, onApplyFlour }: Flour
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
                     <span style={{ fontWeight: 600, fontSize: 14, color: '#fafaf0' }}>{flour.name}</span>
-                    <span style={{ color: '#f5e6c870', fontSize: 12, marginLeft: 8 }}>{flour.brand} · {flour.type}</span>
+                    <span style={{ color: '#f5e6c870', fontSize: 12, marginLeft: 8 }}>{flour.brand} · {t.flourTypeLabel} {t.flourTypes[flour.type] ?? flour.type}</span>
                   </div>
                   <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0, marginLeft: 12 }}>
                     <span style={{ fontSize: 11, background: '#c0522a22', color: '#c0522a', padding: '2px 8px', borderRadius: 999 }}>

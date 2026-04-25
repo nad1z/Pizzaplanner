@@ -55,7 +55,7 @@ export function FlourCard({ flour, isSelected, filterStyleId, currentHydration, 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
           <div>
             <h3 style={{ fontSize: 17, color: '#fafaf0', marginBottom: 2 }}>{flour.name}</h3>
-            <span style={{ fontSize: 12, color: '#f5e6c870' }}>{flour.brand} · {t.flourTypeLabel} {flour.type}</span>
+            <span style={{ fontSize: 12, color: '#f5e6c870' }}>{flour.brand} · {t.flourTypeLabel} {t.flourTypes[flour.type] ?? flour.type}</span>
           </div>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0, marginLeft: 12 }}>
             <button onClick={() => onSelect(isSelected ? null : flour)} style={{

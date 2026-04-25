@@ -50,15 +50,15 @@ export function HydrationGauge({ value, styleMin, styleMax, flourMin, flourMax }
       <line x1={cx} y1={cy} x2={nx.toFixed(1)} y2={ny.toFixed(1)} stroke={color} strokeWidth="2.5" strokeLinecap="round" />
       <circle cx={cx} cy={cy} r="4.5" fill={color} />
 
-      <text x={cx} y={cy - 18} textAnchor="middle" fill="#f5e6c8"    fontSize="16" fontFamily="Playfair Display" fontWeight="600">{value}%</text>
-      <text x={cx} y={cy -  5} textAnchor="middle" fill="#f5e6c880"  fontSize="9"  fontFamily="DM Sans">{t.gauge.hydration}</text>
+      <text x={cx} y={cy - 18} textAnchor="middle" fill="#f5e6c8"    fontSize="16" fontFamily="Rubik" fontWeight="600">{value}%</text>
+      <text x={cx} y={cy -  5} textAnchor="middle" fill="#f5e6c880"  fontSize="9"  fontFamily="Rubik">{t.gauge.hydration}</text>
 
-      <text x="14"  y="99" fill="#f5e6c840" fontSize="9" fontFamily="DM Sans">0%</text>
-      <text x="166" y="99" fill="#f5e6c840" fontSize="9" fontFamily="DM Sans" textAnchor="end">100%</text>
+      <text x="14"  y="99" fill="#f5e6c840" fontSize="9" fontFamily="Rubik">0%</text>
+      <text x="166" y="99" fill="#f5e6c840" fontSize="9" fontFamily="Rubik" textAnchor="end">100%</text>
 
-      <text x={cx} y="107" textAnchor="middle" fill={color}    fontSize="9" fontFamily="DM Sans" opacity="0.85">{t.gauge.styleRange(styleMin, styleMax)}</text>
+      <text x={cx} y="107" textAnchor="middle" fill={color}    fontSize="9" fontFamily="Rubik" opacity="0.85">{t.gauge.styleRange(styleMin, styleMax)}</text>
       {hasFlour && (
-        <text x={cx} y="114" textAnchor="middle" fill="#38bdf8" fontSize="8" fontFamily="DM Sans" opacity="0.8">{t.gauge.flourRange(flourMin!, flourMax!)}</text>
+        <text x={cx} y="114" textAnchor="middle" fill="#38bdf8" fontSize="8" fontFamily="Rubik" opacity="0.8">{t.gauge.flourRange(flourMin!, flourMax!)}</text>
       )}
     </svg>
   );

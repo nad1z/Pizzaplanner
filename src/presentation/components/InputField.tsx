@@ -101,7 +101,7 @@ export function InputField({ label, unit, value, onChange, validity, error, step
               onChange(n);
             }
           }}
-          style={{ color: error ? '#ef4444' : '#f5e6c8', background: 'transparent', fontSize: 22, fontFamily: 'DM Sans', textAlign: 'center', width: '100%' }}
+          style={{ color: error ? '#ef4444' : '#f5e6c8', background: 'transparent', fontSize: 22, textAlign: 'center', width: '100%' }}
           className="h-14 outline-none px-1"
         />
         <span style={{ color: '#f5e6c860', fontSize: 13, paddingRight: 8, flexShrink: 0 }}>{unit}</span>
