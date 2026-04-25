@@ -34,6 +34,8 @@ export interface AppTranslation {
       selectFlour: string;
       reset: string;
       switch: string;
+      copyLink: string;
+      copied: string;
     };
     flourSuggests: (name: string, hydration: number, fermentation: number) => string;
     hydrationLooksLike: (pct: number, style: string) => string;

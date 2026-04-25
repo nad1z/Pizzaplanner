@@ -32,6 +32,8 @@ export const he: AppTranslation = {
       selectFlour: '🌾 בחר קמח ממדריך הקמחים',
       reset:       '↺ אפס לברירת מחדל',
       switch:      'החלף',
+      copyLink:    'העתק קישור',
+      copied:      'הועתק!',
     },
     flourSuggests: (name, h, f) =>
       `🌾 ${name} מציע ${h}% הידרציה ו-${f} שעות התפחה`,

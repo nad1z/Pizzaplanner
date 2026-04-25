@@ -4,6 +4,7 @@ import { PizzaCalculator } from './PizzaCalculator';
 import { FlourGuide } from './FlourGuide';
 import { LanguageContext, LANGUAGES, loadLanguage, saveLanguage, useTranslation } from '../../i18n';
 import type { LanguageId } from '../../i18n';
+import { UrlStateManager } from '../../infrastructure/UrlStateManager';
 
 type AppView = 'calculator' | 'flour-guide';
 
@@ -13,17 +14,22 @@ interface PendingApply {
 }
 
 export function App() {
-  const [lang, setLang] = useState<LanguageId>(loadLanguage);
+  const [lang, setLang] = useState<LanguageId>(() => {
+    const fromUrl = UrlStateManager.readLang();
+    return (fromUrl === 'en' || fromUrl === 'he') ? fromUrl : loadLanguage();
+  });
   const [view, setView] = useState<AppView>('calculator');
   const [menuOpen, setMenuOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
   const [selectedFlour, setSelectedFlour] = useState<FlourData | null>(null);
   const [pendingApply, setPendingApply] = useState<PendingApply | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Sync document direction with language
+  // Sync document direction with language, and keep lang in URL
   useEffect(() => {
     document.documentElement.dir = lang === 'he' ? 'rtl' : 'ltr';
     document.documentElement.lang = lang;
+    UrlStateManager.updateLang(lang);
   }, [lang]);
 
   // Close menu on outside click
@@ -51,12 +57,20 @@ export function App() {
     navigateTo('calculator');
   };
 
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
   return (
     <LanguageContext.Provider value={lang}>
       <AppInner
         lang={lang}
         view={view}
         menuOpen={menuOpen}
+        copied={copied}
         menuRef={menuRef}
         selectedFlour={selectedFlour}
         pendingApply={pendingApply}
@@ -66,6 +80,7 @@ export function App() {
         onSelectFlour={setSelectedFlour}
         onApplyFlour={handleApplyFlour}
         onClearApply={() => setPendingApply(null)}
+        onCopyLink={handleCopyLink}
       />
     </LanguageContext.Provider>
   );
@@ -75,6 +90,7 @@ interface AppInnerProps {
   lang: LanguageId;
   view: AppView;
   menuOpen: boolean;
+  copied: boolean;
   menuRef: React.RefObject<HTMLDivElement>;
   selectedFlour: FlourData | null;
   pendingApply: PendingApply | null;
@@ -84,10 +100,11 @@ interface AppInnerProps {
   onSelectFlour: (f: FlourData | null) => void;
   onApplyFlour: (flour: FlourData, h: number, f: number) => void;
   onClearApply: () => void;
+  onCopyLink: () => void;
 }
 
-function AppInner({ lang, view, menuOpen, menuRef, selectedFlour, pendingApply,
-  onLangChange, onMenuToggle, onNavigate, onSelectFlour, onApplyFlour, onClearApply }: AppInnerProps) {
+function AppInner({ lang, view, menuOpen, copied, menuRef, selectedFlour, pendingApply,
+  onLangChange, onMenuToggle, onNavigate, onSelectFlour, onApplyFlour, onClearApply, onCopyLink }: AppInnerProps) {
   const t = useTranslation();
 
   return (
@@ -152,6 +169,14 @@ function AppInner({ lang, view, menuOpen, menuRef, selectedFlour, pendingApply,
                 ))}
               </select>
             </div>
+            <button onClick={onCopyLink} style={{
+              display: 'flex', alignItems: 'center', gap: 8,
+              width: '100%', padding: '10px 18px', background: 'none', border: 'none',
+              cursor: 'pointer', color: copied ? '#4ade80' : '#f5e6c8aa',
+              fontSize: 13, fontFamily: 'DM Sans', textAlign: 'left', transition: 'color 0.2s',
+            }}>
+              {copied ? '✓' : '🔗'} {copied ? t.calc.buttons.copied : t.calc.buttons.copyLink}
+            </button>
           </div>
         )}
       </div>
