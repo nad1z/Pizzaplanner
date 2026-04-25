@@ -17,13 +17,17 @@ export interface RecipeResult {
 }
 
 export class DoughCalculator {
+  // K=0.31 g/cm² matches real-world medium-crust pizzas
+  // (Rule of 22 calibration: 14"≈308g, 12"≈226g, 10"≈157g)
+  private static readonly K = 0.31;
+
   static ballWeightFromDiameter(cm: number): number {
-    return Math.round(0.65 * Math.PI * Math.pow(cm / 2, 2));
+    return Math.round(this.K * Math.PI * Math.pow(cm / 2, 2));
   }
 
   static diameterFromBallWeight(g: number): number {
     if (!Number.isFinite(g) || g <= 0) return 0;
-    return Math.round(2 * Math.sqrt(g / (0.65 * Math.PI)));
+    return Math.round(2 * Math.sqrt(g / (this.K * Math.PI)));
   }
 
   static compute({ numPizzas, ballWeightG, hydrationPct, saltPct, oilPct, yeastPct }: DoughInputs): RecipeResult {

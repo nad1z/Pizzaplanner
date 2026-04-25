@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { ValidityLevel } from '../utils/validity';
 import { DOT_CLASSES } from '../utils/validity';
 
@@ -18,12 +18,17 @@ interface InputFieldProps {
 export function InputField({ label, unit, value, onChange, validity, error, step = 1, min: fmin, max: fmax, labelExtra }: InputFieldProps) {
   const flashRef = useRef<HTMLDivElement>(null);
   const prevVal = useRef(value);
+  const [localValue, setLocalValue] = useState<string>(String(value));
+  const focusedRef = useRef(false);
 
   useEffect(() => {
-    if (prevVal.current !== value && flashRef.current) {
-      flashRef.current.classList.remove('flash');
-      void flashRef.current.offsetWidth;
-      flashRef.current.classList.add('flash');
+    if (!focusedRef.current) {
+      setLocalValue(String(value));
+      if (prevVal.current !== value && flashRef.current) {
+        flashRef.current.classList.remove('flash');
+        void flashRef.current.offsetWidth;
+        flashRef.current.classList.add('flash');
+      }
     }
     prevVal.current = value;
   }, [value]);
@@ -62,11 +67,29 @@ export function InputField({ label, unit, value, onChange, validity, error, step
         >−</button>
         <input
           type="number"
-          value={value}
+          value={localValue}
           min={fmin}
           max={fmax}
-          step={step}
-          onChange={e => onChange(Number(e.target.value))}
+          step="any"
+          onChange={e => {
+            const str = e.target.value;
+            setLocalValue(str);
+            const n = Number(str);
+            if (str !== '' && Number.isFinite(n)) onChange(n);
+          }}
+          onFocus={e => {
+            focusedRef.current = true;
+            e.target.select();
+          }}
+          onBlur={() => {
+            focusedRef.current = false;
+            const n = Number(localValue);
+            if (localValue === '' || !Number.isFinite(n)) {
+              setLocalValue(String(value));
+            } else {
+              onChange(n);
+            }
+          }}
           style={{ color: error ? '#ef4444' : '#f5e6c8', background: 'transparent', fontSize: 22, fontFamily: 'DM Sans', textAlign: 'center', width: '100%' }}
           className="h-14 outline-none px-1"
         />
