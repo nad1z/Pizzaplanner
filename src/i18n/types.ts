@@ -87,5 +87,6 @@ export interface AppTranslation {
     brooklyn:     { name: string; description: string };
     detroit:      { name: string; description: string };
     sicilian:     { name: string; description: string };
+    focaccia:     { name: string; description: string };
   };
 }
