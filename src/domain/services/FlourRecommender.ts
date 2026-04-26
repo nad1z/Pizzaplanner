@@ -20,6 +20,7 @@ const STYLE_DISPLAY_NAME: Record<PizzaStyleId, string> = {
   brooklyn:     'Brooklyn',
   detroit:      'Detroit',
   sicilian:     'Sicilian',
+  focaccia:     'Focaccia',
 };
 
 export function getFlourWarnings(
