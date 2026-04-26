@@ -17,6 +17,7 @@ const STYLE_ID_TO_EN: Record<PizzaStyleId, string> = {
   brooklyn:     'Brooklyn',
   detroit:      'Detroit',
   sicilian:     'Sicilian',
+  focaccia:     'Focaccia',
 };
 
 interface FlourGuideProps {

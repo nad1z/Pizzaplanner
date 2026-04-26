@@ -14,6 +14,7 @@ const STYLE_ID_TO_EN: Record<PizzaStyleId, string> = {
   brooklyn:     'Brooklyn',
   detroit:      'Detroit',
   sicilian:     'Sicilian',
+  focaccia:     'Focaccia',
 };
 
 const EN_TO_STYLE_ID: Record<string, PizzaStyleId> = {
@@ -24,6 +25,7 @@ const EN_TO_STYLE_ID: Record<string, PizzaStyleId> = {
   'Brooklyn':       'brooklyn',
   'Detroit':        'detroit',
   'Sicilian':       'sicilian',
+  'Focaccia':       'focaccia',
 };
 
 interface FlourCardProps {
