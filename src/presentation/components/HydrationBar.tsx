@@ -17,33 +17,25 @@ export function HydrationBar({ min, max, defaultVal, current }: HydrationBarProp
 
   return (
     <div>
-      <div style={{ fontSize: 10, color: '#f5e6c870', marginBottom: 6, display: 'flex', justifyContent: 'space-between' }}>
+      <div className="hydration-bar__header">
         <span className="uppercase tracking-widest">{t.card.hydrationRange}</span>
       </div>
-      <div style={{ position: 'relative', height: 8, background: '#3a2a18', borderRadius: 4 }}>
-        <div style={{
-          position: 'absolute', left: 0, right: 0, top: 0, bottom: 0,
-          background: 'linear-gradient(to right, #c0522a33, #c0522a88)',
-          borderRadius: 4,
-        }} />
-        <div style={{
-          position: 'absolute', top: '50%', transform: 'translate(-50%, -50%)',
-          left: `${defaultPct}%`,
-          width: 14, height: 14, background: '#c0522a', borderRadius: '50%',
-          border: '2px solid #1a1209', zIndex: 2,
-        }} />
+      <div className="hydration-bar__track">
+        <div className="hydration-bar__fill" />
+        <div
+          className="hydration-bar__marker hydration-bar__marker--default"
+          style={{ left: `${defaultPct}%` }}
+        />
         {currentPct !== null && (
-          <div style={{
-            position: 'absolute', top: '50%', transform: 'translate(-50%, -50%)',
-            left: `${currentPct}%`,
-            width: 10, height: 10, background: '#f5e6c8', borderRadius: '50%',
-            border: '2px solid #1a1209', zIndex: 3,
-          }} />
+          <div
+            className="hydration-bar__marker hydration-bar__marker--current"
+            style={{ left: `${currentPct}%` }}
+          />
         )}
       </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: '#f5e6c860', marginTop: 4 }}>
+      <div className="hydration-bar__footer">
         <span>{min}%</span>
-        <span style={{ color: '#c0522aaa' }}>
+        <span className="hydration-bar__optimal">
           {t.card.optimal(defaultVal)}{current !== undefined ? ` · ${t.card.yours(current)}` : ''}
         </span>
         <span>{max}%</span>

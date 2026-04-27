@@ -10,7 +10,7 @@ import '@fontsource/rubik/hebrew-400.css';
 import '@fontsource/rubik/hebrew-500.css';
 import '@fontsource/rubik/hebrew-600.css';
 import '@fontsource/rubik/hebrew-700.css';
-import './styles/styles.css';
+import './styles/index.css';
 import { App } from './presentation/components/App';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

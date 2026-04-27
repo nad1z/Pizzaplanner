@@ -58,24 +58,19 @@ export function InputField({ label, unit, value, onChange, validity, error, step
   };
 
   return (
-    <div className="flex flex-col gap-1">
-      <div className="flex items-center justify-between">
-        <span style={{ color: '#f5e6c8aa', fontSize: 12 }} className="uppercase tracking-widest">{label}</span>
-        <div className="flex items-center gap-2">
+    <div className="input-field">
+      <div className="input-field__header">
+        <span className="input-field__label uppercase tracking-widest">{label}</span>
+        <div className="input-field__extras">
           {labelExtra}
-          {dot && <span className={`w-2 h-2 rounded-full ${dot}`} />}
+          {dot && <span className={`input-field__dot ${dot}`} />}
         </div>
       </div>
       <div
         ref={flashRef}
-        className="flex items-center rounded-xl overflow-hidden"
-        style={{ background: '#2a1e0e', border: `1px solid ${error ? '#ef4444' : '#3a2a18'}` }}
+        className={`input-field__box${error ? ' input-field__box--error' : ''}`}
       >
-        <button
-          onClick={stepDown}
-          style={{ color: '#c0522a', fontSize: 20, width: 44, flexShrink: 0 }}
-          className="h-14 flex items-center justify-center hover:bg-white/5 transition-colors"
-        >−</button>
+        <button onClick={stepDown} className="input-field__step">−</button>
         <input
           type="number"
           value={localValue}
@@ -101,19 +96,12 @@ export function InputField({ label, unit, value, onChange, validity, error, step
               onChange(n);
             }
           }}
-          style={{ color: error ? '#ef4444' : '#f5e6c8', background: 'transparent', fontSize: 22, textAlign: 'center', width: '100%' }}
-          className="h-14 outline-none px-1"
+          className={`input-field__input${error ? ' input-field__input--error' : ''}`}
         />
-        <span style={{ color: '#f5e6c860', fontSize: 13, paddingRight: 8, flexShrink: 0 }}>{unit}</span>
-        <button
-          onClick={stepUp}
-          style={{ color: '#c0522a', fontSize: 20, width: 44, flexShrink: 0 }}
-          className="h-14 flex items-center justify-center hover:bg-white/5 transition-colors"
-        >+</button>
+        <span className="input-field__unit">{unit}</span>
+        <button onClick={stepUp} className="input-field__step">+</button>
       </div>
-      {error && (
-        <span style={{ color: '#ef4444', fontSize: 11, paddingLeft: 2 }}>{error}</span>
-      )}
+      {error && <span className="input-field__error">{error}</span>}
     </div>
   );
 }

@@ -1,0 +1,66 @@
+:root {
+  /* Surfaces */
+  --color-bg:           #1a1209;
+  --color-surface:      #21160a;
+  --color-surface-2:    #2a1e0e;
+  --color-surface-3:    #1e1308;
+  --color-border:       #3a2a18;
+  --color-border-soft:  #3a2a1855;
+  --color-border-line:  #3a2a1833;
+  --color-border-inner: #3a2a1844;
+  --color-border-mute:  #3a2a1866;
+
+  /* Foreground */
+  --color-text:           #f5e6c8;
+  --color-text-strong:    #fafaf0;
+  --color-text-muted:     #f5e6c8aa;
+  --color-text-subtle:    #f5e6c870;
+  --color-text-faded:     #f5e6c860;
+  --color-text-faint:     #f5e6c850;
+  --color-text-dim:       #f5e6c840;
+  --color-text-soft:      #f5e6c880;
+  --color-text-readable:  #f5e6c8cc;
+
+  /* Accent */
+  --color-accent:         #c0522a;
+  --color-accent-on:      #fafaf0;
+  --color-accent-11:      #c0522a11;
+  --color-accent-22:      #c0522a22;
+  --color-accent-33:      #c0522a33;
+  --color-accent-44:      #c0522a44;
+  --color-accent-55:      #c0522a55;
+  --color-accent-66:      #c0522a66;
+  --color-accent-aa:      #c0522aaa;
+
+  /* Validity */
+  --color-valid-green:    #22c55e;
+  --color-valid-yellow:   #facc15;
+  --color-valid-red:      #ef4444;
+
+  /* Warnings */
+  --color-warn-orange:        #f59e0b;
+  --color-warn-orange-border: #f59e0b55;
+  --color-warn-orange-text:   #f59e0bcc;
+  --color-warn-yellow:        #eab308;
+  --color-warn-yellow-border: #eab30855;
+  --color-warn-yellow-text:   #eab308cc;
+
+  /* Misc */
+  --color-flour-blue:     #38bdf8;
+  --color-out-of-range:   #7f1d1d;
+  --color-bad-bg:         #3a1a0a;
+  --color-bad-text:       #f58668aa;
+  --color-bad-border:     #5a2a1844;
+  --color-success:        #4ade80;
+  --color-flash:          #c0522a44;
+
+  /* Radii */
+  --radius-pill: 999px;
+  --radius-sm:   6px;
+  --radius-md:   8px;
+  --radius-lg:   10px;
+  --radius-xl:   12px;
+  --radius-2xl:  14px;
+  --radius-3xl:  16px;
+  --radius-4xl:  20px;
+}

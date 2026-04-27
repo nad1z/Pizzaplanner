@@ -10,7 +10,7 @@ import { FIELD_BOUNDS, absoluteError } from '../../domain/validation';
 import { StorageManager } from '../../infrastructure/StorageManager';
 import type { PersistedState, DiameterUnit } from '../../infrastructure/StorageManager';
 import { UrlStateManager } from '../../infrastructure/UrlStateManager';
-import { validityLevel, RING_COLORS, DOT_CLASSES } from '../utils/validity';
+import { validityLevel, DOT_CLASSES } from '../utils/validity';
 import { useTranslation } from '../../i18n';
 import { HydrationGauge } from './HydrationGauge';
 import { InputField } from './InputField';
@@ -34,10 +34,10 @@ interface RowProps {
 
 function Row({ label, value, unit, accent = false }: RowProps) {
   return (
-    <div className="flex justify-between items-baseline py-3" style={{ borderBottom: '1px solid #3a2a1833' }}>
-      <span style={{ color: '#f5e6c8aa', fontSize: 13 }} className="uppercase tracking-wider">{label}</span>
-      <span style={{ color: accent ? '#c0522a' : '#fafaf0', fontSize: accent ? 22 : 18, fontWeight: accent ? 700 : 400 }}>
-        {value}<span style={{ fontSize: 12, marginLeft: 3, color: '#f5e6c870' }}>{unit}</span>
+    <div className="recipe-row">
+      <span className="recipe-row__label uppercase tracking-wider">{label}</span>
+      <span className={accent ? 'recipe-row__value recipe-row__value--accent' : 'recipe-row__value'}>
+        {value}<span className="recipe-row__unit">{unit}</span>
       </span>
     </div>
   );
@@ -146,48 +146,41 @@ export function PizzaCalculator({ selectedFlour, pendingApply, onClearApply, onN
   const reset = () => { StorageManager.clear(); setDismissed(false); setState(prev => getDefaults('neapolitan', prev.diameterUnit)); };
 
   return (
-    <div style={{ minHeight: '100vh', color: '#f5e6c8', padding: '24px 16px 48px' }} className="max-w-3xl mx-auto">
+    <div className="calculator max-w-3xl mx-auto">
       <div className="text-center mb-8">
-        <h1 className="serif" style={{ fontSize: 38, color: '#fafaf0', lineHeight: 1.1, marginBottom: 4 }}>{t.calc.title}</h1>
-        <p style={{ color: '#f5e6c870', fontSize: 14 }}>{t.calc.subtitle}</p>
+        <h1 className="serif calculator__title">{t.calc.title}</h1>
+        <p className="calculator__subtitle">{t.calc.subtitle}</p>
       </div>
 
       <div className="flex flex-wrap gap-2 justify-center mb-6">
         {(Object.entries(PizzaStyle.STYLES) as [PizzaStyleId, PizzaStyle][]).map(([id, s]) => (
           <button key={id} onClick={() => handleStyleChange(id)}
-            style={{
-              padding: '8px 18px', borderRadius: 999, fontSize: 13, fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s',
-              background: state.styleId === id ? '#c0522a' : '#2a1e0e',
-              color:      state.styleId === id ? '#fafaf0' : '#f5e6c8aa',
-              border: `1px solid ${state.styleId === id ? '#c0522a' : '#3a2a18'}`,
-            }}>{s.emoji} {t.styles[id].name}</button>
+            className={`style-pill${state.styleId === id ? ' style-pill--active' : ''}`}>
+            {s.emoji} {t.styles[id].name}
+          </button>
         ))}
       </div>
 
-      <p className="text-center mb-8" style={{ color: '#f5e6c870', fontSize: 14, fontStyle: 'italic' }}>{t.styles[state.styleId].description}</p>
+      <p className="text-center mb-8 calculator__style-desc">{t.styles[state.styleId].description}</p>
 
-      {/* Apply flour banner */}
       {pendingApply && selectedFlour && (
-        <div style={{ background: '#2a1e0e', border: '1px solid #c0522a55', borderRadius: 14, padding: '12px 20px', marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
-          <span style={{ fontSize: 13, color: '#f5e6c8cc' }}>
+        <div className="apply-banner">
+          <span className="apply-banner__text">
             {t.calc.flourSuggests(selectedFlour.name, pendingApply.hydration, pendingApply.fermentation)}
           </span>
-          <div className="flex gap-3" style={{ flexShrink: 0 }}>
+          <div className="apply-banner__actions flex gap-3">
             <button onClick={() => { update({ hydrationPct: pendingApply.hydration, fermentationHours: pendingApply.fermentation }); onClearApply(); }}
-              style={{ fontSize: 12, color: '#c0522a', background: '#c0522a22', border: 'none', borderRadius: 8, padding: '4px 12px', cursor: 'pointer', fontWeight: 600 }}>
+              className="apply-banner__apply">
               {t.calc.buttons.apply}
             </button>
-            <button onClick={onClearApply}
-              style={{ fontSize: 12, color: '#f5e6c850', background: 'none', border: 'none', cursor: 'pointer' }}>
-              ✕
-            </button>
+            <button onClick={onClearApply} className="apply-banner__close">✕</button>
           </div>
         </div>
       )}
 
-      <div className="grid gap-6" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
-        <div className="flex flex-col gap-4" style={{ background: '#21160a', borderRadius: 20, padding: 24, border: '1px solid #3a2a18' }}>
-          <h2 className="serif" style={{ fontSize: 20, color: '#fafaf0', marginBottom: 4 }}>{t.calc.yourDough}</h2>
+      <div className="calculator__grid">
+        <div className="card card--inputs">
+          <h2 className="serif card__title">{t.calc.yourDough}</h2>
 
           <InputField label={t.calc.labels.pizzas} unit="pcs" value={state.numPizzas} step={1} min={1} max={50}
             error={fieldErrors.numPizzas}
@@ -211,13 +204,7 @@ export function PizzaCalculator({ selectedFlour, pendingApply, onClearApply, onN
               <div className="flex gap-1">
                 {(['cm', 'in'] as DiameterUnit[]).map(u => (
                   <button key={u} onClick={() => update({ diameterUnit: u })}
-                    style={{
-                      fontSize: 10, padding: '1px 6px', borderRadius: 4, cursor: 'pointer',
-                      border: '1px solid', lineHeight: '16px',
-                      background: dimUnit === u ? '#c0522a' : 'transparent',
-                      color: dimUnit === u ? '#fafaf0' : '#f5e6c860',
-                      borderColor: dimUnit === u ? '#c0522a' : '#3a2a18',
-                    }}>{u}</button>
+                    className={`unit-toggle${dimUnit === u ? ' unit-toggle--active' : ''}`}>{u}</button>
                 ))}
               </div>
             }
@@ -247,44 +234,40 @@ export function PizzaCalculator({ selectedFlour, pendingApply, onClearApply, onN
             error={fieldErrors.fermentationHours}
             onChange={v => update({ fermentationHours: Math.max(1, Math.round(v)) })} />
 
-          <div className="flex flex-col gap-2">
-            <span style={{ color: '#f5e6c8aa', fontSize: 12 }} className="uppercase tracking-widest">{t.calc.labels.yeastType}</span>
-            <div className="flex gap-2 flex-wrap">
+          <div className="yeast">
+            <span className="yeast__label uppercase tracking-widest">{t.calc.labels.yeastType}</span>
+            <div className="yeast__pills">
               {(Object.keys(YEAST_TYPES) as YeastTypeId[]).map(id => (
                 <button key={id} onClick={() => update({ yeastId: id })}
-                  style={{
-                    padding: '6px 14px', borderRadius: 999, fontSize: 12, fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s',
-                    background: state.yeastId === id ? '#c0522a' : '#2a1e0e',
-                    color:      state.yeastId === id ? '#fafaf0' : '#f5e6c8aa',
-                    border: `1px solid ${state.yeastId === id ? '#c0522a' : '#3a2a18'}`,
-                  }}>{t.yeast[id].name}</button>
+                  className={`yeast-pill${state.yeastId === id ? ' yeast-pill--active' : ''}`}>
+                  {t.yeast[id].name}
+                </button>
               ))}
             </div>
-            <span style={{ color: '#f5e6c850', fontSize: 11 }}>{t.yeast[state.yeastId].description}</span>
+            <span className="yeast__desc">{t.yeast[state.yeastId].description}</span>
           </div>
 
-          {/* Selected flour indicator */}
           {selectedFlour && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#2a1e0e', borderRadius: 10, padding: '8px 12px', border: '1px solid #c0522a33' }}>
-              <span style={{ fontSize: 12, color: '#f5e6c8aa' }}>🌾 <span style={{ color: '#f5e6c8' }}>{selectedFlour.name}</span></span>
-              <button onClick={onNavigateToFlourGuide} style={{ fontSize: 11, color: '#c0522a', background: 'none', border: 'none', cursor: 'pointer' }}>
+            <div className="flour-indicator">
+              <span className="flour-indicator__name">🌾 <strong>{selectedFlour.name}</strong></span>
+              <button onClick={onNavigateToFlourGuide} className="flour-indicator__change">
                 {t.calc.buttons.change}
               </button>
             </div>
           )}
           {!selectedFlour && (
-            <button onClick={onNavigateToFlourGuide} style={{ fontSize: 12, color: '#c0522a66', background: 'none', border: '1px dashed #c0522a33', borderRadius: 10, padding: '8px 12px', cursor: 'pointer', textAlign: 'left' }}>
+            <button onClick={onNavigateToFlourGuide} className="flour-pick">
               {t.calc.buttons.selectFlour}
             </button>
           )}
 
-          <button onClick={reset} style={{ marginTop: 4, color: '#c0522a66', fontSize: 12, background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', padding: 0 }}>
+          <button onClick={reset} className="reset-link">
             {t.calc.buttons.reset}
           </button>
         </div>
 
-        <div style={{ background: '#21160a', borderRadius: 20, padding: 24, border: '1px solid #3a2a18' }}>
-          <h2 className="serif" style={{ fontSize: 20, color: '#fafaf0', marginBottom: 16 }}>{t.calc.recipe}</h2>
+        <div className="card">
+          <h2 className="serif card__title card__title--recipe">{t.calc.recipe}</h2>
           <HydrationGauge
             value={state.hydrationPct}
             styleMin={style.hydration.min}
@@ -292,7 +275,7 @@ export function PizzaCalculator({ selectedFlour, pendingApply, onClearApply, onN
             flourMin={selectedFlour?.hydration_min}
             flourMax={selectedFlour?.hydration_max}
           />
-          <div style={{ marginTop: 16 }}>
+          <div className="recipe-list">
             <Row label={t.calc.labels.flour}     value={recipe.flourG}     unit="g" />
             <Row label={t.calc.labels.water}     value={recipe.waterG}     unit="g" />
             <Row label={t.calc.labels.salt}      value={recipe.saltG}      unit="g" />
@@ -300,47 +283,46 @@ export function PizzaCalculator({ selectedFlour, pendingApply, onClearApply, onN
             <Row label={t.yeast[state.yeastId].name} value={recipe.yeastG} unit="g" />
             <Row label={t.calc.labels.totalDough} value={recipe.totalDough} unit="g" accent />
           </div>
-          <div style={{ marginTop: 16, padding: '12px 16px', background: '#2a1e0e', borderRadius: 12, border: '1px solid #3a2a1844' }}>
-            <div style={{ fontSize: 12, color: '#f5e6c870', marginBottom: 4 }}>{t.calc.perPizza}</div>
-            <div style={{ fontSize: 14, color: '#f5e6c8' }}>
+          <div className="per-pizza">
+            <div className="per-pizza__label">{t.calc.perPizza}</div>
+            <div className="per-pizza__details">
               {state.ballWeightG}g ball · {dimDisplayVal}{dimUnit === 'in' ? '"' : 'cm'} · {style.saltPercent}% salt{style.oilPercent > 0 ? ` · ${style.oilPercent}% oil` : ''}
             </div>
           </div>
         </div>
       </div>
 
-      <div className="flex flex-col gap-3 mt-6">
-        {/* Flour warnings */}
+      <div className="notices">
         {flourWarnings.map((w, i) => (
-          <div key={i} style={{ background: '#2a1e0e', border: `1px solid ${w.level === 'orange' ? '#f59e0b55' : '#eab30855'}`, borderRadius: 14, padding: '12px 20px' }}>
-            <span style={{ fontSize: 13, color: w.level === 'orange' ? '#f59e0bcc' : '#eab308cc' }}>
+          <div key={i} className={`notice notice--warn-${w.level === 'orange' ? 'orange' : 'yellow'}`}>
+            <span className={`notice__text notice__text--warn-${w.level === 'orange' ? 'orange' : 'yellow'}`}>
               ⚠️ {t.warnings[w.key]}
             </span>
           </div>
         ))}
 
         {!dismissed && suggestedStyle && (
-          <div style={{ background: '#2a1e0e', border: '1px solid #c0522a55', borderRadius: 14, padding: '12px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: 13, color: '#f5e6c8cc' }}>
+          <div className="notice notice--accent">
+            <span className="notice__text">
               {suggestedStyle.style.emoji} {t.calc.hydrationLooksLike(state.hydrationPct, t.styles[suggestedStyle.id].name)}
             </span>
-            <div className="flex gap-3 ml-4" style={{ flexShrink: 0 }}>
-              <button onClick={() => handleStyleChange(suggestedStyle.id)} style={{ fontSize: 12, color: '#c0522a', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>{t.calc.buttons.switch}</button>
-              <button onClick={() => setDismissed(true)} style={{ fontSize: 12, color: '#f5e6c850', background: 'none', border: 'none', cursor: 'pointer' }}>✕</button>
+            <div className="notice__actions flex gap-3">
+              <button onClick={() => handleStyleChange(suggestedStyle.id)} className="notice__primary">{t.calc.buttons.switch}</button>
+              <button onClick={() => setDismissed(true)} className="notice__dismiss">✕</button>
             </div>
           </div>
         )}
         {!fieldErrors.hydrationPct && hydValidity !== 'green' && (
-          <div style={{ background: '#2a1e0e', border: `1px solid ${RING_COLORS[hydValidity]}44`, borderRadius: 14, padding: '12px 20px' }}>
-            <span style={{ fontSize: 13, color: '#f5e6c8cc' }}>
+          <div className={`notice notice--validity-${hydValidity}`}>
+            <span className="notice__text">
               <span className={`inline-block w-2 h-2 rounded-full ${DOT_CLASSES[hydValidity]} mr-2`} />
               {t.calc.hydrationOutside(state.hydrationPct, hydValidity === 'red' ? t.calc.severity.critically : t.calc.severity.slightly, t.styles[state.styleId].name, style.hydration.min, style.hydration.max)}
             </span>
           </div>
         )}
         {!fieldErrors.ballWeightG && ballValidity !== 'green' && (
-          <div style={{ background: '#2a1e0e', border: `1px solid ${RING_COLORS[ballValidity]}44`, borderRadius: 14, padding: '12px 20px' }}>
-            <span style={{ fontSize: 13, color: '#f5e6c8cc' }}>
+          <div className={`notice notice--validity-${ballValidity}`}>
+            <span className="notice__text">
               <span className={`inline-block w-2 h-2 rounded-full ${DOT_CLASSES[ballValidity]} mr-2`} />
               {t.calc.ballWeightOutside(state.ballWeightG, ballValidity === 'red' ? t.calc.severity.critically : t.calc.severity.slightly, t.styles[state.styleId].name, style.ballWeight.min, style.ballWeight.max)}
             </span>

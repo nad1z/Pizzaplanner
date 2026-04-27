@@ -108,18 +108,9 @@ function AppInner({ lang, view, menuOpen, copied, menuRef, selectedFlour, pendin
   const t = useTranslation();
 
   return (
-    <div style={{ minHeight: '100vh', background: '#1a1209' }}>
-      {/* Fixed hamburger */}
-      <div ref={menuRef} style={{ position: 'fixed', top: 12, right: 16, zIndex: 200 }}>
-        <button
-          onClick={onMenuToggle}
-          aria-label="Menu"
-          style={{
-            background: '#21160a', border: '1px solid #3a2a18', borderRadius: 10,
-            color: '#f5e6c8', padding: '8px 10px', cursor: 'pointer',
-            display: 'flex', flexDirection: 'column', gap: 4,
-          }}
-        >
+    <div className="app">
+      <div ref={menuRef} className="menu">
+        <button onClick={onMenuToggle} aria-label="Menu" className="menu__trigger">
           {menuOpen ? (
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <line x1="3" y1="3" x2="15" y2="15" />
@@ -135,12 +126,7 @@ function AppInner({ lang, view, menuOpen, copied, menuRef, selectedFlour, pendin
         </button>
 
         {menuOpen && (
-          <div style={{
-            position: 'absolute', top: 'calc(100% + 6px)', right: 0,
-            background: '#21160a', border: '1px solid #3a2a18',
-            borderRadius: 12, padding: '6px 0', minWidth: 190,
-            boxShadow: '0 8px 32px #00000066',
-          }}>
+          <div className="menu__dropdown">
             <NavItem
               label={t.nav.calculator}
               active={view === 'calculator'}
@@ -152,29 +138,20 @@ function AppInner({ lang, view, menuOpen, copied, menuRef, selectedFlour, pendin
               onClick={() => onNavigate('flour-guide')}
               badge={selectedFlour ? selectedFlour.name.split(' ').slice(0, 2).join(' ') : undefined}
             />
-            <div style={{ borderTop: '1px solid #3a2a1855', margin: '6px 0' }} />
-            <div style={{ padding: '6px 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 11, color: '#f5e6c860', flexShrink: 0 }}>{t.lang.label}</span>
+            <div className="menu__divider" />
+            <div className="menu__lang">
+              <span className="menu__lang-label">{t.lang.label}</span>
               <select
                 value={lang}
                 onChange={e => onLangChange(e.target.value as LanguageId)}
-                style={{
-                  flex: 1, background: '#2a1e0e', border: '1px solid #3a2a18',
-                  borderRadius: 6, color: '#f5e6c8', fontSize: 12,
-                  padding: '4px 6px', cursor: 'pointer',
-                }}
+                className="menu__lang-select"
               >
                 {(Object.keys(LANGUAGES) as LanguageId[]).map(id => (
                   <option key={id} value={id}>{LANGUAGES[id]}</option>
                 ))}
               </select>
             </div>
-            <button onClick={onCopyLink} style={{
-              display: 'flex', alignItems: 'center', gap: 8,
-              width: '100%', padding: '10px 18px', background: 'none', border: 'none',
-              cursor: 'pointer', color: copied ? '#4ade80' : '#f5e6c8aa',
-              fontSize: 13, textAlign: 'left', transition: 'color 0.2s',
-            }}>
+            <button onClick={onCopyLink} className={`menu__copy${copied ? ' menu__copy--copied' : ''}`}>
               {copied ? '✓' : '🔗'} {copied ? t.calc.buttons.copied : t.calc.buttons.copyLink}
             </button>
           </div>
@@ -209,18 +186,9 @@ interface NavItemProps {
 
 function NavItem({ label, active, onClick, badge }: NavItemProps) {
   return (
-    <button onClick={onClick} style={{
-      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-      width: '100%', padding: '10px 18px', background: 'none', border: 'none',
-      cursor: 'pointer', color: active ? '#c0522a' : '#f5e6c8',
-      fontSize: 14, textAlign: 'left',
-    }}>
+    <button onClick={onClick} className={`nav-item${active ? ' nav-item--active' : ''}`}>
       <span>{label}</span>
-      {badge && (
-        <span style={{ fontSize: 10, color: '#c0522a', background: '#c0522a22', padding: '2px 7px', borderRadius: 999, marginLeft: 8 }}>
-          {badge}
-        </span>
-      )}
+      {badge && <span className="nav-item__badge">{badge}</span>}
     </button>
   );
 }
