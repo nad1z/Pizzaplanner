@@ -234,7 +234,7 @@ function ShareButton() {
   ];
 
   return (
-    <div ref={ref} style={{ position: 'fixed', top: 12, right: 68, zIndex: 200 }}>
+    <div ref={ref} style={{ position: 'fixed', top: 12, left: 16, zIndex: 200 }}>
       <button
         onClick={() => setOpen(o => !o)}
         aria-label={t.share.label}
@@ -255,7 +255,7 @@ function ShareButton() {
 
       {open && (
         <div style={{
-          position: 'absolute', top: 'calc(100% + 6px)', right: 0,
+          position: 'absolute', top: 'calc(100% + 6px)', left: 0,
           background: '#21160a', border: '1px solid #3a2a18',
           borderRadius: 12, padding: '14px 12px',
           boxShadow: '0 8px 32px #00000066',
