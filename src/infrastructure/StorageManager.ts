@@ -2,6 +2,8 @@ import { FIELD_BOUNDS, isValidStyleId } from '../domain/validation';
 import type { PizzaStyleId } from '../domain/models/PizzaStyle';
 import { YEAST_TYPES } from '../domain/models/YeastType';
 import type { YeastTypeId } from '../domain/models/YeastType';
+import { DOUGH_METHODS } from '../domain/models/DoughMethod';
+import type { DoughMethodId, FermentationMode } from '../domain/models/DoughMethod';
 
 export type DiameterUnit = 'cm' | 'in';
 
@@ -14,7 +16,12 @@ export interface PersistedState {
   yeastId: YeastTypeId;
   fermentationHours?: number;
   diameterUnit?: DiameterUnit;
+  doughMethod?: DoughMethodId;
+  fermentationMode?: FermentationMode;
+  eatDateTime?: string;
 }
+
+const VALID_FERMENTATION_MODES: FermentationMode[] = ['room_temp', 'cold'];
 
 function isValidPersistedState(raw: unknown): raw is PersistedState {
   if (!raw || typeof raw !== 'object') return false;
@@ -26,8 +33,11 @@ function isValidPersistedState(raw: unknown): raw is PersistedState {
     typeof d.pizzaDiameterCm === 'number' && d.pizzaDiameterCm >= FIELD_BOUNDS.pizzaDiameterCm.min && d.pizzaDiameterCm <= FIELD_BOUNDS.pizzaDiameterCm.max &&
     typeof d.hydrationPct    === 'number' && d.hydrationPct    >= FIELD_BOUNDS.hydrationPct.min    && d.hydrationPct    <= FIELD_BOUNDS.hydrationPct.max &&
     typeof d.yeastId === 'string' && d.yeastId in YEAST_TYPES &&
-    (d.fermentationHours === undefined || (typeof d.fermentationHours === 'number' && d.fermentationHours >= FIELD_BOUNDS.fermentationHours.min && d.fermentationHours <= FIELD_BOUNDS.fermentationHours.max)) &&
-    (d.diameterUnit === undefined || d.diameterUnit === 'cm' || d.diameterUnit === 'in')
+    (d.fermentationHours === undefined || (typeof d.fermentationHours === 'number' && d.fermentationHours >= 1 && d.fermentationHours <= 168)) &&
+    (d.diameterUnit === undefined || d.diameterUnit === 'cm' || d.diameterUnit === 'in') &&
+    (d.doughMethod === undefined || (typeof d.doughMethod === 'string' && d.doughMethod in DOUGH_METHODS)) &&
+    (d.fermentationMode === undefined || VALID_FERMENTATION_MODES.includes(d.fermentationMode as FermentationMode)) &&
+    (d.eatDateTime === undefined || typeof d.eatDateTime === 'string')
   );
 }
 
