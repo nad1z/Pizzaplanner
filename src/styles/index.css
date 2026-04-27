@@ -7,6 +7,7 @@
 @import './components/hydration-bar.css';
 @import './components/hydration-gauge.css';
 @import './components/input-field.css';
+@import './components/recipe-view.css';
 
 @tailwind base;
 @tailwind components;
