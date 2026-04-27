@@ -137,9 +137,6 @@ function AppInner({ lang, view, menuOpen, menuRef, selectedFlour, pendingApply,
                 ))}
               </select>
             </div>
-            <button onClick={onCopyLink} className={`menu__copy${copied ? ' menu__copy--copied' : ''}`}>
-              {copied ? '✓' : '🔗'} {copied ? t.calc.buttons.copied : t.calc.buttons.copyLink}
-            </button>
           </div>
         )}
       </div>
@@ -204,30 +201,12 @@ function ShareButton() {
     setOpen(false);
   };
 
-  const platformBtn = (color: string, icon: React.ReactNode, label: string) => ({
-    wrapStyle: { width: 46, height: 46, borderRadius: 12, background: color, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' } as React.CSSProperties,
-    labelStyle: { fontSize: 10, color: '#f5e6c8aa', whiteSpace: 'nowrap' } as React.CSSProperties,
-    icon,
-    label,
-  });
-
-  const platforms = [
-    platformBtn('#25D366', <WhatsAppIcon />, 'WhatsApp'),
-    platformBtn('#34C759', <MessagesIcon />, t.share.messages),
-    platformBtn('linear-gradient(135deg,#f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%)', <InstagramIcon />, 'Instagram'),
-    platformBtn('#006AFF', <MessengerIcon />, 'Messenger'),
-  ];
-
   return (
-    <div ref={ref} style={{ position: 'fixed', top: 12, left: 16, zIndex: 200 }}>
+    <div ref={ref} className="share">
       <button
         onClick={() => setOpen(o => !o)}
         aria-label={t.share.label}
-        style={{
-          background: '#21160a', border: '1px solid #3a2a18', borderRadius: 10,
-          color: '#f5e6c8', padding: '8px 10px', cursor: 'pointer',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}
+        className="share__trigger"
       >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="18" cy="5" r="3" />
@@ -239,65 +218,48 @@ function ShareButton() {
       </button>
 
       {open && (
-        <div style={{
-          position: 'absolute', top: 'calc(100% + 6px)', left: 0,
-          background: '#21160a', border: '1px solid #3a2a18',
-          borderRadius: 12, padding: '14px 12px',
-          boxShadow: '0 8px 32px #00000066',
-          display: 'flex', flexDirection: 'column', gap: 10,
-        }}>
-          <div style={{ display: 'flex', gap: 10 }}>
-            {/* WhatsApp */}
+        <div className="share__dropdown">
+          <div className="share__platforms">
             <a
               href={`https://wa.me/?text=${encoded}`}
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => setOpen(false)}
-              style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5 }}
+              className="share__platform"
             >
-              <div style={platforms[0].wrapStyle}>{platforms[0].icon}</div>
-              <span style={platforms[0].labelStyle}>{platforms[0].label}</span>
+              <div className="share__platform-icon share__platform-icon--whatsapp"><WhatsAppIcon /></div>
+              <span className="share__platform-label">WhatsApp</span>
             </a>
 
-            {/* Messages / SMS */}
             <a
               href={`sms:?&body=${encoded}`}
               onClick={() => setOpen(false)}
-              style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5 }}
+              className="share__platform"
             >
-              <div style={platforms[1].wrapStyle}>{platforms[1].icon}</div>
-              <span style={platforms[1].labelStyle}>{platforms[1].label}</span>
+              <div className="share__platform-icon share__platform-icon--messages"><MessagesIcon /></div>
+              <span className="share__platform-label">{t.share.messages}</span>
             </a>
 
             {/* Instagram — native share sheet on mobile, copy fallback on desktop */}
-            <button
-              onClick={handleInstagram}
-              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5 }}
-            >
-              <div style={platforms[2].wrapStyle}>{platforms[2].icon}</div>
-              <span style={platforms[2].labelStyle}>{platforms[2].label}</span>
+            <button onClick={handleInstagram} className="share__platform">
+              <div className="share__platform-icon share__platform-icon--instagram"><InstagramIcon /></div>
+              <span className="share__platform-label">Instagram</span>
             </button>
 
-            {/* Facebook Messenger */}
             <a
               href={`fb-messenger://share/?link=${encodedUrl}`}
               onClick={() => setOpen(false)}
-              style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5 }}
+              className="share__platform"
             >
-              <div style={platforms[3].wrapStyle}>{platforms[3].icon}</div>
-              <span style={platforms[3].labelStyle}>{platforms[3].label}</span>
+              <div className="share__platform-icon share__platform-icon--messenger"><MessengerIcon /></div>
+              <span className="share__platform-label">Messenger</span>
             </a>
           </div>
 
-          <button onClick={handleCopy} style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-            width: '100%', padding: '8px 12px',
-            background: copied ? '#4ade8022' : '#2a1e0e',
-            border: `1px solid ${copied ? '#4ade80' : '#3a2a18'}`,
-            borderRadius: 8, cursor: 'pointer',
-            color: copied ? '#4ade80' : '#f5e6c8aa',
-            fontSize: 12, transition: 'all 0.2s',
-          }}>
+          <button
+            onClick={handleCopy}
+            className={`share__copy${copied ? ' share__copy--copied' : ''}`}
+          >
             {copied ? '✓' : '🔗'} {copied ? t.calc.buttons.copied : t.calc.buttons.copyLink}
           </button>
         </div>
