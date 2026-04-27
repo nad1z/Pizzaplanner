@@ -132,4 +132,9 @@ export const en: AppTranslation = {
     long_cold:    'Long cold fermentation',
   },
   flourTypeLabel: 'Type',
+  share: {
+    label: 'Share',
+    message: 'Check out my pizza recipe!',
+    messages: 'Messages',
+  },
 };
