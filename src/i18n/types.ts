@@ -3,6 +3,7 @@ export interface AppTranslation {
   nav: {
     calculator: string;
     flourGuide: string;
+    recipe: string;
   };
   lang: {
     label: string;
@@ -103,6 +104,36 @@ export interface AppTranslation {
     long_cold: string;
   };
   flourTypeLabel: string;
+  doughMethods: {
+    straight: { name: string; description: string };
+    poolish:  { name: string; description: string };
+    biga:     { name: string; description: string };
+    sourdough:{ name: string; description: string };
+  };
+  recipe: {
+    title: string;
+    noEatDate: string;
+    eatDateLabel: string;
+    eatDatePlaceholder: string;
+    methodLabel: string;
+    basicLabel: string;
+    advancedLabel: string;
+    fermentModeLabel: string;
+    roomTempLabel: string;
+    coldLabel: string;
+    fermentTimeLabel: string;
+    totalTimeLabel: (hours: number) => string;
+    timelineTitle: string;
+    checklistTitle: string;
+    resetChecklist: string;
+    beforeEat: (h: number, m: number) => string;
+    absoluteTime: (dateStr: string) => string;
+    stepDuration: (min: number) => string;
+    parallel: string;
+    tipLabel: string;
+    tempLabel: string;
+    allDone: string;
+  };
   share: {
     label: string;
     message: string;
