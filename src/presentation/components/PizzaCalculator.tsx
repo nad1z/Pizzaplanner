@@ -4,6 +4,8 @@ import type { PizzaStyleId } from '../../domain/models/PizzaStyle';
 import { YEAST_TYPES } from '../../domain/models/YeastType';
 import type { YeastTypeId } from '../../domain/models/YeastType';
 import type { FlourData } from '../../domain/models/FlourType';
+import { DOUGH_METHODS, STRAIGHT_TIME_OPTIONS, ADVANCED_TIME_OPTIONS_ROOM_TEMP, ADVANCED_TIME_OPTIONS_COLD } from '../../domain/models/DoughMethod';
+import type { DoughMethodId, FermentationMode } from '../../domain/models/DoughMethod';
 import { DoughCalculator } from '../../domain/services/DoughCalculator';
 import { getFlourWarnings } from '../../domain/services/FlourRecommender';
 import { FIELD_BOUNDS, absoluteError } from '../../domain/validation';
@@ -53,9 +55,28 @@ function getDefaults(styleId: PizzaStyleId, diameterUnit?: DiameterUnit): CalcSt
     pizzaDiameterCm: DoughCalculator.diameterFromBallWeight(ballWeightG),
     hydrationPct: s.hydration.recommended,
     yeastId: 'idy',
-    fermentationHours: 24,
+    fermentationHours: 6,
     diameterUnit: diameterUnit ?? 'cm',
+    doughMethod: 'straight',
+    fermentationMode: 'room_temp',
   };
+}
+
+function deriveYeastId(method: DoughMethodId, currentYeastId: YeastTypeId): YeastTypeId {
+  if (method === 'sourdough') return 'sourdough';
+  if (currentYeastId === 'sourdough') return 'idy';
+  return currentYeastId;
+}
+
+function defaultFermentHours(method: DoughMethodId, mode: FermentationMode): number {
+  if (method === 'straight') return 6;
+  return mode === 'cold' ? 24 : 6;
+}
+
+function timeOptions(method: DoughMethodId, mode: FermentationMode): readonly number[] {
+  if (method === 'straight') return STRAIGHT_TIME_OPTIONS;
+  if (mode === 'cold') return ADVANCED_TIME_OPTIONS_COLD;
+  return ADVANCED_TIME_OPTIONS_ROOM_TEMP;
 }
 
 interface PizzaCalculatorProps {
@@ -70,15 +91,16 @@ export function PizzaCalculator({ selectedFlour, pendingApply, onClearApply, onN
   const [state, setState] = useState<CalcState>(() => {
     const fromUrl = UrlStateManager.readCalc();
     const fromStorage = StorageManager.load();
+    const defaults = getDefaults('neapolitan');
     if (fromUrl) {
       const base = (fromStorage && PizzaStyle.STYLES[fromStorage.styleId])
-        ? { fermentationHours: 24, ...fromStorage }
+        ? { ...defaults, ...fromStorage }
         : getDefaults(fromUrl.styleId);
       return { ...base, ...fromUrl };
     }
     return (fromStorage && PizzaStyle.STYLES[fromStorage.styleId])
-      ? { fermentationHours: 24, diameterUnit: 'cm', ...fromStorage }
-      : getDefaults('neapolitan');
+      ? { ...defaults, ...fromStorage }
+      : defaults;
   });
   const [dismissed, setDismissed] = useState(false);
 
@@ -88,7 +110,10 @@ export function PizzaCalculator({ selectedFlour, pendingApply, onClearApply, onN
   }, [state]);
 
   const style = PizzaStyle.STYLES[state.styleId];
-  const fermentation = state.fermentationHours ?? 24;
+  const method = (state.doughMethod ?? 'straight') as DoughMethodId;
+  const fermentMode = (state.fermentationMode ?? 'room_temp') as FermentationMode;
+  const fermentation = state.fermentationHours ?? 6;
+  const effectiveYeastId = deriveYeastId(method, state.yeastId);
   const dimUnit = (state.diameterUnit ?? 'cm') as DiameterUnit;
   const dimDisplayVal = dimUnit === 'in'
     ? Math.round(state.pizzaDiameterCm * CM_TO_IN)
@@ -98,8 +123,8 @@ export function PizzaCalculator({ selectedFlour, pendingApply, onClearApply, onN
     : FIELD_BOUNDS.pizzaDiameterCm;
 
   const recipe = useMemo(
-    () => DoughCalculator.compute({ ...state, saltPct: style.saltPercent, oilPct: style.oilPercent, yeastPct: YEAST_TYPES[state.yeastId].flourPercent }),
-    [state, style],
+    () => DoughCalculator.compute({ ...state, saltPct: style.saltPercent, oilPct: style.oilPercent, yeastPct: YEAST_TYPES[effectiveYeastId].flourPercent }),
+    [state, style, effectiveYeastId],
   );
 
   const update = useCallback((patch: Partial<CalcState>) => {
@@ -119,11 +144,10 @@ export function PizzaCalculator({ selectedFlour, pendingApply, onClearApply, onN
   const ballValidity = validityLevel(state.ballWeightG,  style.ballWeight.min, style.ballWeight.max);
 
   const fieldErrors = {
-    numPizzas:        absoluteError(state.numPizzas,    FIELD_BOUNDS.numPizzas,        ''),
-    ballWeightG:      absoluteError(state.ballWeightG,  FIELD_BOUNDS.ballWeightG,      'g'),
-    pizzaDiameterCm:  absoluteError(dimDisplayVal,      dimDisplayBounds,              dimUnit === 'in' ? '"' : 'cm'),
-    hydrationPct:     absoluteError(state.hydrationPct, FIELD_BOUNDS.hydrationPct,     '%'),
-    fermentationHours:absoluteError(fermentation,       FIELD_BOUNDS.fermentationHours,'h'),
+    numPizzas:       absoluteError(state.numPizzas,    FIELD_BOUNDS.numPizzas,    ''),
+    ballWeightG:     absoluteError(state.ballWeightG,  FIELD_BOUNDS.ballWeightG,  'g'),
+    pizzaDiameterCm: absoluteError(dimDisplayVal,      dimDisplayBounds,          dimUnit === 'in' ? '"' : 'cm'),
+    hydrationPct:    absoluteError(state.hydrationPct, FIELD_BOUNDS.hydrationPct, '%'),
   };
 
   const flourWarnings = selectedFlour
@@ -230,21 +254,117 @@ export function PizzaCalculator({ selectedFlour, pendingApply, onClearApply, onN
               update({ hydrationPct: Math.round(waterG / recipe.flourG * 100) });
             }} />
 
-          <InputField label={t.calc.labels.fermentation} unit="h" value={fermentation} step={1} min={1} max={168}
-            error={fieldErrors.fermentationHours}
-            onChange={v => update({ fermentationHours: Math.max(1, Math.round(v)) })} />
+          {/* ── Dough Method ── */}
+          <div className="method-section">
+            <span className="method-section__label uppercase tracking-widest">{t.recipe.methodLabel}</span>
 
-          <div className="yeast">
-            <span className="yeast__label uppercase tracking-widest">{t.calc.labels.yeastType}</span>
-            <div className="yeast__pills">
-              {(Object.keys(YEAST_TYPES) as YeastTypeId[]).map(id => (
-                <button key={id} onClick={() => update({ yeastId: id })}
-                  className={`yeast-pill${state.yeastId === id ? ' yeast-pill--active' : ''}`}>
-                  {t.yeast[id].name}
+            {/* Basic / Advanced toggle */}
+            <div className="method-tier-pills">
+              {(['straight', 'poolish', 'biga', 'sourdough'] as DoughMethodId[]).filter(id => !DOUGH_METHODS[id].isAdvanced).map(id => (
+                <button key="basic"
+                  onClick={() => {
+                    const newYeastId = deriveYeastId('straight', state.yeastId);
+                    const newHours = defaultFermentHours('straight', fermentMode);
+                    update({ doughMethod: 'straight', yeastId: newYeastId, fermentationHours: newHours });
+                  }}
+                  className={`tier-pill${!DOUGH_METHODS[method].isAdvanced ? ' tier-pill--active' : ''}`}>
+                  {t.recipe.basicLabel}
+                </button>
+              ))}
+              <button
+                onClick={() => {
+                  const adv: DoughMethodId = method === 'straight' ? 'poolish' : method;
+                  const newYeastId = deriveYeastId(adv, state.yeastId);
+                  const newHours = defaultFermentHours(adv, fermentMode);
+                  update({ doughMethod: adv, yeastId: newYeastId, fermentationHours: newHours });
+                }}
+                className={`tier-pill${DOUGH_METHODS[method].isAdvanced ? ' tier-pill--active' : ''}`}>
+                {t.recipe.advancedLabel}
+              </button>
+            </div>
+
+            {/* Advanced sub-method pills */}
+            {DOUGH_METHODS[method].isAdvanced && (
+              <div className="method-pills">
+                {(['poolish', 'biga', 'sourdough'] as DoughMethodId[]).map(id => (
+                  <button key={id}
+                    onClick={() => {
+                      const newYeastId = deriveYeastId(id, state.yeastId);
+                      const newHours = defaultFermentHours(id, fermentMode);
+                      update({ doughMethod: id, yeastId: newYeastId, fermentationHours: newHours });
+                    }}
+                    className={`method-pill${method === id ? ' method-pill--active' : ''}`}>
+                    {DOUGH_METHODS[id].emoji} {t.doughMethods[id].name}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            <span className="method-section__desc">{t.doughMethods[method].description}</span>
+
+            {/* Yeast type (IDY / ADY) — hidden for sourdough */}
+            {method !== 'sourdough' && (
+              <div className="method-yeast">
+                <span className="method-yeast__label uppercase tracking-widest">{t.calc.labels.yeastType}</span>
+                <div className="method-yeast__pills">
+                  {(['idy', 'ady'] as YeastTypeId[]).map(id => (
+                    <button key={id} onClick={() => update({ yeastId: id })}
+                      className={`yeast-pill${effectiveYeastId === id ? ' yeast-pill--active' : ''}`}>
+                      {t.yeast[id].name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* ── Fermentation mode + time ── */}
+          <div className="ferment-section">
+            <span className="ferment-section__label uppercase tracking-widest">{t.recipe.fermentModeLabel}</span>
+
+            {/* Room Temp / Cold toggle */}
+            <div className="ferment-mode-pills">
+              {(['room_temp', 'cold'] as FermentationMode[]).map(m => (
+                <button key={m}
+                  onClick={() => {
+                    const newHours = defaultFermentHours(method, m);
+                    update({ fermentationMode: m, fermentationHours: newHours });
+                  }}
+                  className={`mode-pill${fermentMode === m ? ' mode-pill--active' : ''}`}>
+                  {m === 'room_temp' ? t.recipe.roomTempLabel : t.recipe.coldLabel}
                 </button>
               ))}
             </div>
-            <span className="yeast__desc">{t.yeast[state.yeastId].description}</span>
+
+            {/* Time presets */}
+            <div className="ferment-time-pills">
+              <span className="ferment-time-pills__label">{t.recipe.fermentTimeLabel}</span>
+              <div className="ferment-time-pills__buttons">
+                {timeOptions(method, fermentMode).map(h => (
+                  <button key={h} onClick={() => update({ fermentationHours: h })}
+                    className={`time-pill${fermentation === h ? ' time-pill--active' : ''}`}>
+                    {h}h
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* ── Eat date / time ── */}
+          <div className="eat-date-section">
+            <label className="eat-date-section__label uppercase tracking-widest" htmlFor="eat-datetime">
+              {t.recipe.eatDateLabel}
+            </label>
+            <input
+              id="eat-datetime"
+              type="datetime-local"
+              className="eat-date-input"
+              value={state.eatDateTime ?? ''}
+              onChange={e => update({ eatDateTime: e.target.value || undefined })}
+            />
+            {!state.eatDateTime && (
+              <p className="eat-date-section__hint">{t.recipe.noEatDate}</p>
+            )}
           </div>
 
           {selectedFlour && (
@@ -280,7 +400,7 @@ export function PizzaCalculator({ selectedFlour, pendingApply, onClearApply, onN
             <Row label={t.calc.labels.water}     value={recipe.waterG}     unit="g" />
             <Row label={t.calc.labels.salt}      value={recipe.saltG}      unit="g" />
             {style.oilPercent > 0 && <Row label={t.calc.labels.oil} value={recipe.oilG} unit="g" />}
-            <Row label={t.yeast[state.yeastId].name} value={recipe.yeastG} unit="g" />
+            <Row label={t.yeast[effectiveYeastId].name} value={recipe.yeastG} unit="g" />
             <Row label={t.calc.labels.totalDough} value={recipe.totalDough} unit="g" accent />
           </div>
           <div className="per-pizza">
