@@ -132,4 +132,9 @@ export const he: AppTranslation = {
     long_cold:    'התפחה קרה ארוכה',
   },
   flourTypeLabel: 'סוג',
+  share: {
+    label: 'שתף',
+    message: 'תבדקו את מתכון הפיצה שלי!',
+    messages: 'הודעות',
+  },
 };

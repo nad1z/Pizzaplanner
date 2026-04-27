@@ -103,4 +103,9 @@ export interface AppTranslation {
     long_cold: string;
   };
   flourTypeLabel: string;
+  share: {
+    label: string;
+    message: string;
+    messages: string;
+  };
 }
