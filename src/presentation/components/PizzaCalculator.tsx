@@ -260,7 +260,7 @@ export function PizzaCalculator({ selectedFlour, pendingApply, onClearApply, onN
 
             {/* Basic / Advanced toggle */}
             <div className="method-tier-pills">
-              {(['straight', 'poolish', 'biga', 'sourdough'] as DoughMethodId[]).filter(id => !DOUGH_METHODS[id].isAdvanced).map(id => (
+              {(['straight', 'poolish', 'biga', 'sourdough'] as DoughMethodId[]).filter(id => !DOUGH_METHODS[id].isAdvanced).map(() => (
                 <button key="basic"
                   onClick={() => {
                     const newYeastId = deriveYeastId('straight', state.yeastId);
