@@ -1,4 +1,4 @@
-import { validityLevel, RING_COLORS } from '../utils/validity';
+import { validityLevel } from '../utils/validity';
 import { useTranslation } from '../../i18n';
 
 interface HydrationGaugeProps {
@@ -29,36 +29,36 @@ export function HydrationGauge({ value, styleMin, styleMax, flourMin, flourMax }
   const na = pctToRad(Math.max(0, Math.min(100, value)));
   const nx = cx + R * Math.cos(na), ny = cy + R * Math.sin(na);
 
-  const color = RING_COLORS[validityLevel(value, styleMin, styleMax)];
+  const validity = validityLevel(value, styleMin, styleMax);
 
   const lo = hasFlour ? Math.min(styleMin, flourMin!) : styleMin;
   const hi = hasFlour ? Math.max(styleMax, flourMax!) : styleMax;
 
   return (
-    <svg viewBox="0 0 180 114" className="w-full max-w-xs mx-auto">
-      <path d={arc(0, 100)} fill="none" stroke="#2a1e0e" strokeWidth="12" strokeLinecap="round" />
+    <svg viewBox="0 0 180 114" className={`gauge gauge--${validity}`}>
+      <path d={arc(0, 100)} className="gauge__background" />
 
-      {lo > 1   && <path d={arc(0, lo)}   fill="none" stroke="#7f1d1d" strokeWidth="12" strokeLinecap="round" opacity="0.5" />}
-      {hi < 99  && <path d={arc(hi, 100)} fill="none" stroke="#7f1d1d" strokeWidth="12" strokeLinecap="round" opacity="0.5" />}
+      {lo > 1   && <path d={arc(0, lo)}   className="gauge__out-of-range" />}
+      {hi < 99  && <path d={arc(hi, 100)} className="gauge__out-of-range" />}
 
       {hasFlour && (
-        <path d={arc(flourMin!, flourMax!)} fill="none" stroke="#38bdf8" strokeWidth="12" strokeLinecap="round" opacity="0.55" />
+        <path d={arc(flourMin!, flourMax!)} className="gauge__flour-range" />
       )}
 
-      <path d={arc(styleMin, styleMax)} fill="none" stroke={color} strokeWidth="12" strokeLinecap="round" opacity="0.9" />
+      <path d={arc(styleMin, styleMax)} className="gauge__style-range" />
 
-      <line x1={cx} y1={cy} x2={nx.toFixed(1)} y2={ny.toFixed(1)} stroke={color} strokeWidth="2.5" strokeLinecap="round" />
-      <circle cx={cx} cy={cy} r="4.5" fill={color} />
+      <line x1={cx} y1={cy} x2={nx.toFixed(1)} y2={ny.toFixed(1)} className="gauge__needle" />
+      <circle cx={cx} cy={cy} r="4.5" className="gauge__center" />
 
-      <text x={cx} y={cy - 18} textAnchor="middle" fill="#f5e6c8"    fontSize="16" fontFamily="Rubik" fontWeight="600">{value}%</text>
-      <text x={cx} y={cy -  5} textAnchor="middle" fill="#f5e6c880"  fontSize="9"  fontFamily="Rubik">{t.gauge.hydration}</text>
+      <text x={cx} y={cy - 18} textAnchor="middle" className="gauge__value">{value}%</text>
+      <text x={cx} y={cy -  5} textAnchor="middle" className="gauge__label">{t.gauge.hydration}</text>
 
-      <text x="14"  y="99" fill="#f5e6c840" fontSize="9" fontFamily="Rubik">0%</text>
-      <text x="166" y="99" fill="#f5e6c840" fontSize="9" fontFamily="Rubik" textAnchor="end">100%</text>
+      <text x="14"  y="99" className="gauge__bound">0%</text>
+      <text x="166" y="99" textAnchor="end" className="gauge__bound">100%</text>
 
-      <text x={cx} y="107" textAnchor="middle" fill={color}    fontSize="9" fontFamily="Rubik" opacity="0.85">{t.gauge.styleRange(styleMin, styleMax)}</text>
+      <text x={cx} y="107" textAnchor="middle" className="gauge__style-text">{t.gauge.styleRange(styleMin, styleMax)}</text>
       {hasFlour && (
-        <text x={cx} y="114" textAnchor="middle" fill="#38bdf8" fontSize="8" fontFamily="Rubik" opacity="0.8">{t.gauge.flourRange(flourMin!, flourMax!)}</text>
+        <text x={cx} y="114" textAnchor="middle" className="gauge__flour-text">{t.gauge.flourRange(flourMin!, flourMax!)}</text>
       )}
     </svg>
   );
