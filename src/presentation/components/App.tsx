@@ -2,11 +2,12 @@ import { useState, useEffect, useRef } from 'react';
 import type { FlourData } from '../../domain/models/FlourType';
 import { PizzaCalculator } from './PizzaCalculator';
 import { FlourGuide } from './FlourGuide';
+import { RecipeView } from './RecipeView';
 import { LanguageContext, LANGUAGES, loadLanguage, saveLanguage, useTranslation } from '../../i18n';
 import type { LanguageId } from '../../i18n';
 import { UrlStateManager } from '../../infrastructure/UrlStateManager';
 
-type AppView = 'calculator' | 'flour-guide';
+type AppView = 'calculator' | 'flour-guide' | 'recipe';
 
 interface PendingApply {
   hydration: number;
@@ -124,6 +125,11 @@ function AppInner({ lang, view, menuOpen, menuRef, selectedFlour, pendingApply,
               onClick={() => onNavigate('flour-guide')}
               badge={selectedFlour ? selectedFlour.name.split(' ').slice(0, 2).join(' ') : undefined}
             />
+            <NavItem
+              label={t.nav.recipe}
+              active={view === 'recipe'}
+              onClick={() => onNavigate('recipe')}
+            />
             <div className="menu__divider" />
             <div className="menu__lang">
               <span className="menu__lang-label">{t.lang.label}</span>
@@ -159,6 +165,7 @@ function AppInner({ lang, view, menuOpen, menuRef, selectedFlour, pendingApply,
           onApplyFlour={onApplyFlour}
         />
       )}
+      {view === 'recipe' && <RecipeView />}
     </div>
   );
 }

@@ -350,3 +350,194 @@
   border: none;
   cursor: pointer;
 }
+
+/* ── Dough method section ── */
+.method-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.method-section__label {
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+.method-section__desc {
+  color: var(--color-text-faint);
+  font-size: 11px;
+  font-style: italic;
+}
+
+.method-tier-pills {
+  display: flex;
+  gap: 8px;
+}
+
+.tier-pill {
+  flex: 1;
+  padding: 7px 0;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
+  background: var(--color-surface-2);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+}
+
+.tier-pill--active {
+  background: var(--color-accent);
+  color: var(--color-accent-on);
+  border-color: var(--color-accent);
+}
+
+.method-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.method-pill {
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--color-surface-2);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+}
+
+.method-pill--active {
+  background: var(--color-accent);
+  color: var(--color-accent-on);
+  border-color: var(--color-accent);
+}
+
+.method-yeast {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.method-yeast__label {
+  color: var(--color-text-muted);
+  font-size: 11px;
+}
+
+.method-yeast__pills {
+  display: flex;
+  gap: 8px;
+}
+
+/* ── Fermentation section ── */
+.ferment-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ferment-section__label {
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+.ferment-mode-pills {
+  display: flex;
+  gap: 8px;
+}
+
+.mode-pill {
+  flex: 1;
+  padding: 6px 0;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
+  background: var(--color-surface-2);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+}
+
+.mode-pill--active {
+  background: var(--color-accent);
+  color: var(--color-accent-on);
+  border-color: var(--color-accent);
+}
+
+.ferment-time-pills {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ferment-time-pills__label {
+  color: var(--color-text-muted);
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.ferment-time-pills__buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.time-pill {
+  padding: 5px 14px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--color-surface-2);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+}
+
+.time-pill--active {
+  background: var(--color-accent);
+  color: var(--color-accent-on);
+  border-color: var(--color-accent);
+}
+
+/* ── Eat date section ── */
+.eat-date-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.eat-date-section__label {
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+.eat-date-input {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  color: var(--color-text);
+  font-size: 13px;
+  padding: 8px 12px;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+  color-scheme: dark;
+}
+
+.eat-date-input:focus {
+  outline: none;
+  border-color: var(--color-accent-55);
+}
+
+.eat-date-section__hint {
+  color: var(--color-text-faint);
+  font-size: 11px;
+  font-style: italic;
+}
