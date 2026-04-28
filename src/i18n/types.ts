@@ -140,4 +140,9 @@ export interface AppTranslation {
     message: string;
     messages: string;
   };
+  validation: {
+    invalidNumber: string;
+    belowMin: (min: number, unit: string) => string;
+    aboveMax: (max: number, unit: string) => string;
+  };
 }

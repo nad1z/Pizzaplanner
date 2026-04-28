@@ -169,4 +169,9 @@ export const he: AppTranslation = {
     message: 'תבדקו את מתכון הפיצה שלי!',
     messages: 'הודעות',
   },
+  validation: {
+    invalidNumber: 'חייב להיות מספר תקין',
+    belowMin: (min, unit) => `מינימום ${min}${unit}`,
+    aboveMax: (max, unit) => `מקסימום ${max}${unit}`,
+  },
 };

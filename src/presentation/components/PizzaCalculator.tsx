@@ -9,6 +9,8 @@ import type { DoughMethodId, FermentationMode } from '../../domain/models/DoughM
 import { DoughCalculator } from '../../domain/services/DoughCalculator';
 import { getFlourWarnings } from '../../domain/services/FlourRecommender';
 import { FIELD_BOUNDS, absoluteError } from '../../domain/validation';
+import type { ValidationError } from '../../domain/validation';
+import type { AppTranslation } from '../../i18n/types';
 import { StorageManager } from '../../infrastructure/StorageManager';
 import type { PersistedState, DiameterUnit } from '../../infrastructure/StorageManager';
 import { UrlStateManager } from '../../infrastructure/UrlStateManager';
@@ -60,6 +62,13 @@ function getDefaults(styleId: PizzaStyleId, diameterUnit?: DiameterUnit): CalcSt
     doughMethod: 'straight',
     fermentationMode: 'room_temp',
   };
+}
+
+function translateError(err: ValidationError | undefined, t: AppTranslation): string | undefined {
+  if (!err) return undefined;
+  if (err.kind === 'invalid') return t.validation.invalidNumber;
+  if (err.kind === 'below_min') return t.validation.belowMin(err.min, err.unit);
+  return t.validation.aboveMax(err.max, err.unit);
 }
 
 function deriveYeastId(method: DoughMethodId, currentYeastId: YeastTypeId): YeastTypeId {
@@ -145,10 +154,10 @@ export function PizzaCalculator({ selectedFlour, pendingApply, onClearApply, onN
   const ballValidity = validityLevel(state.ballWeightG,  style.ballWeight.min, style.ballWeight.max);
 
   const fieldErrors = {
-    numPizzas:       absoluteError(state.numPizzas,    FIELD_BOUNDS.numPizzas,    ''),
-    ballWeightG:     absoluteError(state.ballWeightG,  FIELD_BOUNDS.ballWeightG,  'g'),
-    pizzaDiameterCm: absoluteError(dimDisplayVal,      dimDisplayBounds,          dimUnit === 'in' ? '"' : 'cm'),
-    hydrationPct:    absoluteError(state.hydrationPct, FIELD_BOUNDS.hydrationPct, '%'),
+    numPizzas:       translateError(absoluteError(state.numPizzas,    FIELD_BOUNDS.numPizzas,    ''),     t),
+    ballWeightG:     translateError(absoluteError(state.ballWeightG,  FIELD_BOUNDS.ballWeightG,  'g'),    t),
+    pizzaDiameterCm: translateError(absoluteError(dimDisplayVal,      dimDisplayBounds,          dimUnit === 'in' ? '"' : 'cm'), t),
+    hydrationPct:    translateError(absoluteError(state.hydrationPct, FIELD_BOUNDS.hydrationPct, '%'),    t),
   };
 
   const flourWarnings = selectedFlour

@@ -169,4 +169,9 @@ export const en: AppTranslation = {
     message: 'Check out my pizza recipe!',
     messages: 'Messages',
   },
+  validation: {
+    invalidNumber: 'Must be a valid number',
+    belowMin: (min, unit) => `Minimum ${min}${unit}`,
+    aboveMax: (max, unit) => `Maximum ${max}${unit}`,
+  },
 };

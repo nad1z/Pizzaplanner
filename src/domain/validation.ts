@@ -18,9 +18,14 @@ export function isValidStyleId(id: unknown): id is PizzaStyleId {
   return typeof id === 'string' && id in PizzaStyle.STYLES;
 }
 
-export function absoluteError(value: number, bounds: FieldBounds, unit: string): string | undefined {
-  if (!Number.isFinite(value)) return 'Must be a valid number';
-  if (value < bounds.min) return `Minimum ${bounds.min}${unit}`;
-  if (value > bounds.max) return `Maximum ${bounds.max}${unit}`;
+export type ValidationError =
+  | { kind: 'invalid' }
+  | { kind: 'below_min'; min: number; unit: string }
+  | { kind: 'above_max'; max: number; unit: string };
+
+export function absoluteError(value: number, bounds: FieldBounds, unit: string): ValidationError | undefined {
+  if (!Number.isFinite(value)) return { kind: 'invalid' };
+  if (value < bounds.min) return { kind: 'below_min', min: bounds.min, unit };
+  if (value > bounds.max) return { kind: 'above_max', max: bounds.max, unit };
   return undefined;
 }
