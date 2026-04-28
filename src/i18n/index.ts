@@ -7,7 +7,7 @@ export type LanguageId = 'en' | 'he';
 
 export const LANGUAGES: Record<LanguageId, string> = { en: 'English', he: 'עברית' };
 
-const TRANSLATIONS: Record<LanguageId, AppTranslation> = { en, he };
+export const TRANSLATIONS: Record<LanguageId, AppTranslation> = { en, he };
 
 export const LanguageContext = createContext<LanguageId>('en');
 
@@ -20,7 +20,7 @@ const LANG_KEY = 'pizza-lang';
 export function loadLanguage(): LanguageId {
   try {
     const v = localStorage.getItem(LANG_KEY);
-    return (v === 'en' || v === 'he') ? v : 'en';
+    return (v !== null && v in LANGUAGES) ? (v as LanguageId) : 'en';
   } catch {
     return 'en';
   }

@@ -17,29 +17,12 @@ function deriveYeastId(method: DoughMethodId, stored: string): 'idy' | 'ady' | '
   return stored as 'idy' | 'ady';
 }
 
-function formatRelative(minutesBefore: number): string {
-  const h = Math.floor(minutesBefore / 60);
-  const m = minutesBefore % 60;
-  if (h === 0) return `${m}m before eating`;
-  if (m === 0) return `${h}h before eating`;
-  return `${h}h ${m}m before eating`;
-}
-
 function formatAbsolute(eatDate: Date, minutesBefore: number): string {
   const stepDate = new Date(eatDate.getTime() - minutesBefore * 60 * 1000);
   return stepDate.toLocaleString(undefined, {
     weekday: 'short', month: 'short', day: 'numeric',
     hour: '2-digit', minute: '2-digit',
   });
-}
-
-function formatDuration(min: number): string {
-  if (min >= 60) {
-    const h = Math.floor(min / 60);
-    const m = min % 60;
-    return m > 0 ? `${h}h ${m}m` : `${h}h`;
-  }
-  return `${min}m`;
 }
 
 function totalProcessHours(steps: RecipeStep[]): number {
@@ -278,9 +261,12 @@ export function RecipeView() {
                     <span className="recipe-step__when">
                       {eatDate
                         ? formatAbsolute(eatDate, step.startMinutesBeforeEat)
-                        : formatRelative(step.startMinutesBeforeEat)}
+                        : t.recipe.beforeEat(
+                            Math.floor(step.startMinutesBeforeEat / 60),
+                            step.startMinutesBeforeEat % 60,
+                          )}
                     </span>
-                    <span className="recipe-step__duration">{formatDuration(step.durationMinutes)}</span>
+                    <span className="recipe-step__duration">⏱ {t.recipe.stepDuration(step.durationMinutes)}</span>
                     {step.temperature && (
                       <span className="recipe-step__temp">🌡 {step.temperature}</span>
                     )}

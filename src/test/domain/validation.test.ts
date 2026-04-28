@@ -31,28 +31,26 @@ describe('absoluteError', () => {
     expect(absoluteError(115, bounds, '%')).toBeUndefined();
   });
 
-  it('returns a min message when value is below min', () => {
+  it('returns below_min code with correct values when below min', () => {
     const err = absoluteError(30, bounds, '%');
-    expect(err).toMatch(/minimum/i);
-    expect(err).toContain('40');
-    expect(err).toContain('%');
+    expect(err).toEqual({ kind: 'below_min', min: 40, unit: '%' });
   });
 
-  it('returns a max message when value is above max', () => {
+  it('returns above_max code with correct values when above max', () => {
     const err = absoluteError(150, bounds, '%');
-    expect(err).toMatch(/maximum/i);
-    expect(err).toContain('115');
-    expect(err).toContain('%');
+    expect(err).toEqual({ kind: 'above_max', max: 115, unit: '%' });
   });
 
-  it('returns a validation message for non-finite values', () => {
-    expect(absoluteError(Infinity, bounds, '%')).toBeTruthy();
-    expect(absoluteError(NaN, bounds, '%')).toBeTruthy();
+  it('returns invalid code for non-finite values', () => {
+    expect(absoluteError(Infinity, bounds, '%')).toEqual({ kind: 'invalid' });
+    expect(absoluteError(NaN, bounds, '%')).toEqual({ kind: 'invalid' });
   });
 
-  it('includes the unit in error messages', () => {
-    expect(absoluteError(0, FIELD_BOUNDS.ballWeightG, 'g')).toContain('g');
-    expect(absoluteError(9999, FIELD_BOUNDS.ballWeightG, 'g')).toContain('g');
+  it('includes the unit in error codes', () => {
+    const below = absoluteError(0, FIELD_BOUNDS.ballWeightG, 'g');
+    const above = absoluteError(9999, FIELD_BOUNDS.ballWeightG, 'g');
+    expect(below).toMatchObject({ unit: 'g' });
+    expect(above).toMatchObject({ unit: 'g' });
   });
 });
 
