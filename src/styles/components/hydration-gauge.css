@@ -1,0 +1,90 @@
+/* HydrationGauge — SVG-based half-circle hydration indicator */
+.gauge {
+  width: 100%;
+  max-width: 20rem;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+
+.gauge__background {
+  fill: none;
+  stroke: var(--color-surface-2);
+  stroke-width: 12;
+  stroke-linecap: round;
+}
+
+.gauge__out-of-range {
+  fill: none;
+  stroke: var(--color-out-of-range);
+  stroke-width: 12;
+  stroke-linecap: round;
+  opacity: 0.5;
+}
+
+.gauge__flour-range {
+  fill: none;
+  stroke: var(--color-flour-blue);
+  stroke-width: 12;
+  stroke-linecap: round;
+  opacity: 0.55;
+}
+
+.gauge__style-range {
+  fill: none;
+  stroke-width: 12;
+  stroke-linecap: round;
+  opacity: 0.9;
+}
+
+.gauge__needle {
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+/* Validity-tinted SVG elements use these classes for fill/stroke */
+.gauge--green   .gauge__style-range,
+.gauge--green   .gauge__needle    { stroke: var(--color-valid-green); }
+.gauge--yellow  .gauge__style-range,
+.gauge--yellow  .gauge__needle    { stroke: var(--color-valid-yellow); }
+.gauge--red     .gauge__style-range,
+.gauge--red     .gauge__needle    { stroke: var(--color-valid-red); }
+
+.gauge--green   .gauge__center,
+.gauge--green   .gauge__style-text { fill: var(--color-valid-green); }
+.gauge--yellow  .gauge__center,
+.gauge--yellow  .gauge__style-text { fill: var(--color-valid-yellow); }
+.gauge--red     .gauge__center,
+.gauge--red     .gauge__style-text { fill: var(--color-valid-red); }
+
+.gauge__value {
+  fill: var(--color-text);
+  font-size: 16px;
+  font-family: 'Rubik', sans-serif;
+  font-weight: 600;
+}
+
+.gauge__label {
+  fill: var(--color-text-soft);
+  font-size: 9px;
+  font-family: 'Rubik', sans-serif;
+}
+
+.gauge__bound {
+  fill: var(--color-text-dim);
+  font-size: 9px;
+  font-family: 'Rubik', sans-serif;
+}
+
+.gauge__style-text {
+  font-size: 9px;
+  font-family: 'Rubik', sans-serif;
+  opacity: 0.85;
+}
+
+.gauge__flour-text {
+  fill: var(--color-flour-blue);
+  font-size: 8px;
+  font-family: 'Rubik', sans-serif;
+  opacity: 0.8;
+}

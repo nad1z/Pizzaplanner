@@ -1,0 +1,36 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  font-family: 'Rubik', sans-serif;
+}
+
+h1, h2, h3, .serif {
+  font-family: 'Rubik', sans-serif;
+  font-weight: 600;
+}
+
+@keyframes flash {
+  0%   { background-color: var(--color-flash); }
+  100% { background-color: transparent; }
+}
+
+.flash {
+  animation: flash 0.4s ease-out;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+::-webkit-scrollbar        { width: 6px; }
+::-webkit-scrollbar-track  { background: var(--color-bg); }
+::-webkit-scrollbar-thumb  { background: var(--color-accent-66); border-radius: 3px; }

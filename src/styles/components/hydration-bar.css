@@ -1,0 +1,55 @@
+.hydration-bar__header {
+  font-size: 10px;
+  color: var(--color-text-subtle);
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.hydration-bar__track {
+  position: relative;
+  height: 8px;
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+.hydration-bar__fill {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, var(--color-accent-33), #c0522a88);
+  border-radius: 4px;
+}
+
+.hydration-bar__marker {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 2px solid var(--color-bg);
+}
+
+.hydration-bar__marker--default {
+  width: 14px;
+  height: 14px;
+  background: var(--color-accent);
+  z-index: 2;
+}
+
+.hydration-bar__marker--current {
+  width: 10px;
+  height: 10px;
+  background: var(--color-text);
+  z-index: 3;
+}
+
+.hydration-bar__footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--color-text-faded);
+  margin-top: 4px;
+}
+
+.hydration-bar__optimal {
+  color: var(--color-accent-aa);
+}

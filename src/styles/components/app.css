@@ -1,0 +1,206 @@
+.app {
+  min-height: 100vh;
+  background: var(--color-bg);
+}
+
+/* Hamburger menu (top-right) */
+.menu {
+  position: fixed;
+  top: 12px;
+  right: 16px;
+  z-index: 200;
+}
+
+.menu__trigger {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  color: var(--color-text);
+  padding: 8px 10px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.menu__dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: 6px 0;
+  min-width: 190px;
+  box-shadow: 0 8px 32px #00000066;
+}
+
+.menu__divider {
+  border-top: 1px solid var(--color-border-soft);
+  margin: 6px 0;
+}
+
+.menu__lang {
+  padding: 6px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.menu__lang-label {
+  font-size: 11px;
+  color: var(--color-text-faded);
+  flex-shrink: 0;
+}
+
+.menu__lang-select {
+  flex: 1;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  font-size: 12px;
+  padding: 4px 6px;
+  cursor: pointer;
+}
+
+.menu__copy {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 18px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  text-align: left;
+  transition: color 0.2s;
+}
+
+.menu__copy--copied {
+  color: var(--color-success);
+}
+
+/* Nav items */
+.nav-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 10px 18px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text);
+  font-size: 14px;
+  text-align: left;
+}
+
+.nav-item--active {
+  color: var(--color-accent);
+}
+
+.nav-item__badge {
+  font-size: 10px;
+  color: var(--color-accent);
+  background: var(--color-accent-22);
+  padding: 2px 7px;
+  border-radius: var(--radius-pill);
+  margin-left: 8px;
+}
+
+/* Share button (top-left) */
+.share {
+  position: fixed;
+  top: 12px;
+  left: 16px;
+  z-index: 200;
+}
+
+.share__trigger {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  color: var(--color-text);
+  padding: 8px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.share__dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: 14px 12px;
+  box-shadow: 0 8px 32px #00000066;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.share__platforms {
+  display: flex;
+  gap: 10px;
+}
+
+.share__platform {
+  text-decoration: none;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.share__platform-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: var(--radius-xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+.share__platform-icon--whatsapp  { background: #25D366; }
+.share__platform-icon--messages  { background: #34C759; }
+.share__platform-icon--instagram { background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
+.share__platform-icon--messenger { background: #006AFF; }
+
+.share__platform-label {
+  font-size: 10px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.share__copy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 8px 12px;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  transition: all 0.2s;
+}
+
+.share__copy--copied {
+  background: #4ade8022;
+  border-color: var(--color-success);
+  color: var(--color-success);
+}

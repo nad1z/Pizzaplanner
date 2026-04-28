@@ -1,0 +1,365 @@
+.recipe-view {
+  min-height: 100vh;
+  color: var(--color-text);
+  padding: 24px 16px 64px;
+}
+
+.recipe-view--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+}
+
+/* ── Header ── */
+.recipe-header {
+  margin-bottom: 20px;
+}
+
+.recipe-header__style {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.recipe-header__emoji {
+  font-size: 38px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.recipe-header__name {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-text-strong);
+  margin: 0 0 2px;
+}
+
+.recipe-header__meta {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.recipe-header__dot {
+  margin: 0 6px;
+  color: var(--color-border);
+}
+
+.recipe-header__total {
+  color: var(--color-text-faint);
+}
+
+/* ── Ingredient chips ── */
+.recipe-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.recipe-chip {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  padding: 5px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 52px;
+}
+
+.recipe-chip__label {
+  font-size: 9px;
+  color: var(--color-text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.recipe-chip__value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-strong);
+}
+
+.recipe-chip__unit {
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--color-text-muted);
+  margin-left: 1px;
+}
+
+/* ── Eat date banner ── */
+.recipe-eat-banner {
+  background: var(--color-surface);
+  border: 1px solid var(--color-accent-55);
+  border-radius: var(--radius-2xl);
+  padding: 12px 18px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.recipe-eat-banner__row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.recipe-eat-banner__label {
+  font-size: 10px;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  min-width: 52px;
+}
+
+.recipe-eat-banner__value {
+  font-size: 15px;
+  color: var(--color-text-strong);
+  font-weight: 500;
+}
+
+.recipe-eat-banner__start {
+  font-size: 13px;
+  color: var(--color-accent);
+  font-weight: 500;
+}
+
+.recipe-no-date {
+  background: var(--color-surface-2);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-2xl);
+  padding: 10px 18px;
+  margin-bottom: 14px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+/* ── Progress bar ── */
+.recipe-progress {
+  position: relative;
+  height: 3px;
+  background: var(--color-border);
+  border-radius: 2px;
+  margin-bottom: 6px;
+}
+
+.recipe-progress__bar {
+  height: 100%;
+  background: var(--color-accent);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+.recipe-progress__label {
+  display: block;
+  text-align: right;
+  font-size: 11px;
+  color: var(--color-text-faint);
+  margin-top: 4px;
+  margin-bottom: 14px;
+}
+
+/* ── All done ── */
+.recipe-all-done {
+  text-align: center;
+  padding: 14px;
+  font-size: 17px;
+  color: var(--color-accent);
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+/* ── Reset button ── */
+.recipe-reset-btn {
+  display: block;
+  margin: 0 auto 16px;
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  color: var(--color-text-faint);
+  font-size: 11px;
+  padding: 4px 14px;
+  cursor: pointer;
+}
+
+/* ── Steps list ── */
+.recipe-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ── Step card ── */
+.recipe-step {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-2xl);
+  transition: border-color 0.15s;
+  overflow: hidden;
+}
+
+.recipe-step--done {
+  opacity: 0.5;
+  border-color: var(--color-accent-33);
+}
+
+.recipe-step--expanded {
+  border-color: var(--color-accent-55);
+}
+
+/* ── Step header (clickable row) ── */
+.recipe-step__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.recipe-step__header:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* ── Check circle ── */
+.recipe-step__check {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--color-surface-2);
+  border: 1.5px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  padding: 0;
+  line-height: 1;
+}
+
+.recipe-step__check:hover {
+  border-color: var(--color-accent-55);
+  color: var(--color-accent);
+}
+
+.recipe-step__check--done {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-accent-on);
+}
+
+/* ── Meta (title + timing) ── */
+.recipe-step__meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.recipe-step__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-strong);
+  display: block;
+  margin-bottom: 3px;
+}
+
+.recipe-step--done .recipe-step__title {
+  text-decoration: line-through;
+  color: var(--color-text-faint);
+}
+
+.recipe-step__timing {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  align-items: center;
+}
+
+.recipe-step__when {
+  font-size: 11px;
+  color: var(--color-accent);
+  font-weight: 500;
+}
+
+.recipe-step__duration {
+  font-size: 11px;
+  color: var(--color-text-faint);
+}
+
+.recipe-step__temp {
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+/* ── Chevron ── */
+.recipe-step__chevron {
+  flex-shrink: 0;
+  font-size: 9px;
+  color: var(--color-text-faint);
+  padding: 0 2px;
+}
+
+/* ── Expanded body ── */
+.recipe-step__body {
+  padding: 0 14px 14px 52px;
+  border-top: 1px solid var(--color-border-line);
+  padding-top: 12px;
+}
+
+.recipe-step__details {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.recipe-step__detail {
+  font-size: 13px;
+  color: var(--color-text-readable);
+  line-height: 1.55;
+  padding-left: 13px;
+  position: relative;
+}
+
+.recipe-step__detail::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--color-accent-55);
+  font-size: 10px;
+  top: 3px;
+}
+
+.recipe-step__tips {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.recipe-step__tip {
+  font-size: 12px;
+  color: var(--color-text-faint);
+  font-style: italic;
+  line-height: 1.45;
+  background: var(--color-surface-2);
+  border-radius: var(--radius-lg);
+  padding: 7px 11px;
+  margin: 0;
+}
+
+.recipe-step__tip-label {
+  color: var(--color-accent-66);
+  font-style: normal;
+  font-weight: 600;
+  font-size: 11px;
+}
