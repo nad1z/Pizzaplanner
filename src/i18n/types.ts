@@ -133,6 +133,7 @@ export interface AppTranslation {
     tipLabel: string;
     tempLabel: string;
     allDone: string;
+    viewRecipe: string;
   };
   share: {
     label: string;

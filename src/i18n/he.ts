@@ -162,6 +162,7 @@ export const he: AppTranslation = {
     tipLabel:           '💡 טיפ',
     tempLabel:          '🌡️',
     allDone:            '🎉 כל השלבים הושלמו — תהנה מהפיצה!',
+    viewRecipe:         'צפה במתכון →',
   },
   share: {
     label: 'שתף',

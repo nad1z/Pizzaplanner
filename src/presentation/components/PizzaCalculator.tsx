@@ -84,9 +84,10 @@ interface PizzaCalculatorProps {
   pendingApply: { hydration: number; fermentation: number } | null;
   onClearApply: () => void;
   onNavigateToFlourGuide: () => void;
+  onNavigateToRecipe: () => void;
 }
 
-export function PizzaCalculator({ selectedFlour, pendingApply, onClearApply, onNavigateToFlourGuide }: PizzaCalculatorProps) {
+export function PizzaCalculator({ selectedFlour, pendingApply, onClearApply, onNavigateToFlourGuide, onNavigateToRecipe }: PizzaCalculatorProps) {
   const t = useTranslation();
   const [state, setState] = useState<CalcState>(() => {
     const fromUrl = UrlStateManager.readCalc();
@@ -366,6 +367,11 @@ export function PizzaCalculator({ selectedFlour, pendingApply, onClearApply, onN
               <p className="eat-date-section__hint">{t.recipe.noEatDate}</p>
             )}
           </div>
+
+          {/* ── View Recipe CTA ── */}
+          <button onClick={onNavigateToRecipe} className="view-recipe-btn">
+            {t.recipe.viewRecipe}
+          </button>
 
           {selectedFlour && (
             <div className="flour-indicator">

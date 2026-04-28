@@ -541,3 +541,25 @@
   font-size: 11px;
   font-style: italic;
 }
+
+/* ── View Recipe CTA ── */
+.view-recipe-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 11px 16px;
+  background: var(--color-accent);
+  color: var(--color-accent-on);
+  border: none;
+  border-radius: var(--radius-xl);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  margin-top: 4px;
+}
+
+.view-recipe-btn:hover {
+  opacity: 0.88;
+}

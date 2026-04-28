@@ -70,6 +70,7 @@ export function App() {
         onSelectFlour={setSelectedFlour}
         onApplyFlour={handleApplyFlour}
         onClearApply={() => setPendingApply(null)}
+        onNavigateToRecipe={() => navigateTo('recipe')}
       />
     </LanguageContext.Provider>
   );
@@ -88,10 +89,11 @@ interface AppInnerProps {
   onSelectFlour: (f: FlourData | null) => void;
   onApplyFlour: (flour: FlourData, h: number, f: number) => void;
   onClearApply: () => void;
+  onNavigateToRecipe: () => void;
 }
 
 function AppInner({ lang, view, menuOpen, menuRef, selectedFlour, pendingApply,
-  onLangChange, onMenuToggle, onNavigate, onSelectFlour, onApplyFlour, onClearApply }: AppInnerProps) {
+  onLangChange, onMenuToggle, onNavigate, onSelectFlour, onApplyFlour, onClearApply, onNavigateToRecipe }: AppInnerProps) {
   const t = useTranslation();
 
   return (
@@ -156,6 +158,7 @@ function AppInner({ lang, view, menuOpen, menuRef, selectedFlour, pendingApply,
           pendingApply={pendingApply}
           onClearApply={onClearApply}
           onNavigateToFlourGuide={() => onNavigate('flour-guide')}
+          onNavigateToRecipe={onNavigateToRecipe}
         />
       )}
       {view === 'flour-guide' && (

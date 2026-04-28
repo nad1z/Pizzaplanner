@@ -162,6 +162,7 @@ export const en: AppTranslation = {
     tipLabel:           '💡 Tip',
     tempLabel:          '🌡️',
     allDone:            '🎉 All steps complete — enjoy your pizza!',
+    viewRecipe:         'View Recipe →',
   },
   share: {
     label: 'Share',

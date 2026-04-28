@@ -64,29 +64,56 @@ const BAKE_GUIDE: Record<PizzaStyleId, { temp: number; minMin: number; maxMin: n
   focaccia:     { temp: 220, minMin: 20, maxMin: 25, notes: 'The surface should be golden and slightly blistered. The bottom must be crispy — if not, return to the oven for 3–5 more minutes.' },
 };
 
+const PAN_STYLES: PizzaStyleId[] = ['roman', 'detroit', 'sicilian', 'focaccia'];
+
 function bakingSteps(input: GeneratorInput, startMinsBeforeEat = 30): RecipeStep[] {
   const { styleId, pizzaDiameterCm, numPizzas, oilG } = input;
   const bake = BAKE_GUIDE[styleId];
   const diamIn = Math.round(pizzaDiameterCm * 0.393701);
-  const oilNote = oilG > 0 ? ` Drizzle ${g(oilG)}g olive oil over the dough and toppings.` : '';
+  const isPanStyle = PAN_STYLES.includes(styleId);
+
+  const panStyleNote: Record<string, string> = {
+    detroit:  'Push the dough firmly into all four corners of a well-oiled rectangular blue steel pan. Lay cheese (ideally brick cheese or a blend) all the way to the edges so it fries and caramelises against the pan sides. Add sauce in stripes on top of the cheese — Detroit style adds sauce last.',
+    roman:    'Press the dough evenly across the oiled teglia (rectangular pan) to about 1–1.5 cm thickness. Dimple the surface with your fingertips. Add sauce thinly — Roman pizza al taglio is relatively lightly topped.',
+    sicilian: 'Press the dough evenly into the oiled rectangular pan to about 1.5 cm thickness. Let it rest 15 minutes if it springs back. Add sauce and toppings generously.',
+    focaccia: 'Press dough to the pan edges. Drizzle generously with olive oil and use all your fingertips to press deep dimples across the entire surface. Let rest 20 minutes before adding toppings (rosemary, coarse salt, olives). No sauce needed.',
+  };
+
+  const stretchStep: RecipeStep = isPanStyle ? {
+    id: 'stretch',
+    title: 'Press into pan & top',
+    startMinutesBeforeEat: startMinsBeforeEat,
+    durationMinutes: 20,
+    details: [
+      `Coat your baking pan generously with olive oil — use ${oilG > 0 ? `${g(oilG)}g` : 'a generous amount'} and cover the base and sides completely.`,
+      `Place a dough ball in the centre of the pan and begin pressing outward from the middle with flat fingertips. Do not stretch by pulling — press and dimple.`,
+      panStyleNote[styleId] ?? `Press the dough evenly across the pan to an even thickness. If it resists, cover and rest 10 minutes, then try again — the gluten will relax.`,
+      `Repeat for each of the ${numPizzas} pan${numPizzas > 1 ? 's' : ''}.`,
+    ],
+    tips: [
+      'Pan dough should be soft and extensible. If it keeps springing back, it needs more rest — cover and wait 10 minutes.',
+      'More oil in the pan = crispier bottom. Do not skimp.',
+    ],
+  } : {
+    id: 'stretch',
+    title: 'Stretch, shape & top',
+    startMinutesBeforeEat: startMinsBeforeEat,
+    durationMinutes: 15,
+    details: [
+      `Lightly flour your work surface. Take one dough ball and press from the centre outward with your fingertips, leaving a 2 cm / 1" rim untouched — this becomes the cornicione.`,
+      `Lift the dough and let gravity stretch it gently, rotating it as you go, until it reaches approximately ${pizzaDiameterCm} cm / ${diamIn}" in diameter.`,
+      `Transfer to a lightly floured peel or a sheet of parchment. Work quickly — wet toppings make the dough stick to the peel.`,
+      `Add sauce and toppings sparingly. Less is more: overloaded pizza steams rather than bakes.${oilG > 0 ? ` Drizzle ${g(oilG)}g olive oil over the dough and toppings.` : ''}`,
+      `Repeat for each of the ${numPizzas} pizza${numPizzas > 1 ? 's' : ''}.`,
+    ],
+    tips: [
+      'Never use a rolling pin — it degasses the dough and destroys the cornicione.',
+      'If the dough springs back and resists stretching, cover it and let it rest 5 minutes before trying again.',
+    ],
+  };
+
   const steps: RecipeStep[] = [
-    {
-      id: 'stretch',
-      title: 'Stretch, shape & top',
-      startMinutesBeforeEat: startMinsBeforeEat,
-      durationMinutes: 15,
-      details: [
-        `Lightly flour your work surface. Take one dough ball and press from the centre outward with your fingertips, leaving a 2 cm / 1" rim untouched — this becomes the cornicione.`,
-        `Lift the dough and let gravity stretch it gently, rotating it as you go, until it reaches approximately ${pizzaDiameterCm} cm / ${diamIn}" in diameter.`,
-        `Transfer to a lightly floured peel or a sheet of parchment. Work quickly — wet toppings make the dough stick to the peel.`,
-        `Add sauce and toppings sparingly. Less is more: overloaded pizza steams rather than bakes.${oilNote}`,
-        `Repeat for each of the ${numPizzas} pizza${numPizzas > 1 ? 's' : ''}.`,
-      ],
-      tips: [
-        'Never use a rolling pin — it degasses the dough and destroys the cornicione.',
-        'If the dough springs back and resists stretching, cover it and let it rest 5 minutes before trying again.',
-      ],
-    },
+    stretchStep,
     {
       id: 'bake',
       title: 'Bake',
