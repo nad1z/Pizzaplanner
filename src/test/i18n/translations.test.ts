@@ -168,25 +168,31 @@ function checkTranslation(id: LanguageId, t: AppTranslation): void {
     'title'|'noEatDate'|'eatDateLabel'|'eatDatePlaceholder'|'methodLabel'|
     'basicLabel'|'advancedLabel'|'fermentModeLabel'|'roomTempLabel'|'coldLabel'|
     'fermentTimeLabel'|'timelineTitle'|'checklistTitle'|'resetChecklist'|
-    'parallel'|'tipLabel'|'tempLabel'|'allDone'>)[] = [
+    'parallel'|'tipLabel'|'tempLabel'|'allDone'|'eatingAt'|'startBy'|
+    'yeastLabel'|'starterLabel'>)[] = [
     'title','noEatDate','eatDateLabel','eatDatePlaceholder','methodLabel',
     'basicLabel','advancedLabel','fermentModeLabel','roomTempLabel','coldLabel',
     'fermentTimeLabel','timelineTitle','checklistTitle','resetChecklist',
-    'parallel','tipLabel','tempLabel','allDone',
+    'parallel','tipLabel','tempLabel','allDone','eatingAt','startBy',
+    'yeastLabel','starterLabel',
   ];
   for (const key of recipeStrings) nonEmpty(t.recipe[key] as string, p(`recipe.${key}`));
 
-  isFunc(t.recipe.totalTimeLabel, p('recipe.totalTimeLabel'));
-  isFunc(t.recipe.beforeEat,      p('recipe.beforeEat'));
-  isFunc(t.recipe.absoluteTime,   p('recipe.absoluteTime'));
-  isFunc(t.recipe.stepDuration,   p('recipe.stepDuration'));
+  isFunc(t.recipe.totalTimeLabel,  p('recipe.totalTimeLabel'));
+  isFunc(t.recipe.totalHoursShort, p('recipe.totalHoursShort'));
+  isFunc(t.recipe.beforeEat,       p('recipe.beforeEat'));
+  isFunc(t.recipe.absoluteTime,    p('recipe.absoluteTime'));
+  isFunc(t.recipe.stepDuration,    p('recipe.stepDuration'));
+  isFunc(t.recipe.progressDone,    p('recipe.progressDone'));
 
-  callReturnsString(t.recipe.totalTimeLabel, [24],      p('recipe.totalTimeLabel'));
-  callReturnsString(t.recipe.beforeEat,      [2, 30],   p('recipe.beforeEat'));
-  callReturnsString(t.recipe.beforeEat,      [0, 45],   p('recipe.beforeEat(0h)'));
-  callReturnsString(t.recipe.absoluteTime,   ['Mon, Apr 28, 09:00'], p('recipe.absoluteTime'));
-  callReturnsString(t.recipe.stepDuration,   [90],      p('recipe.stepDuration(90m)'));
-  callReturnsString(t.recipe.stepDuration,   [15],      p('recipe.stepDuration(15m)'));
+  callReturnsString(t.recipe.totalTimeLabel,  [24],         p('recipe.totalTimeLabel'));
+  callReturnsString(t.recipe.totalHoursShort, [8],          p('recipe.totalHoursShort'));
+  callReturnsString(t.recipe.beforeEat,       [2, 30],      p('recipe.beforeEat'));
+  callReturnsString(t.recipe.beforeEat,       [0, 45],      p('recipe.beforeEat(0h)'));
+  callReturnsString(t.recipe.absoluteTime,    ['Mon, Apr 28, 09:00'], p('recipe.absoluteTime'));
+  callReturnsString(t.recipe.stepDuration,    [90],         p('recipe.stepDuration(90m)'));
+  callReturnsString(t.recipe.stepDuration,    [15],         p('recipe.stepDuration(15m)'));
+  callReturnsString(t.recipe.progressDone,    [3, 7],       p('recipe.progressDone'));
 
   // share
   nonEmpty(t.share.label,    p('share.label'));
