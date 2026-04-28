@@ -123,6 +123,7 @@ export interface AppTranslation {
     coldLabel: string;
     fermentTimeLabel: string;
     totalTimeLabel: (hours: number) => string;
+    totalHoursShort: (h: number) => string;
     timelineTitle: string;
     checklistTitle: string;
     resetChecklist: string;
@@ -134,6 +135,11 @@ export interface AppTranslation {
     tempLabel: string;
     allDone: string;
     viewRecipe: string;
+    eatingAt: string;
+    startBy: string;
+    progressDone: (done: number, total: number) => string;
+    yeastLabel: string;
+    starterLabel: string;
   };
   share: {
     label: string;

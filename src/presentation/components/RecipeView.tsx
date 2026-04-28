@@ -169,7 +169,7 @@ export function RecipeView() {
               <span className="recipe-header__dot">·</span>
               {fermentHours}h
               {totalHours > 0 && (
-                <span className="recipe-header__total"> · ~{totalHours}h total</span>
+                <span className="recipe-header__total"> · {t.recipe.totalHoursShort(totalHours)}</span>
               )}
             </p>
           </div>
@@ -179,12 +179,12 @@ export function RecipeView() {
       {/* ── Ingredient summary ── */}
       {recipe && (
         <div className="recipe-chips">
-          <IngredientChip label="Flour" value={recipe.flourG} />
-          <IngredientChip label="Water" value={recipe.waterG} />
-          <IngredientChip label="Salt" value={recipe.saltG} />
-          {recipe.oilG > 0 && <IngredientChip label="Oil" value={recipe.oilG} />}
-          <IngredientChip label={method === 'sourdough' ? 'Starter' : 'Yeast'} value={recipe.yeastG} />
-          <IngredientChip label="Total" value={recipe.totalDough} />
+          <IngredientChip label={t.calc.labels.flour} value={recipe.flourG} />
+          <IngredientChip label={t.calc.labels.water} value={recipe.waterG} />
+          <IngredientChip label={t.calc.labels.salt} value={recipe.saltG} />
+          {recipe.oilG > 0 && <IngredientChip label={t.calc.labels.oil} value={recipe.oilG} />}
+          <IngredientChip label={method === 'sourdough' ? t.recipe.starterLabel : t.recipe.yeastLabel} value={recipe.yeastG} />
+          <IngredientChip label={t.calc.labels.totalDough} value={recipe.totalDough} />
         </div>
       )}
 
@@ -192,21 +192,21 @@ export function RecipeView() {
       {eatDate ? (
         <div className="recipe-eat-banner">
           <div className="recipe-eat-banner__row">
-            <span className="recipe-eat-banner__label">Eating at</span>
+            <span className="recipe-eat-banner__label">{t.recipe.eatingAt}</span>
             <span className="recipe-eat-banner__value">
               {eatDate.toLocaleString(undefined, { weekday: 'long', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
             </span>
           </div>
           {steps.length > 0 && (
             <div className="recipe-eat-banner__row">
-              <span className="recipe-eat-banner__label">Start by</span>
+              <span className="recipe-eat-banner__label">{t.recipe.startBy}</span>
               <span className="recipe-eat-banner__start">{formatAbsolute(eatDate, steps[0].startMinutesBeforeEat)}</span>
             </div>
           )}
         </div>
       ) : (
         <div className="recipe-no-date">
-          📅 {t.recipe.noEatDate} — set it in the Calculator.
+          📅 {t.recipe.noEatDate}
         </div>
       )}
 
@@ -214,7 +214,7 @@ export function RecipeView() {
       {steps.length > 0 && (
         <div className="recipe-progress">
           <div className="recipe-progress__bar" style={{ width: `${(doneCount / steps.length) * 100}%` }} />
-          <span className="recipe-progress__label">{doneCount} / {steps.length} done</span>
+          <span className="recipe-progress__label">{t.recipe.progressDone(doneCount, steps.length)}</span>
         </div>
       )}
 
@@ -291,7 +291,7 @@ export function RecipeView() {
                     <div className="recipe-step__tips">
                       {step.tips.map((tip, i) => (
                         <p key={i} className="recipe-step__tip">
-                          <span className="recipe-step__tip-label">💡 Tip:</span> {tip}
+                          <span className="recipe-step__tip-label">{t.recipe.tipLabel}:</span> {tip}
                         </p>
                       ))}
                     </div>
