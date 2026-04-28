@@ -1,7 +1,7 @@
 .recipe-view {
   min-height: 100vh;
   color: var(--color-text);
-  padding: 24px 16px 64px;
+  padding: 68px 16px 64px;
 }
 
 .recipe-view--empty {

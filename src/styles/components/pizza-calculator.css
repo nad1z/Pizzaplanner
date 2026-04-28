@@ -1,7 +1,7 @@
 .calculator {
   min-height: 100vh;
   color: var(--color-text);
-  padding: 24px 16px 48px;
+  padding: 68px 16px 48px;
 }
 
 .calculator__title {

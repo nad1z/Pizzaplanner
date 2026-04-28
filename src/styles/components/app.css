@@ -3,11 +3,36 @@
   background: var(--color-bg);
 }
 
-/* Hamburger menu (top-right) */
-.menu {
+/* Fixed site header */
+.site-header {
   position: fixed;
-  top: 12px;
-  right: 16px;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 52px;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border-soft);
+}
+
+.site-header__title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text-strong);
+  letter-spacing: 0.01em;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+/* Hamburger menu (inside site-header) */
+.menu {
+  position: relative;
   z-index: 200;
 }
 
@@ -111,11 +136,9 @@
   margin-left: 8px;
 }
 
-/* Share button (top-left) */
+/* Share button (inside site-header) */
 .share {
-  position: fixed;
-  top: 12px;
-  left: 16px;
+  position: relative;
   z-index: 200;
 }
 
