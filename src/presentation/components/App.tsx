@@ -98,7 +98,7 @@ function AppInner({ lang, view, menuOpen, menuRef, selectedFlour, pendingApply,
 
   return (
     <div className="app">
-      <header className="site-header">
+      <header className="site-header" dir="ltr">
         <ShareButton />
         <button className="site-header__title" onClick={() => onNavigate('calculator')}>
           {t.calc.title}
