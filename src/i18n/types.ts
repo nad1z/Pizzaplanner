@@ -1,3 +1,409 @@
+export interface RecipeI18n {
+  // ── shared helpers ───────────────────────────────────────────────────────────
+  idyInstruction:  (yeastG: string) => string;
+  adyInstruction:  (yeastG: string, waterG: string, temp: string) => string;
+  idyTrace:        string;
+  adyTrace:        string;
+  drizzleOil:      (oilG: string) => string;
+  bakeNote:        Record<string, string>;
+  panNote:         Record<string, string>;
+  panNoteFallback: string;
+
+  // ── step titles ──────────────────────────────────────────────────────────────
+  t: {
+    miseEnPlace:         string;
+    autolyse:            string;
+    developGluten:       string;
+    bulkRoom:            (hours: number) => string;
+    ballDiv:             (n: number, g: number) => string;
+    proofFinal:          string;
+    preheat:             string;
+    preheatRemove:       string;
+    stretchPan:          string;
+    stretchShape:        string;
+    bake:                string;
+    restEat:             string;
+    shortBulk:           string;
+    coldRetard:          (hours: number) => string;
+    coldFerment:         (hours: number) => string;
+    warmUp:              string;
+    warmUp2h:            string;
+    poolishMix:          string;
+    poolishMainMix:      string;
+    bigaMix:             string;
+    bigaMainMix:         string;
+    roomTempFerment:     (hours: number) => string;
+    feedStarter:         string;
+    addStarterSalt:      string;
+    bulkSourdough:       (hours: number) => string;
+    bulkSourdoughPartial: string;
+    preShape:            string;
+    finalShape:          string;
+    shapeColdProof:      (hours: number) => string;
+  };
+
+  // ── common baking steps (shared across all methods) ──────────────────────────
+  panPress: {
+    d1:   (oilG: string, hasOil: boolean) => string;
+    d2:   string;
+    d4:   (n: number) => string;
+    tip1: string;
+    tip2: string;
+  };
+  handStretch: {
+    d1:   string;
+    d2:   (diamCm: number, diamIn: number) => string;
+    d3:   string;
+    d4:   (drizzle: string) => string;
+    d5:   (n: number) => string;
+    tip1: string;
+    tip2: string;
+  };
+  bakeStep: {
+    d1:   string;
+    d2:   (temp: string, minMin: number, maxMin: number) => string;
+    d4:   string;
+    tip1: string;
+    tip2: string;
+  };
+  restStep: {
+    d1:   string;
+    d2:   string;
+    tip1: string;
+  };
+
+  // ── straight / room-temp ─────────────────────────────────────────────────────
+  str: {
+    mise: {
+      d1:   (flour: string, water: string, salt: string, yeast: string, yeastType: string, oilInfo: string) => string;
+      d2:   (mainWater: string, temp: string, reserved: string) => string;
+      d3:   string;
+      tip1: string;
+    };
+    autolyse: {
+      d1:   (mainWater: string, flour: string) => string;
+      d2:   string;
+      d3:   string;
+      tip1: string;
+    };
+    gluten: {
+      d1:   (salt: string, water: string) => string;
+      d3:   string;
+      d4:   string;
+      d5:   string;
+      d6:   (oil: string) => string;
+      tip1: string;
+    };
+    bulk: {
+      d1:   (minTemp: string, maxTemp: string, hours: number) => string;
+      d2:   (targetTemp: string) => string;
+      d3:   (sets: number, totalMin: number) => string;
+      d4:   string;
+      d5:   string;
+      d6:   string;
+      tip1: (temp: string) => string;
+      tip2: string;
+    };
+    ball: {
+      d1:   string;
+      d2:   (n: number, grams: number) => string;
+      d3:   string;
+      d4:   string;
+      tip1: string;
+    };
+    proof: {
+      d1:   (minTemp: string, maxTemp: string) => string;
+      d2:   string;
+      d3:   string;
+      tip1: string;
+    };
+    preheat: {
+      d1:   (temp: string) => string;
+      d2:   string;
+      d3:   string;
+      tip1: string;
+    };
+  };
+
+  // ── straight / cold ──────────────────────────────────────────────────────────
+  stc: {
+    mise: {
+      d1:   (flour: string, water: string, salt: string, yeast: string, yeastType: string, oilInfo: string) => string;
+      d2:   (minTemp: string, maxTemp: string) => string;
+      d3:   string;
+      tip1: string;
+    };
+    autolyse: {
+      d1:   (mainWater: string, flour: string) => string;
+      d2:   string;
+    };
+    gluten: {
+      d1:   (salt: string, water: string) => string;
+      d3:   string;
+      d4:   string;
+      d5:   (oil: string) => string;
+      tip1: string;
+    };
+    shortBulk: {
+      d1:   (minTemp: string, maxTemp: string) => string;
+      d2:   string;
+      d3:   string;
+      tip1: string;
+    };
+    ball: {
+      d1:   (n: number, grams: number) => string;
+      d2:   string;
+      d3:   string;
+      tip1: string;
+    };
+    retard: {
+      d1:   (minTemp: string, maxTemp: string, hours: number) => string;
+      d2:   string;
+      d3:   string;
+      tip1: string;
+      tip2: string;
+    };
+    warmUp: {
+      d1:   string;
+      d2:   string;
+      d3:   string;
+      tip1: string;
+    };
+    proof: {
+      d1:   (minTemp: string, maxTemp: string) => string;
+      d2:   string;
+    };
+    preheat: {
+      d1:   (temp: string) => string;
+      d2:   string;
+    };
+  };
+
+  // ── poolish / room-temp ──────────────────────────────────────────────────────
+  plr: {
+    poolishMix: {
+      d1:   (flour: string, water: string, temp: string) => string;
+      d3:   string;
+      d4:   string;
+      d5:   string;
+      tip1: string;
+      tip2: string;
+    };
+    mainMix: {
+      d1:   string;
+      d2:   (mainFlour: string, mainWater: string, reserved: string) => string;
+      d3:   (salt: string, water: string) => string;
+      d4idy: (yeast: string) => string;
+      d4ady: (yeast: string, temp: string) => string;
+      d5:   string;
+      d6:   (oil: string) => string;
+      tip1: string;
+    };
+    ferment: {
+      d1:   (minTemp: string, maxTemp: string, hours: number) => string;
+      d2:   string;
+      d3:   string;
+    };
+    ball: {
+      d1:   (n: number, grams: number) => string;
+      d2:   string;
+    };
+    proof: {
+      d1:   (minTemp: string, maxTemp: string) => string;
+      d2:   string;
+    };
+    preheat: { d1: (temp: string) => string };
+  };
+
+  // ── poolish / cold ───────────────────────────────────────────────────────────
+  plc: {
+    poolishMix: {
+      d1:   (flour: string, water: string, temp: string) => string;
+      d3:   string;
+      d4:   string;
+      d5:   string;
+      tip1: string;
+      tip2: string;
+    };
+    mainMix: {
+      d1:   (mainFlour: string, mainWater: string, reserved: string, temp: string) => string;
+      d2:   string;
+      d3:   (salt: string, water: string) => string;
+      d4idy: (yeast: string) => string;
+      d4ady: (yeast: string, water: string) => string;
+      d5:   string;
+      d6:   (oil: string) => string;
+      tip1: string;
+    };
+    coldFerment: {
+      d1:   (minTemp: string, maxTemp: string, hours: number) => string;
+      d2:   string;
+      d3:   string;
+      tip1: string;
+    };
+    warmUp: {
+      d1:   string;
+      d2:   string;
+      tip1: string;
+    };
+    ball: {
+      d1:   (n: number, grams: number) => string;
+      d2:   string;
+    };
+    proof: {
+      d1:   (minTemp: string, maxTemp: string) => string;
+      d2:   string;
+    };
+    preheat: { d1: (temp: string) => string };
+  };
+
+  // ── biga / room-temp ─────────────────────────────────────────────────────────
+  bgr: {
+    bigaMix: {
+      d1:   (flour: string, water: string, temp1: string, temp2: string) => string;
+      d2:   string;
+      d3:   string;
+      d4:   string;
+      d5:   string;
+      tip1: string;
+      tip2: string;
+    };
+    mainMix: {
+      d1:   string;
+      d2:   (mainWater: string, reserved: string) => string;
+      d3:   (mainFlour: string) => string;
+      d4:   (salt: string, water: string) => string;
+      d5idy: (yeast: string) => string;
+      d5ady: (yeast: string) => string;
+      d6:   string;
+      d7:   (oil: string) => string;
+      tip1: string;
+    };
+    ferment: {
+      d1:   (minTemp: string, maxTemp: string, hours: number) => string;
+      d2:   string;
+      d3:   string;
+    };
+    ball:   { d1: (n: number, grams: number) => string };
+    proof:  { d1: (minTemp: string, maxTemp: string) => string };
+    preheat:{ d1: (temp: string) => string };
+  };
+
+  // ── biga / cold ──────────────────────────────────────────────────────────────
+  bgc: {
+    bigaMix: {
+      d1:   (flour: string, water: string, temp: string) => string;
+      d2:   string;
+      d3:   string;
+      tip1: string;
+    };
+    mainMix: {
+      d1:   (mainWater: string, reserved: string, temp: string) => string;
+      d2:   (salt: string, water: string) => string;
+      d3idy: (yeast: string) => string;
+      d3ady: (yeast: string, water: string) => string;
+      d4:   string;
+      d5:   (oil: string) => string;
+      tip1: string;
+    };
+    coldFerment: {
+      d1:   (minTemp: string, maxTemp: string, hours: number) => string;
+      d2:   string;
+      tip1: string;
+    };
+    warmUp:  { d1: string };
+    ball:    { d1: (n: number, grams: number) => string };
+    proof:   { d1: (minTemp: string, maxTemp: string) => string };
+    preheat: { d1: (temp: string) => string };
+  };
+
+  // ── sourdough / room-temp ────────────────────────────────────────────────────
+  sdr: {
+    feedStarter: {
+      d1:   (existing: string, flour: string, water: string, temp: string) => string;
+      d2:   string;
+      d3:   (minTemp: string, maxTemp: string) => string;
+      d4:   (starterG: string) => string;
+      tip1: string;
+      tip2: string;
+    };
+    autolyse: {
+      d1:   (flour: string, water: string, temp: string) => string;
+      d2:   string;
+      tip1: string;
+    };
+    addStarterSalt: {
+      d1:   (starterG: string) => string;
+      d2:   string;
+      d3:   string;
+      d4:   (salt: string, water: string) => string;
+      d5:   (oil: string) => string;
+      tip1: string;
+    };
+    bulk: {
+      d1:   (minTemp: string, maxTemp: string, hours: number) => string;
+      d2:   string;
+      d3:   string;
+      d4:   string;
+      tip1: string;
+      tip2: string;
+    };
+    preShape: {
+      d1:   (n: number, grams: number) => string;
+      d2:   string;
+      d3:   string;
+      tip1: string;
+    };
+    finalShape: {
+      d1:   string;
+      d2:   string;
+    };
+    proof: {
+      d1:   (minTemp: string, maxTemp: string) => string;
+      d2:   string;
+    };
+    preheat: { d1: (temp: string) => string };
+  };
+
+  // ── sourdough / cold ─────────────────────────────────────────────────────────
+  sdc: {
+    feedStarter: {
+      d1:   (existing: string, flour: string, water: string, temp: string) => string;
+      d2:   (minTemp: string, maxTemp: string) => string;
+      d3:   (starterG: string) => string;
+      tip1: string;
+    };
+    autolyse: {
+      d1:   (flour: string, water: string, temp: string) => string;
+      d2:   string;
+    };
+    addStarterSalt: {
+      d1:   (starterG: string) => string;
+      d2:   (salt: string, water: string) => string;
+      d3:   (oil: string) => string;
+    };
+    bulk: {
+      d1:   (minTemp: string, maxTemp: string) => string;
+      d2:   string;
+      d3:   string;
+      tip1: string;
+    };
+    preShape: { d1: (n: number, grams: number) => string };
+    shapeColdProof: {
+      d1:   string;
+      d2:   (minTemp: string, maxTemp: string, hours: number) => string;
+      d3:   string;
+      d4:   string;
+      tip1: string;
+      tip2: string;
+    };
+    preheat: {
+      d1:   (temp: string) => string;
+      d2:   string;
+    };
+  };
+}
+
 export interface AppTranslation {
   dir: 'ltr' | 'rtl';
   nav: {
@@ -151,4 +557,5 @@ export interface AppTranslation {
     belowMin: (min: number, unit: string) => string;
     aboveMax: (max: number, unit: string) => string;
   };
+  recipeSteps: RecipeI18n;
 }
