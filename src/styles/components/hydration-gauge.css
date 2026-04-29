@@ -24,10 +24,11 @@
 
 .gauge__flour-range {
   fill: none;
-  stroke: var(--color-flour-blue);
+  stroke: var(--color-flour-range);
   stroke-width: 12;
-  stroke-linecap: round;
-  opacity: 0.55;
+  stroke-linecap: butt;
+  stroke-dasharray: 5 4;
+  opacity: 0.75;
 }
 
 .gauge__style-range {
@@ -83,7 +84,7 @@
 }
 
 .gauge__flour-text {
-  fill: var(--color-flour-blue);
+  fill: var(--color-flour-range);
   font-size: 8px;
   font-family: 'Rubik', sans-serif;
   opacity: 0.8;
