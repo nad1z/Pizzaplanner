@@ -92,7 +92,7 @@ export function RecipeView() {
       hydrationPct: state.hydrationPct,
       yeastId: effectiveYeastId,
       styleId: state.styleId,
-    });
+    }, t.recipeSteps);
   }, [state, recipe, method, mode, fermentHours]);
 
   const checklistKey = RecipeStepsGenerator.checklistKey({ method, mode, fermentationHours: fermentHours });
