@@ -74,8 +74,8 @@ export const en: AppTranslation = {
   },
   gauge: {
     hydration:  'hydration',
-    styleRange: (min, max) => `style ${min}–${max}%`,
-    flourRange: (min, max) => `flour ${min}–${max}%`,
+    styleRange: (min, max) => `Style range: ${min}–${max}%`,
+    flourRange: (min, max) => `Flour range: ${min}–${max}%`,
   },
   yeast: {
     idy:      { name: 'Instant Dry',  description: 'Mix directly into flour' },

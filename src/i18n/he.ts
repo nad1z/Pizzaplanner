@@ -74,8 +74,8 @@ export const he: AppTranslation = {
   },
   gauge: {
     hydration:  'הידרציה',
-    styleRange: (min, max) => `סגנון ${min}–${max}%`,
-    flourRange: (min, max) => `קמח ${min}–${max}%`,
+    styleRange: (min, max) => `טווח סגנון: ${min}–${max}%`,
+    flourRange: (min, max) => `טווח קמח: ${min}–${max}%`,
   },
   yeast: {
     idy:      { name: 'שמרים יבשים מיידיים', description: 'מערבבים ישירות לקמח' },
