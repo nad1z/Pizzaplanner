@@ -114,7 +114,7 @@ function checkTranslation(id: LanguageId, t: AppTranslation): void {
   callReturnsString(t.gauge.flourRange, [60, 80], p('gauge.flourRange'));
 
   // yeast
-  for (const yid of ['idy', 'ady', 'sourdough'] as const) {
+  for (const yid of ['idy', 'ady', 'fresh', 'sourdough'] as const) {
     nonEmpty(t.yeast[yid].name,        p(`yeast.${yid}.name`));
     nonEmpty(t.yeast[yid].description, p(`yeast.${yid}.description`));
   }

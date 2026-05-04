@@ -1,9 +1,11 @@
 export interface RecipeI18n {
   // ── shared helpers ───────────────────────────────────────────────────────────
-  idyInstruction:  (yeastG: string) => string;
-  adyInstruction:  (yeastG: string, waterG: string, temp: string) => string;
-  idyTrace:        string;
-  adyTrace:        string;
+  idyInstruction:   (yeastG: string) => string;
+  adyInstruction:   (yeastG: string, waterG: string, temp: string) => string;
+  freshInstruction: (yeastG: string, waterG: string, temp: string) => string;
+  idyTrace:         string;
+  adyTrace:         string;
+  freshTrace:       string;
   drizzleOil:      (oilG: string) => string;
   bakeNote:        Record<string, string>;
   panNote:         Record<string, string>;
@@ -482,9 +484,10 @@ export interface AppTranslation {
     flourRange: (min: number, max: number) => string;
   };
   yeast: {
-    idy: { name: string; description: string };
-    ady: { name: string; description: string };
-    sourdough: { name: string; description: string };
+    idy:      { name: string; description: string };
+    ady:      { name: string; description: string };
+    fresh:    { name: string; description: string };
+    sourdough:{ name: string; description: string };
   };
   styles: {
     neapolitan:   { name: string; description: string };

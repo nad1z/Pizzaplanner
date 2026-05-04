@@ -93,8 +93,8 @@ describe('StorageManager', () => {
     expect(StorageManager.load()).toBeNull();
   });
 
-  it('accepts all three valid yeast types', () => {
-    for (const yeastId of ['idy', 'ady', 'sourdough'] as const) {
+  it('accepts all four valid yeast types', () => {
+    for (const yeastId of ['idy', 'ady', 'fresh', 'sourdough'] as const) {
       StorageManager.save({ ...SAMPLE, yeastId });
       expect(StorageManager.load()?.yeastId).toBe(yeastId);
     }

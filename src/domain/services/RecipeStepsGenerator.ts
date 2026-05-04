@@ -130,8 +130,11 @@ export function generateStraightRoomTemp(input: GeneratorInput, i18n: RecipeI18n
 
   const yeastInstruction = yeastId === 'idy'
     ? i18n.idyInstruction(g(yeastG))
-    : i18n.adyInstruction(g(yeastG), g(reservedWaterG), cf(37));
+    : yeastId === 'fresh'
+      ? i18n.freshInstruction(g(yeastG), g(reservedWaterG), cf(37))
+      : i18n.adyInstruction(g(yeastG), g(reservedWaterG), cf(37));
 
+  const yeastTypeName = yeastId === 'idy' ? 'instant dry' : yeastId === 'fresh' ? 'fresh' : 'active dry';
   const oilInfo = oilG > 0 ? `, ${g(oilG)}g` : '';
 
   return [
@@ -141,7 +144,7 @@ export function generateStraightRoomTemp(input: GeneratorInput, i18n: RecipeI18n
       startMinutesBeforeEat: totalMin,
       durationMinutes: 15,
       details: [
-        i18n.str.mise.d1(g(flourG), g(waterG), g(saltG), g(yeastG), yeastId === 'idy' ? 'instant dry' : 'active dry', oilInfo),
+        i18n.str.mise.d1(g(flourG), g(waterG), g(saltG), g(yeastG), yeastTypeName, oilInfo),
         i18n.str.mise.d2(g(mainWaterG), cf(25), g(reservedWaterG)),
         i18n.str.mise.d3,
       ],
@@ -243,8 +246,11 @@ export function generateStraightCold(input: GeneratorInput, i18n: RecipeI18n): R
 
   const yeastInstruction = yeastId === 'idy'
     ? i18n.idyInstruction(g(yeastG))
-    : i18n.adyInstruction(g(yeastG), g(reservedWaterG), cf(37));
+    : yeastId === 'fresh'
+      ? i18n.freshInstruction(g(yeastG), g(reservedWaterG), cf(37))
+      : i18n.adyInstruction(g(yeastG), g(reservedWaterG), cf(37));
 
+  const yeastTypeName = yeastId === 'idy' ? 'instant dry' : yeastId === 'fresh' ? 'fresh' : 'active dry';
   const oilInfo = oilG > 0 ? `, ${g(oilG)}g` : '';
 
   return [
@@ -254,7 +260,7 @@ export function generateStraightCold(input: GeneratorInput, i18n: RecipeI18n): R
       startMinutesBeforeEat: base,
       durationMinutes: 15,
       details: [
-        i18n.stc.mise.d1(g(flourG), g(waterG), g(saltG), g(yeastG), yeastId === 'idy' ? 'instant dry' : 'active dry', oilInfo),
+        i18n.stc.mise.d1(g(flourG), g(waterG), g(saltG), g(yeastG), yeastTypeName, oilInfo),
         i18n.stc.mise.d2(cf(18), cf(20)),
         i18n.stc.mise.d3,
       ],
@@ -385,7 +391,7 @@ export function generatePoolishRoomTemp(input: GeneratorInput, i18n: RecipeI18n)
       temperature: '18–22°C / 64–72°F',
       details: [
         i18n.plr.poolishMix.d1(g(poolishFlourG), g(poolishWaterG), cf(20)),
-        yeastId === 'idy' ? i18n.idyTrace : i18n.adyTrace,
+        yeastId === 'idy' ? i18n.idyTrace : yeastId === 'fresh' ? i18n.freshTrace : i18n.adyTrace,
         i18n.plr.poolishMix.d3,
         i18n.plr.poolishMix.d4,
         i18n.plr.poolishMix.d5,
@@ -403,7 +409,7 @@ export function generatePoolishRoomTemp(input: GeneratorInput, i18n: RecipeI18n)
         i18n.plr.mainMix.d3(g(saltG), g(reservedWaterG)),
         yeastId === 'idy'
           ? i18n.plr.mainMix.d4idy(g(mainYeastG))
-          : i18n.plr.mainMix.d4ady(g(mainYeastG), cf(37)),
+          : i18n.plr.mainMix.d4ady(g(mainYeastG), cf(37)),  // fresh uses same dissolve-in-warm-water step as ady
         i18n.plr.mainMix.d5,
         ...(oilG > 0 ? [i18n.plr.mainMix.d6(g(oilG))] : []),
       ],
@@ -480,7 +486,7 @@ export function generatePoolishCold(input: GeneratorInput, i18n: RecipeI18n): Re
       temperature: '18–22°C / 64–72°F',
       details: [
         i18n.plc.poolishMix.d1(g(poolishFlourG), g(poolishWaterG), cf(20)),
-        yeastId === 'idy' ? i18n.idyTrace : i18n.adyTrace,
+        yeastId === 'idy' ? i18n.idyTrace : yeastId === 'fresh' ? i18n.freshTrace : i18n.adyTrace,
         i18n.plc.poolishMix.d3,
         i18n.plc.poolishMix.d4,
         i18n.plc.poolishMix.d5,
@@ -498,7 +504,7 @@ export function generatePoolishCold(input: GeneratorInput, i18n: RecipeI18n): Re
         i18n.plc.mainMix.d3(g(saltG), g(reservedWaterG)),
         yeastId === 'idy'
           ? i18n.plc.mainMix.d4idy(g(mainYeastG))
-          : i18n.plc.mainMix.d4ady(g(mainYeastG), g(reservedWaterG)),
+          : i18n.plc.mainMix.d4ady(g(mainYeastG), g(reservedWaterG)),  // fresh uses same dissolve-in-warm-water step as ady
         i18n.plc.mainMix.d5,
         ...(oilG > 0 ? [i18n.plc.mainMix.d6(g(oilG))] : []),
       ],
@@ -605,7 +611,7 @@ export function generateBigaRoomTemp(input: GeneratorInput, i18n: RecipeI18n): R
         i18n.bgr.mainMix.d4(g(saltG), g(reservedWaterG)),
         yeastId === 'idy'
           ? i18n.bgr.mainMix.d5idy(g(mainYeastG))
-          : i18n.bgr.mainMix.d5ady(g(mainYeastG)),
+          : i18n.bgr.mainMix.d5ady(g(mainYeastG)),  // fresh uses same dissolve-in-warm-water step as ady
         i18n.bgr.mainMix.d6,
         ...(oilG > 0 ? [i18n.bgr.mainMix.d7(g(oilG))] : []),
       ],
@@ -690,7 +696,7 @@ export function generateBigaCold(input: GeneratorInput, i18n: RecipeI18n): Recip
         i18n.bgc.mainMix.d2(g(saltG), g(reservedWaterG)),
         yeastId === 'idy'
           ? i18n.bgc.mainMix.d3idy(g(mainYeastG))
-          : i18n.bgc.mainMix.d3ady(g(mainYeastG), g(reservedWaterG)),
+          : i18n.bgc.mainMix.d3ady(g(mainYeastG), g(reservedWaterG)),  // fresh uses same dissolve-in-warm-water step as ady
         i18n.bgc.mainMix.d4,
         ...(oilG > 0 ? [i18n.bgc.mainMix.d5(g(oilG))] : []),
       ],
