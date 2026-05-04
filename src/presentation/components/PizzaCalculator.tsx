@@ -317,7 +317,7 @@ export function PizzaCalculator({ selectedFlour, pendingApply, onClearApply, onN
               <div className="method-yeast">
                 <span className="method-yeast__label uppercase tracking-widest">{t.calc.labels.yeastType}</span>
                 <div className="method-yeast__pills">
-                  {(['idy', 'ady'] as YeastTypeId[]).map(id => (
+                  {(['idy', 'ady', 'fresh'] as YeastTypeId[]).map(id => (
                     <button key={id} onClick={() => update({ yeastId: id })}
                       className={`yeast-pill${effectiveYeastId === id ? ' yeast-pill--active' : ''}`}>
                       {t.yeast[id].name}

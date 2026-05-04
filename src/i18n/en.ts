@@ -80,6 +80,7 @@ export const en: AppTranslation = {
   yeast: {
     idy:      { name: 'Instant Dry',  description: 'Mix directly into flour' },
     ady:      { name: 'Active Dry',   description: 'Dissolve in warm water first' },
+    fresh:    { name: 'Fresh',        description: 'Crumble into warm water to dissolve' },
     sourdough:{ name: 'Sourdough',    description: 'Natural starter, 20% of flour' },
   },
   styles: {
@@ -182,10 +183,12 @@ export const en: AppTranslation = {
   },
   recipeSteps: {
     // ── helpers ────────────────────────────────────────────────────────────────
-    idyInstruction:  (yeastG: string) => `Sprinkle ${yeastG}g instant dry yeast directly over the dough — no pre-activation needed.`,
-    adyInstruction:  (yeastG: string, waterG: string, temp: string) => `Dissolve ${yeastG}g active dry yeast in ${waterG}g warm water (${temp}) and wait 10 minutes until foamy before adding to the dough.`,
-    idyTrace:        '0.1g instant dry yeast (about a pinch — use a precision scale)',
-    adyTrace:        '0.1g active dry yeast (about a pinch — dissolve in the pre-ferment water before adding)',
+    idyInstruction:   (yeastG: string) => `Sprinkle ${yeastG}g instant dry yeast directly over the dough — no pre-activation needed.`,
+    adyInstruction:   (yeastG: string, waterG: string, temp: string) => `Dissolve ${yeastG}g active dry yeast in ${waterG}g warm water (${temp}) and wait 10 minutes until foamy before adding to the dough.`,
+    freshInstruction: (yeastG: string, waterG: string, temp: string) => `Crumble ${yeastG}g fresh yeast into ${waterG}g warm water (${temp}) and stir until fully dissolved before adding to the dough.`,
+    idyTrace:         '0.1g instant dry yeast (about a pinch — use a precision scale)',
+    adyTrace:         '0.1g active dry yeast (about a pinch — dissolve in the pre-ferment water before adding)',
+    freshTrace:       '0.3g fresh yeast (a tiny crumble — dissolve in the pre-ferment water before adding)',
     drizzleOil:      (oilG: string) => `Drizzle ${oilG}g olive oil over the dough and toppings.`,
     bakeNote: {
       neapolitan:   'Use the highest setting your oven allows. If you have a broiler, switch it on for the last minute to char the crust.',

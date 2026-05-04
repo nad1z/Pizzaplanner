@@ -80,6 +80,7 @@ export const he: AppTranslation = {
   yeast: {
     idy:      { name: 'שמרים יבשים מיידיים', description: 'מערבבים ישירות לקמח' },
     ady:      { name: 'שמרים יבשים פעילים',  description: 'ממיסים במים חמים תחילה' },
+    fresh:    { name: 'שמרים טריים',          description: 'מפוררים למים חמים עד להמסה' },
     sourdough:{ name: 'מחמצת',               description: 'מחמצת טבעית, 20% מהקמח' },
   },
   styles: {
@@ -182,10 +183,12 @@ export const he: AppTranslation = {
   },
   recipeSteps: {
     // ── helpers ────────────────────────────────────────────────────────────────
-    idyInstruction:  (yeastG: string) => `פזר ${yeastG}ג' שמרים יבשים מיידיים ישירות על הבצק — אין צורך בהכנה מוקדמת.`,
-    adyInstruction:  (yeastG: string, waterG: string, temp: string) => `המס ${yeastG}ג' שמרים יבשים פעילים ב-${waterG}ג' מים חמים (${temp}) והמתן 10 דקות עד שיהיה קצפי לפני הוספה לבצק.`,
-    idyTrace:        "0.1ג' שמרים יבשים מיידיים (כמו קמצוץ — השתמש במאזניים מדויקים)",
-    adyTrace:        "0.1ג' שמרים יבשים פעילים (כמו קמצוץ — המס במים של הפרה-פרמנט לפני הוספה)",
+    idyInstruction:   (yeastG: string) => `פזר ${yeastG}ג' שמרים יבשים מיידיים ישירות על הבצק — אין צורך בהכנה מוקדמת.`,
+    adyInstruction:   (yeastG: string, waterG: string, temp: string) => `המס ${yeastG}ג' שמרים יבשים פעילים ב-${waterG}ג' מים חמים (${temp}) והמתן 10 דקות עד שיהיה קצפי לפני הוספה לבצק.`,
+    freshInstruction: (yeastG: string, waterG: string, temp: string) => `פורר ${yeastG}ג' שמרים טריים לתוך ${waterG}ג' מים חמים (${temp}) וערבב עד להמסה מלאה לפני הוספה לבצק.`,
+    idyTrace:         "0.1ג' שמרים יבשים מיידיים (כמו קמצוץ — השתמש במאזניים מדויקים)",
+    adyTrace:         "0.1ג' שמרים יבשים פעילים (כמו קמצוץ — המס במים של הפרה-פרמנט לפני הוספה)",
+    freshTrace:       "0.3ג' שמרים טריים (פירור קטן — המס במים של הפרה-פרמנט לפני הוספה)",
     drizzleOil:      (oilG: string) => `זלוף ${oilG}ג' שמן זית על הבצק והתוספות.`,
     bakeNote: {
       neapolitan:   'השתמש בהגדרה הגבוהה ביותר של התנור שלך. אם יש גריל, הפעל אותו בדקה האחרונה לחריכת הקרום.',
