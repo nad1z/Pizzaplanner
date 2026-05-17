@@ -549,6 +549,10 @@ export interface AppTranslation {
     progressDone: (done: number, total: number) => string;
     yeastLabel: string;
     starterLabel: string;
+    upNext: string;
+    upNextIn: (h: number, m: number) => string;
+    upNextNow: string;
+    upNextOverdue: (h: number, m: number) => string;
   };
   share: {
     label: string;

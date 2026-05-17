@@ -170,6 +170,10 @@ export const he: AppTranslation = {
     progressDone:       (done, total) => `${done} / ${total} הושלמו`,
     yeastLabel:         'שמרים',
     starterLabel:       'מחמצת',
+    upNext:             'הבא בתור',
+    upNextIn:           (h, m) => h > 0 ? `בעוד ${h} שעות${m > 0 ? ` ${m} דקות` : ''}` : `בעוד ${m} דקות`,
+    upNextNow:          'עכשיו',
+    upNextOverdue:      (h, m) => h > 0 ? `לפני ${h} שעות${m > 0 ? ` ${m} דקות` : ''}` : `לפני ${m} דקות`,
   },
   share: {
     label: 'שתף',
