@@ -25,6 +25,18 @@ function formatAbsolute(eatDate: Date, minutesBefore: number): string {
   });
 }
 
+function stepDateOf(eatDate: Date, minutesBefore: number): Date {
+  return new Date(eatDate.getTime() - minutesBefore * 60 * 1000);
+}
+
+function formatShortTime(stepDate: Date, anchor: Date): string {
+  const time = stepDate.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+  const sameDay = stepDate.toDateString() === anchor.toDateString();
+  if (sameDay) return time;
+  const weekday = stepDate.toLocaleDateString(undefined, { weekday: 'short' });
+  return `${weekday} ${time}`;
+}
+
 function totalProcessHours(steps: RecipeStep[]): number {
   if (steps.length === 0) return 0;
   const maxStart = Math.max(...steps.map(s => s.startMinutesBeforeEat));
@@ -114,6 +126,7 @@ export function RecipeView() {
       setChecked(raw ? JSON.parse(raw) : {});
     } catch { setChecked({}); }
     setExpanded(new Set());
+    setAutoExpandedFor(null);
   }, [checklistKey]);
 
   // Persist checklist
@@ -144,6 +157,44 @@ export function RecipeView() {
   const doneCount = steps.filter(s => checked[s.id]).length;
   const methodCfg = DOUGH_METHODS[method];
   const totalHours = totalProcessHours(steps);
+
+  const nextStepIdx = steps.findIndex(s => !checked[s.id]);
+  const nextStep = nextStepIdx >= 0 ? steps[nextStepIdx] : null;
+
+  // Auto-expand the "up next" step; collapse the previously auto-expanded one as it advances
+  const [autoExpandedFor, setAutoExpandedFor] = useState<string | null>(null);
+  useEffect(() => {
+    if (nextStep && autoExpandedFor !== nextStep.id) {
+      setExpanded(prev => {
+        const next = new Set(prev);
+        if (autoExpandedFor) next.delete(autoExpandedFor);
+        next.add(nextStep.id);
+        return next;
+      });
+      setAutoExpandedFor(nextStep.id);
+    }
+  }, [nextStep?.id, autoExpandedFor]);
+
+  // "Up next" timing relative to now
+  const upNextLabel = (() => {
+    if (!nextStep || !eatDate) return null;
+    const stepStart = stepDateOf(eatDate, nextStep.startMinutesBeforeEat).getTime();
+    const deltaMin = Math.round((stepStart - Date.now()) / 60000);
+    if (Math.abs(deltaMin) < 1) return t.recipe.upNextNow;
+    if (deltaMin > 0) {
+      const h = Math.floor(deltaMin / 60);
+      const m = deltaMin % 60;
+      return t.recipe.upNextIn(h, m);
+    }
+    const past = -deltaMin;
+    const h = Math.floor(past / 60);
+    const m = past % 60;
+    return t.recipe.upNextOverdue(h, m);
+  })();
+
+  const anchorDate = eatDate && steps.length > 0
+    ? stepDateOf(eatDate, steps[0].startMinutesBeforeEat)
+    : null;
 
   if (!state || !pizzaStyle) {
     return (
@@ -224,74 +275,76 @@ export function RecipeView() {
         <button onClick={resetChecklist} className="recipe-reset-btn">{t.recipe.resetChecklist}</button>
       )}
 
-      {/* ── Steps ── */}
-      <div className="recipe-steps">
+      {/* ── Up next hint ── */}
+      {nextStep && !allDone && (
+        <div className="recipe-upnext">
+          <span className="recipe-upnext__label">{t.recipe.upNext}:</span>
+          <span className="recipe-upnext__title">{nextStep.title}</span>
+          {upNextLabel && <span className="recipe-upnext__when">{upNextLabel}</span>}
+        </div>
+      )}
+
+      {/* ── Timeline ── */}
+      <div className="recipe-timeline">
         {steps.map((step, idx) => {
           const isChecked = !!checked[step.id];
           const isExpanded = expanded.has(step.id);
+          const isNext = nextStep?.id === step.id;
+          const stepDate = eatDate ? stepDateOf(eatDate, step.startMinutesBeforeEat) : null;
+          const timeLabel = stepDate && anchorDate
+            ? formatShortTime(stepDate, anchorDate)
+            : t.recipe.beforeEat(
+                Math.floor(step.startMinutesBeforeEat / 60),
+                step.startMinutesBeforeEat % 60,
+              );
 
           return (
             <div
               key={step.id}
-              className={`recipe-step${isChecked ? ' recipe-step--done' : ''}${isExpanded ? ' recipe-step--expanded' : ''}`}
+              className={[
+                'recipe-tstep',
+                isChecked ? 'recipe-tstep--done' : '',
+                isNext ? 'recipe-tstep--next' : '',
+                isExpanded ? 'recipe-tstep--open' : '',
+              ].filter(Boolean).join(' ')}
             >
-              {/* Header row — click to expand/collapse */}
+              <button
+                className="recipe-tstep__dot"
+                onClick={e => toggleCheck(step.id, e)}
+                onKeyDown={e => (e.key === ' ' || e.key === 'Enter') && toggleCheck(step.id, e)}
+                aria-label={isChecked ? 'Mark undone' : 'Mark done'}
+              >
+                {isChecked ? <span className="recipe-tstep__check">✓</span> : <span className="recipe-tstep__num">{idx + 1}</span>}
+              </button>
+
               <div
-                className="recipe-step__header"
+                className="recipe-tstep__row"
                 onClick={() => toggleExpand(step.id)}
                 role="button"
                 tabIndex={0}
                 onKeyDown={e => (e.key === ' ' || e.key === 'Enter') && toggleExpand(step.id)}
               >
-                {/* Check circle */}
-                <button
-                  className={`recipe-step__check${isChecked ? ' recipe-step__check--done' : ''}`}
-                  onClick={e => toggleCheck(step.id, e)}
-                  onKeyDown={e => (e.key === ' ' || e.key === 'Enter') && toggleCheck(step.id, e)}
-                  aria-label={isChecked ? 'Mark undone' : 'Mark done'}
-                  tabIndex={0}
-                >
-                  {isChecked ? '✓' : idx + 1}
-                </button>
-
-                {/* Title + timing */}
-                <div className="recipe-step__meta">
-                  <span className="recipe-step__title">{step.title}</span>
-                  <div className="recipe-step__timing">
-                    <span className="recipe-step__when">
-                      {eatDate
-                        ? formatAbsolute(eatDate, step.startMinutesBeforeEat)
-                        : t.recipe.beforeEat(
-                            Math.floor(step.startMinutesBeforeEat / 60),
-                            step.startMinutesBeforeEat % 60,
-                          )}
-                    </span>
-                    <span className="recipe-step__duration">⏱ {t.recipe.stepDuration(step.durationMinutes)}</span>
-                    {step.temperature && (
-                      <span className="recipe-step__temp">🌡 {step.temperature}</span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Chevron */}
-                <span className="recipe-step__chevron" aria-hidden="true">
-                  {isExpanded ? '▲' : '▼'}
-                </span>
+                <span className="recipe-tstep__time">{timeLabel}</span>
+                <span className="recipe-tstep__title">{step.title}</span>
+                <span className="recipe-tstep__dur">{t.recipe.stepDuration(step.durationMinutes)}</span>
+                <span className="recipe-tstep__chev" aria-hidden="true">▼</span>
               </div>
 
-              {/* Expanded body */}
               {isExpanded && (
-                <div className="recipe-step__body">
-                  <ul className="recipe-step__details">
+                <div className="recipe-tstep__body">
+                  {step.temperature && (
+                    <div className="recipe-tstep__temp">🌡 {step.temperature}</div>
+                  )}
+                  <ul className="recipe-tstep__details">
                     {step.details.map((d, i) => (
-                      <li key={i} className="recipe-step__detail">{d}</li>
+                      <li key={i} className="recipe-tstep__detail">{d}</li>
                     ))}
                   </ul>
                   {step.tips.length > 0 && (
-                    <div className="recipe-step__tips">
+                    <div className="recipe-tstep__tips">
                       {step.tips.map((tip, i) => (
-                        <p key={i} className="recipe-step__tip">
-                          <span className="recipe-step__tip-label">{t.recipe.tipLabel}:</span> {tip}
+                        <p key={i} className="recipe-tstep__tip">
+                          <span className="recipe-tstep__tip-label">{t.recipe.tipLabel}:</span> {tip}
                         </p>
                       ))}
                     </div>
