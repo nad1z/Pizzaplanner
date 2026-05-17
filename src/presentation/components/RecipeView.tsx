@@ -64,6 +64,11 @@ function IngredientChip({ label, value, unit = 'g' }: ChipProps) {
 
 export function RecipeView() {
   const t = useTranslation();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, []);
+
   const state = StorageManager.load();
 
   const method = (state?.doughMethod ?? 'straight') as DoughMethodId;
@@ -137,7 +142,15 @@ export function RecipeView() {
 
   const toggleCheck = (id: string, e: React.MouseEvent | React.KeyboardEvent) => {
     e.stopPropagation();
-    setChecked(prev => ({ ...prev, [id]: !prev[id] }));
+    const isNowDone = !checked[id];
+    setChecked(prev => ({ ...prev, [id]: isNowDone }));
+    if (isNowDone) {
+      setExpanded(prev => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    }
   };
 
   const toggleExpand = (id: string) => {
