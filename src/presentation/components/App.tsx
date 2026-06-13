@@ -6,6 +6,7 @@ import { RecipeView } from './RecipeView';
 import { LanguageContext, LANGUAGES, loadLanguage, saveLanguage, useTranslation } from '../../i18n';
 import type { LanguageId } from '../../i18n';
 import { UrlStateManager } from '../../infrastructure/UrlStateManager';
+import { Analytics } from '../../infrastructure/analytics';
 
 type AppView = 'calculator' | 'flour-guide' | 'recipe';
 
@@ -47,9 +48,14 @@ export function App() {
     saveLanguage(id);
   };
 
-  const navigateTo = (v: AppView) => { setView(v); setMenuOpen(false); };
+  const navigateTo = (v: AppView) => {
+    if (v === 'flour-guide') Analytics.flourGuideOpened();
+    setView(v);
+    setMenuOpen(false);
+  };
 
   const handleApplyFlour = (flour: FlourData, hydration: number, fermentation: number) => {
+    Analytics.flourApplied(flour.name, hydration, fermentation);
     setSelectedFlour(flour);
     setPendingApply({ hydration, fermentation });
     navigateTo('calculator');
@@ -200,6 +206,7 @@ function ShareButton() {
 
   const handleCopy = () => {
     navigator.clipboard.writeText(url).then(() => {
+      Analytics.shareClicked('copy_link');
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     });
@@ -207,6 +214,7 @@ function ShareButton() {
 
   const handleInstagram = () => {
     if (navigator.share) {
+      Analytics.shareClicked('native_share');
       navigator.share({ url }).catch(() => {});
     } else {
       handleCopy();
@@ -237,7 +245,7 @@ function ShareButton() {
               href={`https://wa.me/?text=${encoded}`}
               target="_blank"
               rel="noopener noreferrer"
-              onClick={() => setOpen(false)}
+              onClick={() => { Analytics.shareClicked('whatsapp'); setOpen(false); }}
               className="share__platform"
             >
               <div className="share__platform-icon share__platform-icon--whatsapp"><WhatsAppIcon /></div>
@@ -246,7 +254,7 @@ function ShareButton() {
 
             <a
               href={`sms:?&body=${encoded}`}
-              onClick={() => setOpen(false)}
+              onClick={() => { Analytics.shareClicked('sms'); setOpen(false); }}
               className="share__platform"
             >
               <div className="share__platform-icon share__platform-icon--messages"><MessagesIcon /></div>
@@ -261,7 +269,7 @@ function ShareButton() {
 
             <a
               href={`fb-messenger://share/?link=${encodedUrl}`}
-              onClick={() => setOpen(false)}
+              onClick={() => { Analytics.shareClicked('messenger'); setOpen(false); }}
               className="share__platform"
             >
               <div className="share__platform-icon share__platform-icon--messenger"><MessengerIcon /></div>

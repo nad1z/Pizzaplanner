@@ -16,6 +16,7 @@ import type { PersistedState, DiameterUnit } from '../../infrastructure/StorageM
 import { UrlStateManager } from '../../infrastructure/UrlStateManager';
 import { validityLevel, DOT_CLASSES } from '../utils/validity';
 import { useTranslation } from '../../i18n';
+import { Analytics } from '../../infrastructure/analytics';
 import { HydrationGauge } from './HydrationGauge';
 import { InputField } from './InputField';
 
@@ -176,7 +177,11 @@ export function PizzaCalculator({ selectedFlour, pendingApply, onClearApply, onN
     return best;
   }, [state.hydrationPct, state.styleId, style.hydration.recommended]);
 
-  const handleStyleChange = (id: PizzaStyleId) => { setDismissed(false); setState(prev => getDefaults(id, prev.diameterUnit)); };
+  const handleStyleChange = (id: PizzaStyleId) => {
+    Analytics.styleSelected(id, PizzaStyle.STYLES[id].emoji + ' ' + id);
+    setDismissed(false);
+    setState(prev => getDefaults(id, prev.diameterUnit));
+  };
   const reset = () => { StorageManager.clear(); setDismissed(false); setState(prev => getDefaults('neapolitan', prev.diameterUnit)); };
 
   return (
@@ -378,7 +383,7 @@ export function PizzaCalculator({ selectedFlour, pendingApply, onClearApply, onN
           </div>
 
           {/* ── View Recipe CTA ── */}
-          <button onClick={onNavigateToRecipe} className="view-recipe-btn">
+          <button onClick={() => { Analytics.recipeViewed(state.styleId, state.numPizzas, state.hydrationPct, method); onNavigateToRecipe(); }} className="view-recipe-btn">
             {t.recipe.viewRecipe}
           </button>
 
